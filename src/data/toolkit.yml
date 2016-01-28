@@ -1,6 +1,6 @@
 colors:
   primary:
-    Orange: "@@orange"
+    Orange: "rgb(240, 133, 50)"
     Light: "rgb(242, 242, 242)"
   secondary:
     Red: "rgb(201, 55, 6)"

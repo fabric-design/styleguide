@@ -16,6 +16,7 @@ var runSequence = require('run-sequence');
 var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
 var webpack = require('webpack');
+var replace = require('gulp-replace-task');
 
 
 // configuration
@@ -104,6 +105,25 @@ gulp.task('favicon', function () {
 		.pipe(gulp.dest(config.dest));
 });
 
+var quark_tokens = require("./node_modules/quark/tokens/styleguide/main.json");
+
+gulp.task('quark', function() {
+	//create the pattern matching array
+	var patterns = [];
+	for(var token in quark_tokens) {
+		patterns.push({
+			match: token.substr(1), //replace $ as gulp-replace uses @@ for variables
+			replacement: quark_tokens[token]
+		});
+	}
+
+	gulp.src('./tokens/*.yml')
+		.pipe(replace({
+			patterns: patterns
+		}))
+		.pipe(gulp.dest('./src/data'));
+});
+
 
 // assemble
 gulp.task('assemble', function (done) {
@@ -170,6 +190,7 @@ gulp.task('default', ['clean'], function () {
 		'styles',
 		'scripts',
 		'images',
+		'quark',
 		'assemble'
 	];
 
