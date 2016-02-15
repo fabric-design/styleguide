@@ -1,8 +1,7 @@
 colors:
   primary:
     Orange: "@@orange"
-    Light: "rgb(242, 242, 242)"
   secondary:
-    Red: "rgb(201, 55, 6)"
-    Yellow: "rgb(252, 207, 80)"
-    Blue: "rgb(39, 102, 143)"
+    Dark-Gray: "@@dark-gray"
+    Medium-Gray: "@@medium-gray"
+    Light-Gray: "@@light-gray"

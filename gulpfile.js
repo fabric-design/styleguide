@@ -45,7 +45,7 @@ var webpackCompiler = webpack(webpackConfig);
 
 // clean
 gulp.task('clean', function (cb) {
-	del([config.dest], cb);
+	del([config.dest + '/**/*.[js,html,css,ico]'], cb);
 });
 
 
@@ -112,7 +112,7 @@ gulp.task('quark', function() {
 	var patterns = [];
 	for(var token in quark_tokens) {
 		patterns.push({
-			match: token.substr(1), //replace $ as gulp-replace uses @@ for variables
+			match: token,
 			replacement: quark_tokens[token]
 		});
 	}
@@ -139,7 +139,11 @@ gulp.task('serve', function () {
 
 	browserSync({
 		server: {
-			baseDir: config.dest
+			baseDir: config.dest,
+			middleware: function (req, res, next) {
+				req.url = req.url.replace("\/WholesaleDesignSystem", "\/");
+				next();
+			}
 		},
 		notify: false,
 		logPrefix: 'FABRICATOR'

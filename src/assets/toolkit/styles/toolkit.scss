@@ -1,8 +1,15 @@
 /**
  * Toolkit styles
  */
-@import "../../../../node_modules/quark/tokens/web/main";
 
-body {
-	font-family: sans-serif;
-}
+@import "../../../../bower_components/bourbon/app/assets/stylesheets/bourbon";
+@import "../../../../bower_components/neat/app/assets/stylesheets/neat";
+
+//quark variables
+//@import "../../../../node_modules/quark/tokens/web/main";
+@import "variables";
+
+//thoughtworks - bitters
+//cloned - no bower available
+@import "../../../../bower_components/neat/app/assets/stylesheets/neat-helpers"; //needed for grid
+@import "refills/all";

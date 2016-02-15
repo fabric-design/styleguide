@@ -1,0 +1,22 @@
+<div>
+	<div class="animate-target"></div>
+	<button class="animate-trigger">Press to Animate.css</button>
+</div>
+
+<div class="animate-info" style="text-align: center">
+	This component is based on Dan Eden’s Animate.css. It sets up the JavaScript for triggering an animation for another element.
+	Check out the <a href="http://daneden.github.io/animate.css/">Animate.css website</a> to view the animations in action and the <a href="https://github.com/daneden/animate.css/blob/master/animate.css">GitHub page</a> for the CSS.
+</div>
+
+<!--
+$(function() {
+		var animationClasses = 'animated alternate iteration zoomOut';
+		var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+
+		$('.animate-trigger').on('click',function() {
+			$('.animate-target').addClass(animationClasses).one(animationEnd,function() {
+				$(this).removeClass(animationClasses);
+			});
+		});
+	});
+-->

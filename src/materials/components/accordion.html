@@ -1,0 +1,35 @@
+<div class="refills-components">
+	<ul class="accordion">
+		<li>
+			<a href="javascript:void(0)" class="js-accordion-trigger">Accordion Item</a>
+			<ul class="submenu">
+				<li>
+					<a href="javascript:void(0)">Sub Item 1</a>
+				</li>
+				<li>
+					<a href="javascript:void(0)">Sub Item 2</a>
+				</li>
+			</ul>
+		</li>
+		<li>
+			<a href="javascript:void(0)" class="js-accordion-trigger">Another Item</a>
+			<ul class="submenu">
+				<li>
+					<a href="javascript:void(0)">Sub Item 1</a>
+				</li>
+				<li>
+					<a href="javascript:void(0)">Sub Item 2</a>
+				</li>
+			</ul>
+		</li>
+	</ul>
+</div>
+<!--
+
+$('.js-accordion-trigger').bind('click', function(e){
+		jQuery(this).parent().find('.submenu').slideToggle('fast');  // apply the toggle to the ul
+		jQuery(this).parent().toggleClass('is-expanded');
+		e.preventDefault();
+	});
+
+-->

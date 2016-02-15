@@ -1,0 +1,23 @@
+<div class="refills-components">
+	<button type="button" class="js-menu-trigger sliding-panel-button">
+		Click for Sliding Panel
+	</button>
+
+	<nav class="js-menu sliding-panel-content">
+		<ul>
+			<li><a href="javascript:void(0)">Item 1</a></li>
+			<li><a href="javascript:void(0)">Item 2</a></li>
+			<li><a href="javascript:void(0)">Item 3</a></li>
+		</ul>
+	</nav>
+
+	<div class="js-menu-screen sliding-panel-fade-screen"></div>
+</div>
+<!--
+$(document).ready(function(){
+  $('.sliding-panel-button,.sliding-panel-fade-screen,.sliding-panel-close').on('click touchstart',function (e) {
+    $('.sliding-panel-content,.sliding-panel-fade-screen').toggleClass('is-visible');
+    e.preventDefault();
+  });
+});
+-->

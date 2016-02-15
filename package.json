@@ -51,6 +51,7 @@
   },
   "dependencies": {
     "gulp-replace-task": "^0.11.0",
+    "jquery": "^2.2.0",
     "quark": "git+ssh://git@github.bus.zalan.do/WholesaleDesignSystem/Quark"
   }
 }
