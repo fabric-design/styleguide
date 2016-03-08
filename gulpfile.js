@@ -21,6 +21,8 @@ var dirSync = require( 'gulp-dir-sync' );
 var sassJspm = require('sass-jspm-importer');
 var fs = require("fs");
 var clone = require('gulp-clone');
+var jspm = require('gulp-jspm-build');
+
 
 
 //theo
@@ -187,6 +189,16 @@ gulp.task('assemble', function (done) {
 	done();
 });
 
+gulp.task('jspm', function(){
+	jspm({
+		bundleSfx: true,
+		bundles: [
+			{ src: './src/app', dst: 'app.js' }
+		]
+	})
+	.pipe(gulp.dest(config.dest));
+});
+
 
 // server
 gulp.task('serve', function () {
@@ -250,10 +262,10 @@ gulp.task('default', ['clean'], function () {
 		'tokens',
 		'styles',
 		'scripts',
-		'jspm',
 		'images',
 		'quark',
-		'assemble'
+		'assemble',
+		'jspm'
 	];
 
 	// run build

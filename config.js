@@ -18,6 +18,7 @@ System.config({
     "bourbon": "npm:bourbon@4.2.6",
     "bourbon-neat": "npm:bourbon-neat@1.7.4",
     "core-js": "npm:core-js@1.2.6",
+    "jquery": "npm:jquery@2.2.1",
     "scss": "github:mobilexag/plugin-sass@0.3.0",
     "github:jspm/nodelibs-assert@0.1.0": {
       "assert": "npm:assert@1.3.0"
@@ -214,9 +215,6 @@ System.config({
       "path": "github:jspm/nodelibs-path@0.1.0"
     },
     "npm:bourbon@4.2.6": {
-      "path": "github:jspm/nodelibs-path@0.1.0"
-    },
-    "npm:bourbon@5.0.0-beta.2": {
       "path": "github:jspm/nodelibs-path@0.1.0"
     },
     "npm:brace-expansion@1.1.3": {

@@ -6,7 +6,7 @@
 
 var $ = require('jquery');
 
-$(document).ready(function () {
+//$(document).ready(function () {
 
 	/* Accordion */
 	$('.js-accordion-trigger').bind('click', function(e){
@@ -344,4 +344,4 @@ $(document).ready(function () {
 	});
 	/* END Search tools */
 
-});
+//});

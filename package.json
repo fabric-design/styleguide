@@ -42,6 +42,7 @@
     "gulp-dir-sync": "^0.1.2",
     "gulp-if": "^1.2.5",
     "gulp-imagemin": "^2.2.1",
+    "gulp-jspm-build": "0.0.14",
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^2.0.0",
     "gulp-sourcemaps": "^1.5.2",
@@ -62,6 +63,7 @@
     "dependencies": {
       "bourbon": "npm:bourbon@^5.0.0-beta.2",
       "bourbon-neat": "npm:bourbon-neat@^1.7.4",
+      "jquery": "npm:jquery@^2.2.1",
       "jspm/nodelibs-url": "github:jspm/nodelibs-url@0.2.0-alpha",
       "scss": "github:mobilexag/plugin-sass@^0.3.0"
     },
