@@ -1,0 +1,1 @@
+module.exports = require("npm:strip-indent@1.0.1/index");

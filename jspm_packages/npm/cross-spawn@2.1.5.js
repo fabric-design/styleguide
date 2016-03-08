@@ -1,0 +1,1 @@
+module.exports = require("npm:cross-spawn@2.1.5/index.js");

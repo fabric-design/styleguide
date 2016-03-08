@@ -1,0 +1,1 @@
+module.exports = require("npm:npmconf@2.1.2/npmconf.js");

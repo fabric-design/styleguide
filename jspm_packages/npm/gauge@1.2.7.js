@@ -1,0 +1,1 @@
+module.exports = require("npm:gauge@1.2.7/progress-bar.js");

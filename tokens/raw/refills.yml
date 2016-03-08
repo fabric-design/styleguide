@@ -1,0 +1,64 @@
+global:
+  category: "refills"
+
+"imports": [
+  "./variables.yml"
+]
+
+aliases:
+  # Typography
+  GEORGIA: "'Georgia', 'Cambria', 'Times New Roman', 'Times', serif"
+
+props:
+  # Typography
+  refills-serif:
+    value: "'Lusitana', {!GEORGIA}"
+    type: "font"
+  refills-narrow-sans:
+    value: "'Oswald', sans-serif"
+    type: "font"
+  refills-second-serif:
+    value: "{!GEORGIA}"
+    type: "font"
+
+  # Component Properties
+  refills-nav-height:
+    value: "60px"
+    type: "number"
+
+  # Colors
+  refills-body-background-color:
+    value: "{!BASE-BACKGROUND-COLOR}"
+    type: "color"
+  refills-color:
+    value: "{!BASE-FONT-COLOR}"
+    type: "color"
+  refills-accent-color:
+    value: "{!ACTION-COLOR}"
+    type: "color"
+  refills-logo-color:
+    value: "{!ORANGE}"
+    type: "color"
+  refills-anchor-color:
+    value: "{!ACTION-COLOR}"
+    type: "color"
+  refills-hero-background:
+    value: "{!LIGHT-GRAY}"
+    type: "color"
+  refills-secondary-anchor-color:
+    value: "{!MEDIUM-GRAY}"
+    type: "color"
+  refills-highlight-color:
+    value: "{!ACTION-COLOR}"
+    type: "color"
+  refills-white-shadow:
+    value: "0 1px 1px transparentize(#fff, 0.6)"
+    type: "shadow"
+
+  # Screen Breakpoints
+  refills-medium-screen:
+    value: "em(640)"
+    type: "number"
+  refills-large-screen:
+    value: "em(860)"
+    type: "number"

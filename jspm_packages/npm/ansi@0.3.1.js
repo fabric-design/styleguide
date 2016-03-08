@@ -1,0 +1,1 @@
+module.exports = require("npm:ansi@0.3.1/lib/ansi.js");

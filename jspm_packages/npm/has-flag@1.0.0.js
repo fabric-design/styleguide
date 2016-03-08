@@ -1,0 +1,1 @@
+module.exports = require("npm:has-flag@1.0.0/index");

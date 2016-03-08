@@ -1,0 +1,136 @@
+global:
+  category: "variables"
+
+aliases:
+  # Typography
+  BASE-FONT-FAMILY: "'Helvetica Neue', Helvetica, Arial, sans-serif"
+  HEADING-FONT-FAMILY: "{!BASE-FONT-FAMILY}"
+
+  # Font Sizes
+  BASE-FONT-SIZE: "1em"
+
+  # Line height
+  BASE-LINE-HEIGHT: "1.5"
+  HEADING-LINE-HEIGHT: "1.2"
+
+  # Other Sizes
+  BASE-BORDER-RADIUS: "3px"
+  BASE-SPACING: "{!BASE-LINE-HEIGHT} * 1em"
+  SMALL-SPACING: "$base-line-height / 2"
+  BASE-Z-INDEX: "0"
+
+  # Colors
+  ORANGE: "#f08532"
+  DARK-GRAY: "#333"
+  MEDIUM-GRAY: "#999"
+  LIGHT-GRAY: "#ddd"
+
+  # Font Colors
+  BASE-FONT-COLOR: "{!DARK-GRAY}"
+  ACTION-COLOR: "{!ORANGE}"
+
+  # Border
+  BASE-BORDER-COLOR: "{!LIGHT-GRAY}"
+  BASE-BORDER: "1px solid $base-border-color"
+
+  # Background Colors
+  BASE-BACKGROUND-COLOR: "#fff"
+  SECONDARY-BACKGROUND-COLOR: "#f2f2f2" #"tint({!BASE-BORDER-COLOR}, 75%)"
+
+  # Forms
+  FORM-BOX-SHADOW: "inset 0 1px 3px rgba(#000, 0.06)"
+  FORM-BOX-SHADOW-FOCUS: "$form-box-shadow, 0 0 5px adjust-color($action-color, $lightness: -5%, $alpha: -0.3)"
+
+  # Animations
+  BASE-DURATION: "150ms"
+  BASE-TIMING: "ease"
+
+props:
+  # Typography
+  base-font-family:
+    value: "{!BASE-FONT-FAMILY}"
+    type: "font"
+  heading-font-family:
+    value: "{!HEADING-FONT-FAMILY}"
+    type: "font"
+
+  # Font Sizes
+  base-font-size:
+    value: "{!BASE-FONT-SIZE}"
+    type: "number"
+
+  # Line height
+  base-line-height:
+    value: "{!BASE-LINE-HEIGHT}"
+    type: "number"
+  heading-line-height:
+    value: "{!HEADING-LINE-HEIGHT}"
+    type: "number"
+
+  # Other Sizes
+  base-border-radius:
+    value: "{!BASE-BORDER-RADIUS}"
+    type: "number"
+  base-spacing:
+    value: "{!BASE-SPACING}"
+    type: "number"
+  small-spacing:
+    value: "{!SMALL-SPACING}"
+    type: "number"
+  base-z-index:
+    value: "{!BASE-Z-INDEX}"
+    type: "number"
+
+  # Colors
+  orange:
+    value: "{!ORANGE}"
+    type: "color"
+  dark-gray:
+    value: "{!DARK-GRAY}"
+    type: "color"
+  medium-gray:
+    value: "{!MEDIUM-GRAY}"
+    type: "color"
+  light-gray:
+    value: "{!LIGHT-GRAY}"
+    type: "color"
+
+  # Font Colors
+  base-font-color:
+    value: "{!BASE-FONT-COLOR}"
+    type: "color"
+  action-color:
+    value: "{!ACTION-COLOR}"
+    type: "color"
+
+  # Border
+  base-border-color:
+    value: "{!BASE-BORDER-COLOR}"
+    type: "color"
+  base-border:
+    value: "{!BASE-BORDER}"
+    type: "border"
+
+  # Background Colors
+  base-background-color:
+    value: "{!BASE-BACKGROUND-COLOR}"
+    type: "color"
+  secondary-background-color:
+    value: "{!SECONDARY-BACKGROUND-COLOR}"
+    type: "color"
+
+  # Forms
+  form-box-shadow:
+    value: "{!FORM-BOX-SHADOW}"
+    type: "shadow"
+  form-box-shadow-focus:
+    value: "{!FORM-BOX-SHADOW-FOCUS}"
+    type: "shadow"
+
+  # Animations
+  base-duration:
+    value: "{!BASE-DURATION}"
+    type: "number"
+  base-timing:
+    value: "{!BASE-TIMING}"
+    type: "animation"

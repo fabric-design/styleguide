@@ -1,0 +1,7 @@
+global:
+  category: "default"
+
+"imports": [
+  "./variables.yml",
+  "./refills.yml"
+ ]

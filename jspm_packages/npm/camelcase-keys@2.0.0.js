@@ -1,0 +1,1 @@
+module.exports = require("npm:camelcase-keys@2.0.0/index");

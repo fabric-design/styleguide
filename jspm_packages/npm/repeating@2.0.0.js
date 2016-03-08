@@ -1,0 +1,1 @@
+module.exports = require("npm:repeating@2.0.0/index");

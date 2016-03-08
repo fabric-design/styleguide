@@ -1,0 +1,1 @@
+module.exports = require("npm:pseudomap@1.0.2/map.js");

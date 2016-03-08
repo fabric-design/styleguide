@@ -37,7 +37,9 @@
     "fabricator-assemble": "^1.1.7",
     "gulp": "^3.8.11",
     "gulp-autoprefixer": "^2.2.0",
+    "gulp-clone": "^1.0.0",
     "gulp-csso": "^1.0.0",
+    "gulp-dir-sync": "^0.1.2",
     "gulp-if": "^1.2.5",
     "gulp-imagemin": "^2.2.1",
     "gulp-rename": "^1.2.2",
@@ -46,12 +48,31 @@
     "gulp-util": "^3.0.4",
     "imports-loader": "^0.6.3",
     "run-sequence": "^1.0.2",
+    "sass-jspm-importer": "0.0.6",
     "script-loader": "^0.6.1",
     "webpack": "^1.8.11"
   },
   "dependencies": {
     "gulp-replace-task": "^0.11.0",
     "jquery": "^2.2.0",
+    "jspm": "^0.16.30",
     "quark": "git+ssh://git@github.bus.zalan.do/WholesaleDesignSystem/Quark"
+  },
+  "jspm": {
+    "dependencies": {
+      "bourbon": "npm:bourbon@^5.0.0-beta.2",
+      "bourbon-neat": "npm:bourbon-neat@^1.7.4",
+      "jspm/nodelibs-url": "github:jspm/nodelibs-url@0.2.0-alpha",
+      "scss": "github:mobilexag/plugin-sass@^0.3.0"
+    },
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.8.24",
+      "babel-runtime": "npm:babel-runtime@^5.8.24",
+      "core-js": "npm:core-js@^1.1.4"
+    },
+    "buildConfig": {
+      "transpileES6": true,
+      "minify": true
+    }
   }
 }

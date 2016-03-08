@@ -1,0 +1,17 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box; }
+
+.box {
+  background-color: #53aee0;
+  height: 30px;
+  margin-bottom: 10px; }
+
+.examples {
+  margin-left: auto;
+  margin-right: auto; }
+  .examples::after {
+    clear: both;
+    content: "";
+    display: block; }

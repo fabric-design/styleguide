@@ -10,7 +10,7 @@
 	{{#if fabricator}}<link rel="stylesheet" href="{{baseurl}}/assets/fabricator/styles/f.css">{{/if}}
 
 	<!-- toolkit styles -->
-	<link rel="stylesheet" href="{{baseurl}}/assets/toolkit/styles/toolkit.css">
+	<link rel="stylesheet" href="{{baseurl}}/toolkit.css">
 	<!-- /toolkit styles -->
 
 </head>
@@ -33,8 +33,14 @@
 	{{/if}}
 
 	<!-- toolkit scripts -->
-	<script src="{{baseurl}}/assets/toolkit/scripts/toolkit.js"></script>
+	<!--<script src="{{baseurl}}/assets/toolkit/scripts/toolkit.js"></script>-->
 	<!-- /toolkit scripts -->
+
+	<script src="{{baseurl}}/jspm_packages/system.js"></script>
+	<script src="{{baseurl}}/config.js"></script>
+<script>
+	System.import('.{{baseurl}}/app.js');
+</script>
 
 </body>
 </html>

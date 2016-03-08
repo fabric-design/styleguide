@@ -1,0 +1,1 @@
+module.exports = require("npm:os-shim@0.1.3/lib/os");
