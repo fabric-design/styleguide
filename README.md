@@ -8,13 +8,18 @@ Wholesale-Design-System requires [node.js](http://nodejs.org). Make sure your ha
 
 **Start the local development environment:**
 
+Bundle jspm packages. Redo on dependency changes or when adding new files.
+```
+$ jspm bundle-sfx src/app dist/app.js
+```
+Build rest of files
 ```
 $ gulp
 ```
 The above does not terminate. Open a new console and do:
 ```
 $ gulp serve
-``
+```
 
 ### Modifying
 

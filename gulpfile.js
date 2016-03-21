@@ -163,7 +163,7 @@ gulp.task('tokens', function () {
 	gutil.log("Building SCSS-File");
 	gulp.src(config.src.tokens.tokenFolder + "/" + config.src.tokens.entryFile)
 		.on('error', function(err) {
-			gutil.log(gutil.colors.red("Error:"), err)
+			gutil.log(gutil.colors.red("Error:"), err);
 		})
 		.pipe(transform('web'))
 		.pipe(format('scss'))
@@ -172,7 +172,7 @@ gulp.task('tokens', function () {
 	gutil.log("Building Styleguide-Token-File");
 	gulp.src(config.src.tokens.tokenFolder + "/" + config.src.tokens.entryFile)
 		.on('error', function(err) {
-			gutil.log(gutil.colors.red("Error:"), err)
+			gutil.log(gutil.colors.red("Error:"), err);
 		})
 		.pipe(transform('web'))
 		.pipe(format('json'))
@@ -246,8 +246,8 @@ gulp.task('serve', function () {
 	gulp.task('scripts:watch', ['scripts'], reload);
 	gulp.watch('src/assets/{fabricator,toolkit}/scripts/**/*.js', ['scripts:watch']).on('change', webpackCache);
 
-	gulp.task('jspm:watch', ['jspm'], reload);
-	gulp.watch(['jspm_packages/**/*','config.js','app.js'], ['jspm:watch']);
+	// gulp.task('jspm:watch', ['jspm'], reload);
+	// gulp.watch(['jspm_packages/**/*','config.js','app.js'], ['jspm:watch']);
 
 	gulp.task('images:watch', ['images'], reload);
 	gulp.watch(config.src.images, ['images:watch']);
