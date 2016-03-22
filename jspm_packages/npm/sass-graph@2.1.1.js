@@ -1,1 +1,0 @@
-module.exports = require("npm:sass-graph@2.1.1/sass-graph.js");

@@ -1,1 +1,0 @@
-module.exports = require("npm:array-find-index@1.0.1/index");

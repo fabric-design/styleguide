@@ -1,1 +1,0 @@
-module.exports = require("npm:node-sass@3.4.2/lib/index.js");

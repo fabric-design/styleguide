@@ -1,1 +1,0 @@
-module.exports = require("npm:meow@3.7.0/index");

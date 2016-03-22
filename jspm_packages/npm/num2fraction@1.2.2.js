@@ -1,1 +1,0 @@
-module.exports = require("npm:num2fraction@1.2.2/index.js");

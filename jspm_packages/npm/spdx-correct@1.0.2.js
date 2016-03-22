@@ -1,1 +1,0 @@
-module.exports = require("npm:spdx-correct@1.0.2/index");

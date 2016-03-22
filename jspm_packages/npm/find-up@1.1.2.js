@@ -1,1 +1,0 @@
-module.exports = require("npm:find-up@1.1.2/index");

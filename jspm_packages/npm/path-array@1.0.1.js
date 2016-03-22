@@ -1,1 +1,0 @@
-module.exports = require("npm:path-array@1.0.1/index.js");
