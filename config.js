@@ -19,6 +19,7 @@ System.config({
     "bourbon-neat": "npm:bourbon-neat@1.7.4",
     "core-js": "npm:core-js@1.2.6",
     "jquery": "npm:jquery@2.2.1",
+    "jspm/nodelibs-url": "github:jspm/nodelibs-url@0.2.0-alpha",
     "scss": "github:mobilexag/plugin-sass@0.3.0",
     "github:jspm/nodelibs-assert@0.1.0": {
       "assert": "npm:assert@1.3.0"
@@ -85,6 +86,9 @@ System.config({
     },
     "github:jspm/nodelibs-url@0.1.0": {
       "url": "npm:url@0.10.3"
+    },
+    "github:jspm/nodelibs-url@0.2.0-alpha": {
+      "url-browserify": "npm:url@0.11.0"
     },
     "github:jspm/nodelibs-util@0.1.0": {
       "util": "npm:util@0.10.3"
@@ -1334,6 +1338,11 @@ System.config({
       "punycode": "npm:punycode@1.3.2",
       "querystring": "npm:querystring@0.2.0",
       "util": "github:jspm/nodelibs-util@0.1.0"
+    },
+    "npm:url@0.11.0": {
+      "assert": "github:jspm/nodelibs-assert@0.1.0",
+      "punycode": "npm:punycode@1.3.2",
+      "querystring": "npm:querystring@0.2.0"
     },
     "npm:util-deprecate@1.0.2": {
       "util": "github:jspm/nodelibs-util@0.1.0"

@@ -3,47 +3,72 @@ global:
 
 aliases:
   # Typography
-  BASE-FONT-FAMILY: "'Helvetica Neue', Helvetica, Arial, sans-serif"
-  HEADING-FONT-FAMILY: "{!BASE-FONT-FAMILY}"
+  BASE-FONT-FAMILY: "acuminpro, 'Helvetica Neue', Helvetica, Arial, sans-serif"
+  HEADING-FONT-FAMILY: "'Helvetica Neue', Helvetica, Arial, sans-serif"
 
   # Font Sizes
-  BASE-FONT-SIZE: "1em"
+  BASE-FONT-SIZE: "{!SIZE-L}"
 
   # Line height
-  BASE-LINE-HEIGHT: "1.5"
-  HEADING-LINE-HEIGHT: "1.2"
+  BASE-LINE-HEIGHT: "{!SIZE-XXL}"
+  HEADING-LINE-HEIGHT: "1.2rem"
+
+  # Sizes
+  # Derived from: http://www.modularscale.com/?16&px&1.618,1.2&web&text
+  # Rounded to full-pixel value increments for better rendering results
+  # Comments are in the form of [resulting px] @ [base size]
+  SIZE-XXS: "0.25rem"   # 4px @ 16
+  SIZE-XS: "0.5rem"     # 8px @ 16
+  SIZE-S: "0.6875rem"   # 11px @ 16
+  SIZE-M: "0.8125rem"   # 13px @ 16
+  SIZE-L: "1rem"        # 16px @ 16
+  SIZE-XL: "1.1875rem"  # 19px @ 16
+  SIZE-XXL: "1.4375rem" # 23px @ 16
 
   # Other Sizes
   BASE-BORDER-RADIUS: "3px"
-  BASE-SPACING: "{!BASE-LINE-HEIGHT} * 1em"
-  SMALL-SPACING: "$base-line-height / 2"
-  BASE-Z-INDEX: "0"
 
   # Colors
-  ORANGE: "#f08532"
-  DARK-GRAY: "#333"
-  MEDIUM-GRAY: "#999"
-  LIGHT-GRAY: "#ddd"
+  BRAND-ORANGE: "#FF8914"
+  DARK-GRAY-BLUE: "#323740"
+  DEEP-BLUE: "#5E6979"
+  ERRROR-RED: "#F44F41"
+  FAINT-BLUE: "#DEF5FE"
+  GHOST-GRAY: "#99A0AD"
+  LIGHT-GRAY: "#BBBFCC"
+  MEDIUM-GRAY-BLUE: "#D2D7E1"
+  PRIMARY-BLUE: "#00ABF2"
+  SECONDARY-GRAY-BLUE: "#6B788A"
+  SUCCESS-GREEN: "#1EB234"
+  TABLE-GRAY: "#E7ECF3"
+  ULTRA-LIGHT-GRAY: "#F2F7F9"
+  WARNING-YELLOW: "#FF9C18"
+  WHITE: "#FFFFFF"
 
   # Font Colors
-  BASE-FONT-COLOR: "{!DARK-GRAY}"
-  ACTION-COLOR: "{!ORANGE}"
+  BASE-FONT-COLOR: "{!DARK-GRAY-BLUE}"
+  ACTION-COLOR: "{!PRIMARY-BLUE}"
 
   # Border
   BASE-BORDER-COLOR: "{!LIGHT-GRAY}"
   BASE-BORDER: "1px solid $base-border-color"
 
   # Background Colors
-  BASE-BACKGROUND-COLOR: "#fff"
-  SECONDARY-BACKGROUND-COLOR: "#f2f2f2" #"tint({!BASE-BORDER-COLOR}, 75%)"
+  BASE-BACKGROUND-COLOR: "{!WHITE}"
+  SECONDARY-BACKGROUND-COLOR: "{!ULTRA-LIGHT-GRAY}"
+  INVERSE-BACKGROUND-COLOR: "{!DEEP-BLUE}"
 
-  # Forms
+  # Button Colors
+  PRIMARY-BUTTON-DISABLED: "rgba($color-button-primary, 0.4)"
+
+  # Shadows
+  # [inset] | offset-x | offset-y | blur-radius | spread-radius | color
+  SHADOW-SHALLOW-ELEVATION: "0 2px 2px 0 rgba(#bbbfcc, 0.65)"
+  BASE-INSET-SHADOW: "inset 0 1px 1px 0 rgba(0, 0, 0, 0.22), inset 0 2px 4px 0 rgba(153, 160, 173, 0.65)"
+  RECESSED-PAPER-SHADOW-PRIMARY: "inset 0 1px 2px 0 rgba(#000000, 0.19)"
+  RECESSED-PAPER-SHADOW-SECONDARY: "inset 0 1px 14px 0 rgba(#000000, 0.08)"
   FORM-BOX-SHADOW: "inset 0 1px 3px rgba(#000, 0.06)"
   FORM-BOX-SHADOW-FOCUS: "$form-box-shadow, 0 0 5px adjust-color($action-color, $lightness: -5%, $alpha: -0.3)"
-
-  # Animations
-  BASE-DURATION: "150ms"
-  BASE-TIMING: "ease"
 
 props:
   # Typography
@@ -58,6 +83,24 @@ props:
   base-font-size:
     value: "{!BASE-FONT-SIZE}"
     type: "number"
+  font-size-small:
+    value: "{!SIZE-M}"
+    type: "number"
+  font-size-heading:
+    value: "{!SIZE-XXL}"
+    type: "number"
+
+
+  # Font weights
+    font-weight-light:
+      value: 300
+      type: "number"
+    font-weight-medium:
+      value: 500
+      type: number
+    font-weight-semibold:
+      value: 600
+      type: number
 
   # Line height
   base-line-height:
@@ -67,59 +110,136 @@ props:
     value: "{!HEADING-LINE-HEIGHT}"
     type: "number"
 
+  # Spacing
+  spacing-x-small:
+    value: "{!SIZE-XS}"
+    type: "number"
+  small-spacing:
+    value: "{!SIZE-S}"
+    type: "number"
+  spacing-medium:
+    value: "{!SIZE-M}"
+    type: "number"
+  spacing-large:
+    value: "{!SIZE-L}"
+    type: "number"
+  spacing-x-large:
+    value: "{!SIZE-XL}"
+    type: "number"
+  spacing-xx-large:
+    value: "{!SIZE-XXL}"
+    type: "number"
+  spacing-navigation-items:
+    value: "2rem"
+    type: "number"
+  base-spacing:
+    value: "1.5rem"
+    type: "number"
+
+
   # Other Sizes
   base-border-radius:
     value: "{!BASE-BORDER-RADIUS}"
     type: "number"
-  base-spacing:
-    value: "{!BASE-SPACING}"
-    type: "number"
-  small-spacing:
-    value: "{!SMALL-SPACING}"
-    type: "number"
-  base-z-index:
-    value: "{!BASE-Z-INDEX}"
+  border-radius-container:
+    value: "2px"
     type: "number"
 
-  # Colors
-  orange:
-    value: "{!ORANGE}"
-    type: "color"
-  dark-gray:
-    value: "{!DARK-GRAY}"
-    type: "color"
-  medium-gray:
-    value: "{!MEDIUM-GRAY}"
-    type: "color"
-  light-gray:
-    value: "{!LIGHT-GRAY}"
-    type: "color"
+  # Dimensionality
+  base-z-index:
+    value: "1"
+    type: "number"
 
   # Font Colors
   base-font-color:
     value: "{!BASE-FONT-COLOR}"
     type: "color"
-  action-color:
+    category: "text"
+  color-text-link:
     value: "{!ACTION-COLOR}"
     type: "color"
-
-  # Border
-  base-border-color:
-    value: "{!BASE-BORDER-COLOR}"
+    category: "text"
+  color-text-inverse:
+    value: "{!WHITE}"
     type: "color"
-  base-border:
-    value: "{!BASE-BORDER}"
-    type: "border"
-
-  # Background Colors
-  base-background-color:
-    value: "{!BASE-BACKGROUND-COLOR}"
+    category: "text"
+  color-text-warning:
+    value: "#AB670F"
+    type: "color"
+  color-text-success:
+    value: "#178A29"
+    type: "color"
+  color-text-error:
+    value: "#D14538"
+    type: "color"
+  color-text-button-secondary:
+    value: "{!DEEP-BLUE}"
+    type: "color"
+  color-text-button-action:
+    value: "{!PRIMARY-BLUE}"
+    type: "color"
+  color-icon-table-filter:
+    value: "{!MEDIUM-GRAY-BLUE}"
+    type: "color"
+  color-icon-table-header-sort:
+    value: "{!DEEP-BLUE}"
+    type: "color"
+  color-text-table-column-header:
+    value: "{!DEEP-BLUE}"
+    type: "color"
+  color-icon-input:
+    value: "{!LIGHT-GRAY}"
+    type: "color"
+  action-color:
+    value: "{!ACTION-COLOR}"
     type: "color"
   secondary-background-color:
     value: "{!SECONDARY-BACKGROUND-COLOR}"
     type: "color"
 
-  # Forms
+  
+  # Background Colors
+  color-button-primary:
+    value: "{!PRIMARY-BLUE}"
+    type: "color"
+  color-background-table-row:
+    value: "{!WHITE}"
+    type: "color"    
+  color-background-table-row-alt:
+    value: "{!ULTRA-LIGHT-GRAY}"
+    type: "color"    
+  color-background-table-row-hover:
+    value: "{!FAINT-BLUE}"
+    type: "color"
+  color-background-dropdown-option-hover:
+    value: "{!FAINT-BLUE}"
+    type: "color"
+  color-background-accordion-segment:
+    value: "{!MEDIUM-GRAY-BLUE}"
+    type: "color"
+  color-background-table-filters:
+    value: "{!TABLE-GRAY}"
+    type: "color"
+  color-background-progress-bar:
+    value: "{!MEDIUM-GRAY-BLUE}"
+    type: "color"
+  base-background-color:
+    value: "{!BASE-BACKGROUND-COLOR}"
+    type: "color"
+
+  # Shadows
+  shadow-shallow-elevation:
+    value: "{!SHADOW-SHALLOW-ELEVATION}"
+    type: "shadow"
+  shadow-inset-shadow:
+    value: "{!BASE-INSET-SHADOW}"
+    type: "shadow"
+  recessed-paper-shadow-primary:
+    value: "{!RECESSED-PAPER-SHADOW-PRIMARY}"
+    type: "shadow"
+  recessed-paper-shadow-secondary:
+    value: "{!RECESSED-PAPER-SHADOW-SECONDARY}"
+    type: "shadow"
   form-box-shadow:
     value: "{!FORM-BOX-SHADOW}"
     type: "shadow"
@@ -127,10 +247,34 @@ props:
     value: "{!FORM-BOX-SHADOW-FOCUS}"
     type: "shadow"
 
-  # Animations
-  base-duration:
-    value: "{!BASE-DURATION}"
-    type: "number"
-  base-timing:
-    value: "{!BASE-TIMING}"
-    type: "animation"
+
+  # Border
+  base-border-color:
+    value: "{!color-border-default}"
+    type: "color"
+  color-border-table-row-secondary:
+    value: "{!TABLE-GRAY}"
+    type: "color"
+  base-border:
+    value: "{!BASE-BORDER}"
+    type: "border"
+  color-border-table:
+    value: "{!BASE-BORDER}"
+    type: "border"
+  color-border-progress-bar:
+    value: "{!LIGHT-GRAY}"
+    type: "color"
+
+  # Forms
+  color-border-input-default:
+    value: "{!LIGHT-GRAY}"
+    type: "color"
+  color-border-input-highlight:
+    value: "{!PRIMARY-BLUE}"
+    type: "color"
+  color-border-input-warning:
+    value: "{!WARNING-YELLOW}"
+    type: "color"
+  color-border-input-error:
+    value: "{!ERROR-RED}"
+    type: "color"
