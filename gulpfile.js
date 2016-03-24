@@ -140,6 +140,7 @@ gulp.task('favicon', function () {
 });
 
 gulp.task('quark', ['tokens'], function() {
+    console.log('fabricator token transforming from quark');
 	var quark_tokens = JSON.parse(fs.readFileSync(config.dest + "/tokens/styleguide/quark.json"));
 
 	//create the pattern matching array
@@ -254,6 +255,7 @@ gulp.task('serve', function () {
 
 });
 
+gulp.task('build', ['default']);
 // default build task
 gulp.task('default', ['clean'], function () {
 

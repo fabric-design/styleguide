@@ -71,6 +71,54 @@ aliases:
   FORM-BOX-SHADOW-FOCUS: "$form-box-shadow, 0 0 5px adjust-color($action-color, $lightness: -5%, $alpha: -0.3)"
 
 props:
+  # Colors
+  brand-orange:
+    value: "{!BRAND-ORANGE}"
+    type: "color"
+  dark-gray-blue:
+    value: "{!DARK-GRAY-BLUE}"
+    type: "color"
+  deep-blue:
+    value: "{!DEEP-BLUE}"
+    type: "color"
+  error-red:
+    value: "{!ERRROR-RED}"
+    type: "color"
+  faint-blue:
+    value: "{!FAINT-BLUE}"
+    type: "color"
+  ghost-gray:
+    value: "{!GHOST-GRAY}"
+    type: "color"
+  light-gray:
+    value: "{!LIGHT-GRAY}"
+    type: "color"
+  medium-gray-blue:
+    value: "{!MEDIUM-GRAY-BLUE}"
+    type: "color"
+  primary-blue:
+    value: "{!PRIMARY-BLUE}"
+    type: "color"
+  secondary-gray-blue:
+    value: "{!SECONDARY-GRAY-BLUE}"
+    type: "color"
+  success-green:
+    value: "{!SUCCESS-GREEN}"
+    type: "color"
+  table-gray:
+    value: "{!TABLE-GRAY}"
+    type: "color"
+  ultra-light-gray:
+    value: "{!ULTRA-LIGHT-GRAY}"
+    type: "color"
+  warning-yellow:
+    value: "{!WARNING-YELLOW}"
+    type: "color"
+  white:
+    value: "{!WHITE}"
+    type: "color"
+
+
   # Typography
   base-font-family:
     value: "{!BASE-FONT-FAMILY}"

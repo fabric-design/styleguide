@@ -36,7 +36,7 @@
     "del": "^1.1.1",
     "fabricator-assemble": "^1.1.7",
     "gulp": "^3.8.11",
-    "gulp-autoprefixer": "^2.2.0",
+    "gulp-autoprefixer": "^2.3.1",
     "gulp-clone": "^1.0.0",
     "gulp-csso": "^1.0.0",
     "gulp-dir-sync": "^0.1.2",
