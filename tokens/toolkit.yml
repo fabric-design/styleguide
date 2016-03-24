@@ -1,7 +1,19 @@
 colors:
   primary:
-    Orange: "@@orange"
+    Orange: "@@brand-orange"
+    Blue: "@@primary-blue"
   secondary:
-    Dark-Gray: "@@dark-gray"
-    Medium-Gray: "@@medium-gray"
+    Deep-Blue: "@@deep-blue"
+    Faint-Blue: "@@faint-blue"
+    Dark-Gray-Blue: "@@dark-gray-blue"
+    Secondary-Gray-Blue: "@@secondary-gray-blue"
+    Medium-Gray-Blue: "@@medium-gray-blue"
     Light-Gray: "@@light-gray"
+    Ultra-Light-Gray: "@@ultra-light-gray"
+    Ghost-Gray: "@@ghost-gray"
+    Table-Gray: "@@table-gray"
+    White: "@@white"
+  alerts:
+    Success-Green: "@@success-green"
+    Error-Red: "@@error-red"
+    Warning-Yellow: "@@warning-yellow"
