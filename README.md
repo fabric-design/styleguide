@@ -58,3 +58,11 @@ or
 Add the css file to your page
 
 `<link rel="stylesheet" href="https://pages.github.bus.zalan.do/WholesaleDesignSystem/toolkit.min.css">`
+
+## publish
+
+First build the project `gulp build`
+
+`mai`
+
+`aws s3 cp dist/ s3://wholesale-styleguide/ --recursive --exclude ".git/*" --exclude ".DS_Store"`
