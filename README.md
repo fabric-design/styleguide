@@ -61,8 +61,6 @@ Add the css file to your page
 
 ## publish
 
-First build the project `gulp build`
+Check if you have the `wholesale-styleguide` S3-Bucket.
 
-`mai`
-
-`aws s3 cp dist/ s3://wholesale-styleguide/ --recursive --exclude ".git/*" --exclude ".DS_Store"`
+Run `./publish.sh`
