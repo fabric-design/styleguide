@@ -17,7 +17,6 @@ var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
 var webpack = require('webpack');
 var replace = require('gulp-replace-task');
-var dirSync = require( 'gulp-dir-sync' );
 var sassJspm = require('sass-jspm-importer');
 var fs = require("fs");
 var clone = require('gulp-clone');
@@ -70,7 +69,7 @@ gulp.task('clean', function (cb) {
 
 // styles
 gulp.task('styles:fabricator', function () {
-	gulp.src(config.src.styles.fabricator)
+	return gulp.src(config.src.styles.fabricator)
 		.pipe(sourcemaps.init())
 		.pipe(sass().on('error', sass.logError))
 		.pipe(prefix('last 1 version'))
@@ -81,8 +80,12 @@ gulp.task('styles:fabricator', function () {
 		.pipe(gulpif(config.dev, reload({stream:true})));
 });
 
-gulp.task('styles:toolkit', function () {
-	dirSync( config.src.tokens.tokenFolder + '/web', config.src.styles.toolkit);
+gulp.task('styles:copy_tokens', function () {
+    return gulp.src(config.src.tokens.tokenFolder + '/web')
+    .pipe(gulp.dest(config.src.styles.toolkit));
+});
+
+gulp.task('styles:toolkit', ['quark', 'styles:copy_tokens'], function () {    
 	var cssFiles = gulp.src(config.src.styles.toolkit + '/toolkit.scss')
 		.pipe(sourcemaps.init())
 		.pipe(sass({
@@ -93,21 +96,20 @@ gulp.task('styles:toolkit', function () {
 
 	cssFiles.pipe(clone())
 		.pipe(rename('toolkit.css'))
-		.pipe(sourcemaps.write())
 		.pipe(gulp.dest(config.dest))
 		.pipe(reload({stream:true}));
 
-	cssFiles.pipe(csso())
+	return cssFiles.pipe(csso())
 		.pipe(rename('toolkit.min.css'))
-		.pipe(gulp.dest(config.dest));
+		.pipe(sourcemaps.write())
+		.pipe(gulp.dest(config.dest))
+		.pipe(reload({stream:true}));
 });
 
 gulp.task('styles', ['styles:fabricator', 'styles:toolkit']);
 
-
 // scripts
 gulp.task('jspm', function () {
-	dirSync( config.src.scripts.jspm, config.dest + '/jspm_packages');
 	gulp.src(['config.js','src/app.js'])
 		.pipe(gulp.dest(config.dest));
 });
@@ -141,28 +143,27 @@ gulp.task('favicon', function () {
 
 gulp.task('quark', ['tokens'], function() {
     console.log('fabricator token transforming from quark');
-	var quark_tokens = JSON.parse(fs.readFileSync(config.dest + "/tokens/styleguide/quark.json"));
+    var quark_tokens = JSON.parse(fs.readFileSync(config.dest + "/tokens/styleguide/quark.json"));
 
-	//create the pattern matching array
-	var patterns = [];
-	for(var token in quark_tokens) {
-		patterns.push({
-			match: token,
-			replacement: quark_tokens[token]
-		});
-	}
+    //create the pattern matching array
+    var patterns = [];
+    for(var token in quark_tokens) {
+        patterns.push({
+            match: token,
+            replacement: quark_tokens[token]
+        });
+    }
 
-	gulp.src('./tokens/*.yml')
-		.pipe(replace({
-			patterns: patterns
-		}))
-		.pipe(gulp.dest('./src/data'));
+    return gulp.src('./tokens/*.yml')
+        .pipe(replace({
+            patterns: patterns
+        }))
+        .pipe(gulp.dest('./src/data'));
 });
 
-
-gulp.task('tokens', function () {
-	gutil.log("Building SCSS-File");
-	gulp.src(config.src.tokens.tokenFolder + "/" + config.src.tokens.entryFile)
+gulp.task('tokens:scss', function() {
+    gutil.log("Building SCSS-File");
+    return gulp.src(config.src.tokens.tokenFolder + "/" + config.src.tokens.entryFile)
 		.on('error', function(err) {
 			gutil.log(gutil.colors.red("Error:"), err);
 		})
@@ -170,8 +171,10 @@ gulp.task('tokens', function () {
 		.pipe(format('scss'))
 		.pipe(rename('quark.scss'))
 		.pipe(gulp.dest(config.dest + '/tokens/web'));
+});
+gulp.task('tokens:json', function() {
 	gutil.log("Building Styleguide-Token-File");
-	gulp.src(config.src.tokens.tokenFolder + "/" + config.src.tokens.entryFile)
+	return gulp.src(config.src.tokens.tokenFolder + "/" + config.src.tokens.entryFile)
 		.on('error', function(err) {
 			gutil.log(gutil.colors.red("Error:"), err);
 		})
@@ -180,6 +183,7 @@ gulp.task('tokens', function () {
 		.pipe(rename('quark.json'))
 		.pipe(gulp.dest(config.dest + '/tokens/styleguide'));
 });
+gulp.task('tokens', ['tokens:scss','tokens:json']);
 
 
 // assemble
@@ -191,6 +195,8 @@ gulp.task('assemble', function (done) {
 });
 
 gulp.task('jspm', function(){
+	gutil.log("Bundling jspm dependencies");
+    
 	jspm({
 		bundleSfx: true,
 		bundles: [
@@ -251,7 +257,7 @@ gulp.task('serve', function () {
 
 });
 
-gulp.task('build', ['default']);
+gulp.task('build', ['jspm','default']);
 // default build task
 gulp.task('default', ['clean'], function () {
 
@@ -262,12 +268,13 @@ gulp.task('default', ['clean'], function () {
 		'scripts',
 		'images',
 		'quark',
-		'assemble',
-		'jspm'
+		'assemble'
 	];
 
 	// run build
 	runSequence(tasks, function () {
+	    gutil.log("Build complete");
+    
 		if (config.dev) {
 			gulp.start('serve');
 		}
