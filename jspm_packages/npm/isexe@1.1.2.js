@@ -1,1 +1,0 @@
-module.exports = require("npm:isexe@1.1.2/index.js");

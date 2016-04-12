@@ -1,1 +1,0 @@
-module.exports = require("npm:array-index@1.0.0/index.js");

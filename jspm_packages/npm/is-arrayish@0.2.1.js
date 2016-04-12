@@ -1,1 +1,0 @@
-module.exports = require("npm:is-arrayish@0.2.1/index");

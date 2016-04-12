@@ -1,1 +1,0 @@
-module.exports = require("npm:spdx-license-ids@1.2.0/spdx-license-ids.json!systemjs-json");

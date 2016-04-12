@@ -1,1 +1,0 @@
-module.exports = require("npm:osenv@0.1.3/osenv.js");

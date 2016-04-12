@@ -1,1 +1,0 @@
-module.exports = require("npm:spawn-sync@1.0.15/index");

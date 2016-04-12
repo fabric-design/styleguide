@@ -1,1 +1,0 @@
-module.exports = require("npm:hosted-git-info@2.1.4/index.js");
