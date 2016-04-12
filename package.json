@@ -53,10 +53,13 @@
     "webpack": "^1.8.11"
   },
   "dependencies": {
+    "bourbon": "4.2.6",
+    "bourbon-neat": "1.7.4",
     "gulp-replace-task": "^0.11.0",
     "jquery": "^2.2.0",
     "jspm": "^0.16.30",
-    "quark": "git+ssh://git@github.bus.zalan.do/WholesaleDesignSystem/Quark"
+    "quark": "git+ssh://git@github.bus.zalan.do/WholesaleDesignSystem/Quark",
+    "wholesale-styleguide-scss": "ssh://github.bus.zalan.do/WholesaleDesignSystem/Styleguide-SCSS.git"
   },
   "jspm": {
     "dependencies": {

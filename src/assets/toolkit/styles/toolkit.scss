@@ -1,16 +1,4 @@
 /**
  * Toolkit styles
  */
-
-//quark variables
-@import "../../../../dist/tokens/web/quark";
-
-@import "jspm:bourbon/app/assets/stylesheets/bourbon";
-@import "jspm:bourbon-neat/app/assets/stylesheets/neat";
-
-//thoughtworks - bitters
-//cloned - no bower available
-@import "./refills/all";
-@import "jspm:bourbon-neat/app/assets/stylesheets/neat-helpers"; //needed for grid
-
-@import "./custom/custom";
+@import "node_modules/wholesale-styleguide-scss/index";
