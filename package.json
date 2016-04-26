@@ -59,7 +59,7 @@
     "jquery": "^2.2.0",
     "jspm": "^0.16.30",
     "quark": "git+ssh://git@github.bus.zalan.do/WholesaleDesignSystem/Quark",
-    "wholesale-styleguide-scss": "ssh://github.bus.zalan.do/WholesaleDesignSystem/Styleguide-SCSS.git"
+    "wholesale-styleguide-scss": "git+ssh://github.bus.zalan.do/WholesaleDesignSystem/Styleguide-SCSS.git"
   },
   "jspm": {
     "dependencies": {
