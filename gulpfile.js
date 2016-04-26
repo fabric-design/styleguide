@@ -218,11 +218,7 @@ gulp.task('serve', function () {
 
 	browserSync({
 		server: {
-			baseDir: config.dest,
-			middleware: function (req, res, next) {
-				req.url = req.url.replace("\/WholesaleDesignSystem", "\/");
-				next();
-			}
+			baseDir: config.dest
 		},
 		notify: false,
 		logPrefix: 'FABRICATOR'
