@@ -1,1 +1,0 @@
-module.exports = require("npm:os-tmpdir@1.0.1/index");

@@ -1,1 +1,0 @@
-module.exports = require("npm:inherits@1.0.2/inherits.js");

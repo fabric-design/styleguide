@@ -1,8 +1,8 @@
 {
-  "name": "fabricator",
-  "version": "1.2.2",
-  "description": "A tool for building website UI toolkits",
-  "homepage": "http://fbrctr.github.io/",
+  "name": "wholesale-styleguide",
+  "version": "0.0.1",
+  "description": "",
+  "homepage": "https://d1fhpltsebm6no.cloudfront.net/",
   "main": "README.md",
   "scripts": {
     "gulp": "gulp",
@@ -19,11 +19,11 @@
     "patterns",
     "library"
   ],
-  "author": "Luke Askew",
+  "author": "Zalando Wholesale",
   "licenses": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/fbrctr/fabricator.git"
+    "url": "https://github.bus.zalan.do/WholesaleDesignSystem/Styleguide.git"
   },
   "engines": {
     "node": ">=0.10.0",
@@ -53,10 +53,13 @@
     "webpack": "^1.8.11"
   },
   "dependencies": {
+    "bourbon": "4.2.6",
+    "bourbon-neat": "1.7.4",
     "gulp-replace-task": "^0.11.0",
     "jquery": "^2.2.0",
     "jspm": "^0.16.30",
-    "quark": "git+ssh://git@github.bus.zalan.do/WholesaleDesignSystem/Quark"
+    "quark": "git+ssh://git@github.bus.zalan.do/WholesaleDesignSystem/Quark",
+    "wholesale-styleguide-scss": "git+ssh://github.bus.zalan.do/WholesaleDesignSystem/Styleguide-SCSS.git"
   },
   "jspm": {
     "dependencies": {

@@ -1,1 +1,0 @@
-module.exports = require("npm:normalize-package-data@2.3.5/lib/normalize.js");

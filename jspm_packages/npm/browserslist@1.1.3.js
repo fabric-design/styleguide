@@ -1,1 +1,0 @@
-module.exports = require("npm:browserslist@1.1.3/index");

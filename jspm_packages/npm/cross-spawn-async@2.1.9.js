@@ -1,1 +1,0 @@
-module.exports = require("npm:cross-spawn-async@2.1.9/index.js");

@@ -1,1 +1,0 @@
-module.exports = require("npm:nopt@3.0.6/lib/nopt.js");

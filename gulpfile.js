@@ -52,7 +52,8 @@ var config = {
 		}
 
 },
-	dest: 'dist'
+	dest: 'dist',
+    dest_scss: 'dist_scss'
 };
 
 
@@ -104,6 +105,11 @@ gulp.task('styles:toolkit', ['quark', 'styles:copy_tokens'], function () {
 		.pipe(sourcemaps.write())
 		.pipe(gulp.dest(config.dest))
 		.pipe(reload({stream:true}));
+});
+
+gulp.task('styles:toolkit_provide', ['quark', 'styles:copy_tokens'], function () {    
+	return gulp.src(config.src.styles.toolkit + '/**/*.scss')
+		.pipe(gulp.dest(config.dest_scss));
 });
 
 gulp.task('styles', ['styles:fabricator', 'styles:toolkit']);
@@ -256,6 +262,8 @@ gulp.task('serve', function () {
 	gulp.watch(config.src.images, ['images:watch']);
 
 });
+
+gulp.task('provide_scss', ['styles:toolkit_provide']);
 
 gulp.task('build', ['jspm','default']);
 // default build task
