@@ -29,6 +29,9 @@
     "node": ">=0.10.0",
     "npm": ">=2.0.0"
   },
+  "scripts": {
+    "rebuild": "npm update && gulp build && gulp serve"
+  },
   "devDependencies": {
     "babel-core": "^5.2.17",
     "babel-loader": "5.0.0",
@@ -55,11 +58,14 @@
   "dependencies": {
     "bourbon": "4.2.6",
     "bourbon-neat": "1.7.4",
+    "browser-sync": "^2.12.10",
     "gulp-replace-task": "^0.11.0",
-    "jquery": "^2.2.0",
-    "jspm": "^0.16.30",
-    "quark": "git+ssh://git@github.bus.zalan.do/WholesaleDesignSystem/Quark",
-    "wholesale-styleguide-scss": "git+ssh://github.bus.zalan.do/WholesaleDesignSystem/Styleguide-SCSS.git"
+    "jquery": "^2.2.4",
+    "jspm": "^0.16.36",
+    "quark": "ssh://git@github.bus.zalan.do/WholesaleDesignSystem/Quark",
+    "run-sequence": "^1.2.1",
+    "webpack": "^1.13.1",
+    "wholesale-styleguide-scss": "ssh://github.bus.zalan.do/WholesaleDesignSystem/Styleguide-SCSS.git"
   },
   "jspm": {
     "dependencies": {

@@ -43,6 +43,7 @@ var config = {
 			fabricator: 'src/assets/fabricator/styles/fabricator.scss',
 			toolkit: 'src/assets/toolkit/styles'
 		},
+		icons: 'src/assets/icons/**/*',
 		images: 'src/assets/toolkit/images/**/*',
 		views: 'src/toolkit/views/*.html',
 		tokens: {
@@ -86,7 +87,7 @@ gulp.task('styles:copy_tokens', function () {
     .pipe(gulp.dest(config.src.styles.toolkit));
 });
 
-gulp.task('styles:toolkit', ['quark', 'styles:copy_tokens'], function () {    
+gulp.task('styles:toolkit', ['quark', 'styles:copy_tokens'], function () {
 	var cssFiles = gulp.src(config.src.styles.toolkit + '/toolkit.scss')
 		.pipe(sourcemaps.init())
 		.pipe(sass({
@@ -107,7 +108,7 @@ gulp.task('styles:toolkit', ['quark', 'styles:copy_tokens'], function () {
 		.pipe(reload({stream:true}));
 });
 
-gulp.task('styles:toolkit_provide', ['quark', 'styles:copy_tokens'], function () {    
+gulp.task('styles:toolkit_provide', ['quark', 'styles:copy_tokens'], function () {
 	return gulp.src(config.src.styles.toolkit + '/**/*.scss')
 		.pipe(gulp.dest(config.dest_scss));
 });
@@ -145,6 +146,13 @@ gulp.task('images', ['favicon'], function () {
 gulp.task('favicon', function () {
 	return gulp.src('./src/favicon.ico')
 		.pipe(gulp.dest(config.dest));
+});
+
+gulp.task('icons', function () {
+	return gulp.src('**/*', {
+		cwd: 'src/assets/icons'
+	})
+	.pipe(gulp.dest(config.dest + '/assets/icons'));
 });
 
 gulp.task('quark', ['tokens'], function() {
@@ -202,7 +210,7 @@ gulp.task('assemble', function (done) {
 
 gulp.task('jspm', function(){
 	gutil.log("Bundling jspm dependencies");
-    
+
 	jspm({
 		bundleSfx: true,
 		bundles: [
@@ -261,6 +269,8 @@ gulp.task('serve', function () {
 	gulp.task('images:watch', ['images'], reload);
 	gulp.watch(config.src.images, ['images:watch']);
 
+	gulp.task('icons:watch', ['icons'], reload);
+	gulp.watch(config.src.icons, ['icons:watch']);
 });
 
 gulp.task('provide_scss', ['styles:toolkit_provide']);
@@ -274,6 +284,7 @@ gulp.task('default', ['clean'], function () {
 		'tokens',
 		'styles',
 		'scripts',
+		'icons',
 		'images',
 		'quark',
 		'assemble'
@@ -282,7 +293,7 @@ gulp.task('default', ['clean'], function () {
 	// run build
 	runSequence(tasks, function () {
 	    gutil.log("Build complete");
-    
+
 		if (config.dev) {
 			gulp.start('serve');
 		}
