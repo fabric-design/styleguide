@@ -62,10 +62,9 @@
     "gulp-replace-task": "^0.11.0",
     "jquery": "^2.2.4",
     "jspm": "^0.16.36",
-    "quark": "ssh://git@github.bus.zalan.do/WholesaleDesignSystem/Quark",
     "run-sequence": "^1.2.1",
     "webpack": "^1.13.1",
-    "wholesale-styleguide-scss": "ssh://github.bus.zalan.do/WholesaleDesignSystem/Styleguide-SCSS.git"
+    "wholesale-styleguide-scss": "git+ssh://github.bus.zalan.do/WholesaleDesignSystem/Styleguide-SCSS.git"
   },
   "jspm": {
     "dependencies": {

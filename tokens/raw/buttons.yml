@@ -1,9 +1,0 @@
-props:
-  $orange:
-    value: "#f08532"
-    type: "color"
-
-"imports": [
-  "variables.yml"
-  "buttons.yml"
- ]
