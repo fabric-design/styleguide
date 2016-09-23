@@ -52,8 +52,7 @@
     "imports-loader": "^0.6.3",
     "run-sequence": "^1.0.2",
     "sass-jspm-importer": "0.0.6",
-    "script-loader": "^0.6.1",
-    "wholesale-styleguide-scss": "git+ssh://github.bus.zalan.do/WholesaleDesignSystem/Styleguide-SCSS.git"
+    "script-loader": "^0.6.1"
   },
   "dependencies": {
     "browser-sync": "^2.12.10",
@@ -61,7 +60,8 @@
     "jquery": "^2.2.4",
     "jspm": "^0.16.36",
     "run-sequence": "^1.2.1",
-    "webpack": "^1.13.1"
+    "webpack": "^1.13.1",
+    "wholesale-styleguide-scss": "git+ssh://github.bus.zalan.do/WholesaleDesignSystem/Styleguide-SCSS.git"
   },
   "jspm": {
     "dependencies": {

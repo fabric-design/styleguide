@@ -22,14 +22,6 @@ var fs = require("fs");
 var clone = require('gulp-clone');
 var jspm = require('gulp-jspm-build');
 
-
-
-//theo
-var theo = require('theo');
-var transform = theo.plugins.transform;
-var format = theo.plugins.format;
-
-
 // configuration
 var config = {
 	dev: gutil.env.dev,
@@ -82,12 +74,7 @@ gulp.task('styles:fabricator', function () {
 		.pipe(gulpif(config.dev, reload({stream:true})));
 });
 
-gulp.task('styles:copy_tokens', function () {
-    return gulp.src(config.src.tokens.tokenFolder + '/web')
-    .pipe(gulp.dest(config.src.styles.toolkit));
-});
-
-gulp.task('styles:toolkit', ['quark', 'styles:copy_tokens'], function () {
+gulp.task('styles:toolkit', function () {
 	var cssFiles = gulp.src(config.src.styles.toolkit + '/toolkit.scss')
 		.pipe(sourcemaps.init())
 		.pipe(sass({
@@ -106,11 +93,6 @@ gulp.task('styles:toolkit', ['quark', 'styles:copy_tokens'], function () {
 		.pipe(sourcemaps.write())
 		.pipe(gulp.dest(config.dest))
 		.pipe(reload({stream:true}));
-});
-
-gulp.task('styles:toolkit_provide', ['quark', 'styles:copy_tokens'], function () {
-	return gulp.src(config.src.styles.toolkit + '/**/*.scss')
-		.pipe(gulp.dest(config.dest_scss));
 });
 
 gulp.task('styles', ['styles:fabricator', 'styles:toolkit']);
@@ -154,51 +136,6 @@ gulp.task('icons', function () {
 	})
 	.pipe(gulp.dest(config.dest + '/assets/icons'));
 });
-
-gulp.task('quark', ['tokens'], function() {
-    console.log('fabricator token transforming from quark');
-    var quark_tokens = JSON.parse(fs.readFileSync(config.dest + "/tokens/styleguide/quark.json"));
-
-    //create the pattern matching array
-    var patterns = [];
-    for(var token in quark_tokens) {
-        patterns.push({
-            match: token,
-            replacement: quark_tokens[token]
-        });
-    }
-
-    return gulp.src('./tokens/*.yml')
-        .pipe(replace({
-            patterns: patterns
-        }))
-        .pipe(gulp.dest('./src/data'));
-});
-
-gulp.task('tokens:scss', function() {
-    gutil.log("Building SCSS-File");
-    return gulp.src(config.src.tokens.tokenFolder + "/" + config.src.tokens.entryFile)
-		.on('error', function(err) {
-			gutil.log(gutil.colors.red("Error:"), err);
-		})
-		.pipe(transform('web'))
-		.pipe(format('scss'))
-		.pipe(rename('quark.scss'))
-		.pipe(gulp.dest(config.dest + '/tokens/web'));
-});
-gulp.task('tokens:json', function() {
-	gutil.log("Building Styleguide-Token-File");
-	return gulp.src(config.src.tokens.tokenFolder + "/" + config.src.tokens.entryFile)
-		.on('error', function(err) {
-			gutil.log(gutil.colors.red("Error:"), err);
-		})
-		.pipe(transform('web'))
-		.pipe(format('json'))
-		.pipe(rename('quark.json'))
-		.pipe(gulp.dest(config.dest + '/tokens/styleguide'));
-});
-gulp.task('tokens', ['tokens:scss','tokens:json']);
-
 
 // assemble
 gulp.task('assemble', function (done) {
@@ -273,20 +210,16 @@ gulp.task('serve', function () {
 	gulp.watch(config.src.icons, ['icons:watch']);
 });
 
-gulp.task('provide_scss', ['styles:toolkit_provide']);
-
 gulp.task('build', ['jspm','default']);
 // default build task
 gulp.task('default', ['clean'], function () {
 
 	// define build tasks
 	var tasks = [
-		'tokens',
 		'styles',
 		'scripts',
 		'icons',
 		'images',
-		'quark',
 		'assemble'
 	];
 
