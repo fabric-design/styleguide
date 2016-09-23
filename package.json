@@ -53,24 +53,18 @@
     "run-sequence": "^1.0.2",
     "sass-jspm-importer": "0.0.6",
     "script-loader": "^0.6.1",
-    "webpack": "^1.8.11"
+    "wholesale-styleguide-scss": "git+ssh://github.bus.zalan.do/WholesaleDesignSystem/Styleguide-SCSS.git"
   },
   "dependencies": {
-    "bourbon": "4.2.6",
-    "bourbon-neat": "1.7.4",
     "browser-sync": "^2.12.10",
     "gulp-replace-task": "^0.11.0",
     "jquery": "^2.2.4",
     "jspm": "^0.16.36",
-    "quark": "ssh://git@github.bus.zalan.do/WholesaleDesignSystem/Quark",
     "run-sequence": "^1.2.1",
-    "webpack": "^1.13.1",
-    "wholesale-styleguide-scss": "ssh://github.bus.zalan.do/WholesaleDesignSystem/Styleguide-SCSS.git"
+    "webpack": "^1.13.1"
   },
   "jspm": {
     "dependencies": {
-      "bourbon": "npm:bourbon@^5.0.0-beta.2",
-      "bourbon-neat": "npm:bourbon-neat@^1.7.4",
       "jquery": "npm:jquery@^2.2.1",
       "jspm/nodelibs-url": "github:jspm/nodelibs-url@0.2.0-alpha",
       "scss": "github:mobilexag/plugin-sass@^0.3.0"
