@@ -645,7 +645,9 @@ input[type="submit"] {
       background-color: #fafafa; }
 
 .file-button {
-  font-weight: normal; }
+  font-weight: normal;
+  display: inline-block;
+  vertical-align: middle; }
   .file-button input[type="file"] {
     display: none; }
 
@@ -2112,8 +2114,7 @@ header.navigation {
 
 .dropdown {
   position: relative;
-  display: inline-block;
-  vertical-align: middle; }
+  display: block; }
   .dropdown .dropdown-container {
     position: absolute;
     top: 100%;
@@ -2123,8 +2124,8 @@ header.navigation {
     height: 0;
     display: none;
     background-color: #FFFFFF;
-    border-radius: 3px;
-    box-shadow: 0 2px 6px #626166;
+    border-radius: 2px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
     -webkit-transition: height .25s ease;
             transition: height .25s ease;
     will-change: height;
@@ -2133,9 +2134,9 @@ header.navigation {
     .dropdown .dropdown-container.left {
       right: auto;
       left: 0; }
-    .dropdown .dropdown-container.left .dropdown-arrow {
-      left: 1.25rem;
-      right: auto; }
+    .dropdown .dropdown-container.right + .dropdown-arrow {
+      right: 1.25rem;
+      left: auto; }
     .dropdown .dropdown-container .dropdown-root-menu {
       right: 0;
       left: auto; }
@@ -2175,7 +2176,7 @@ header.navigation {
       overflow: hidden;
       text-overflow: ellipsis;
       font-weight: normal; }
-      .dropdown .dropdown-item .text:hover, .dropdown .dropdown-item .text.is-selected {
+      .dropdown .dropdown-item .text:hover, .dropdown .dropdown-item .text.is-focused {
         background-color: #E9EAEF; }
       .dropdown .dropdown-item .text.is-active {
         background-color: #DEF5FE; }
@@ -2185,13 +2186,13 @@ header.navigation {
     width: 0.625rem;
     height: 0.625rem;
     bottom: -1.5625rem;
-    right: 1.25rem;
+    left: 1.25rem;
     background: -webkit-linear-gradient(135deg, rgba(255, 255, 255, 0) 50%, #FFFFFF 50%);
     background: linear-gradient(-45deg, rgba(255, 255, 255, 0) 50%, #FFFFFF 50%);
     -webkit-transform: rotate(45deg);
             transform: rotate(45deg);
     z-index: 3;
-    box-shadow: -1px -1px 1px #88878d; }
+    box-shadow: -1px -1px 1px rgba(115, 115, 115, 0.16); }
   .dropdown .dropdown-container.animate-close {
     -webkit-animation: closeContainer .2s ease-in-out forwards;
             animation: closeContainer .2s ease-in-out forwards; }
