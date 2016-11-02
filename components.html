@@ -582,64 +582,48 @@
 		</div>
 	</div>
 <div class="f-item-preview">
-	<div class="refills-components">
-	<div class="dropdown">
-		<div class="dropdown-container">
-			<p class="dropdown-description">Description</p>
-			<p class="dropdown-button">Click to Select</p>
-			<ul class="dropdown-menu dropdown-select">
-				<li>Dropdown Menu Item</li>
-				<li>Another Item</li>
-				<li>Item Three</li>
-				<li>The Last One</li>
-			</ul>
-		</div>
-	</div>
-</div>
-<!--
-
-$(".dropdown-button").click(function() {
-    var $button, $menu;
-    $button = $(this);
-    $menu = $button.siblings(".dropdown-menu");
-    $menu.toggleClass("show-menu");
-    $menu.children("li").click(function() {
-      $menu.removeClass("show-menu");
-      $button.html($(this).html());
-    });
-  });
-
--->
+	<script src="lib/webcomponents-lite.min.js"></script>
+<link rel="import" href="lib/polymer.html">
+<link rel="import" href="lib/ws-dropdown.html">
+<ws-dropdown>
+	<button>Dropdown</button>
+	<ul class="dropdown-menu dropdown-root-menu">
+		<li class="dropdown-item">
+			<a class="text">Item 1</a>
+		</li>
+		<li class="dropdown-item">
+			<a class="text">Item 2</a>
+		</li>
+		<li class="dropdown-item">
+			<a class="text">Item 3</a>
+		</li>
+		<li class="dropdown-item">
+			<a class="text">Item 4</a>
+		</li>
+	</ul>
+</ws-dropdown>
 </div>
 <div class="f-item-code f-item-hidden" data-f-toggle="code">
-	<pre><code class="language-markup">&lt;div class&#x3D;&quot;refills-components&quot;&gt;
-	&lt;div class&#x3D;&quot;dropdown&quot;&gt;
-		&lt;div class&#x3D;&quot;dropdown-container&quot;&gt;
-			&lt;p class&#x3D;&quot;dropdown-description&quot;&gt;Description&lt;/p&gt;
-			&lt;p class&#x3D;&quot;dropdown-button&quot;&gt;Click to Select&lt;/p&gt;
-			&lt;ul class&#x3D;&quot;dropdown-menu dropdown-select&quot;&gt;
-				&lt;li&gt;Dropdown Menu Item&lt;/li&gt;
-				&lt;li&gt;Another Item&lt;/li&gt;
-				&lt;li&gt;Item Three&lt;/li&gt;
-				&lt;li&gt;The Last One&lt;/li&gt;
-			&lt;/ul&gt;
-		&lt;/div&gt;
-	&lt;/div&gt;
-&lt;/div&gt;
-&lt;!--
-
-$(&quot;.dropdown-button&quot;).click(function() {
-    var $button, $menu;
-    $button &#x3D; $(this);
-    $menu &#x3D; $button.siblings(&quot;.dropdown-menu&quot;);
-    $menu.toggleClass(&quot;show-menu&quot;);
-    $menu.children(&quot;li&quot;).click(function() {
-      $menu.removeClass(&quot;show-menu&quot;);
-      $button.html($(this).html());
-    });
-  });
-
---&gt;</code></pre>
+	<pre><code class="language-markup">&lt;script src&#x3D;&quot;lib/webcomponents-lite.min.js&quot;&gt;&lt;/script&gt;
+&lt;link rel&#x3D;&quot;import&quot; href&#x3D;&quot;lib/polymer.html&quot;&gt;
+&lt;link rel&#x3D;&quot;import&quot; href&#x3D;&quot;lib/ws-dropdown.html&quot;&gt;
+&lt;ws-dropdown&gt;
+	&lt;button&gt;Dropdown&lt;/button&gt;
+	&lt;ul class&#x3D;&quot;dropdown-menu dropdown-root-menu&quot;&gt;
+		&lt;li class&#x3D;&quot;dropdown-item&quot;&gt;
+			&lt;a class&#x3D;&quot;text&quot;&gt;Item 1&lt;/a&gt;
+		&lt;/li&gt;
+		&lt;li class&#x3D;&quot;dropdown-item&quot;&gt;
+			&lt;a class&#x3D;&quot;text&quot;&gt;Item 2&lt;/a&gt;
+		&lt;/li&gt;
+		&lt;li class&#x3D;&quot;dropdown-item&quot;&gt;
+			&lt;a class&#x3D;&quot;text&quot;&gt;Item 3&lt;/a&gt;
+		&lt;/li&gt;
+		&lt;li class&#x3D;&quot;dropdown-item&quot;&gt;
+			&lt;a class&#x3D;&quot;text&quot;&gt;Item 4&lt;/a&gt;
+		&lt;/li&gt;
+	&lt;/ul&gt;
+&lt;/ws-dropdown&gt;</code></pre>
 </div>
 
 
@@ -660,10 +644,16 @@ $(&quot;.dropdown-button&quot;).click(function() {
 		</div>
 	</div>
 <div class="f-item-preview">
-	<input type="file" class="file" name="file">
+	<label class="file-button" for="some-file-button">
+	<input type="file" class="file" name="file" id="some-file-button">
+	<span class="button">Upload File</span>
+</label>
 </div>
 <div class="f-item-code f-item-hidden" data-f-toggle="code">
-	<pre><code class="language-markup">&lt;input type&#x3D;&quot;file&quot; class&#x3D;&quot;file&quot; name&#x3D;&quot;file&quot;&gt;</code></pre>
+	<pre><code class="language-markup">&lt;label class&#x3D;&quot;file-button&quot; for&#x3D;&quot;some-file-button&quot;&gt;
+	&lt;input type&#x3D;&quot;file&quot; class&#x3D;&quot;file&quot; name&#x3D;&quot;file&quot; id&#x3D;&quot;some-file-button&quot;&gt;
+	&lt;span class&#x3D;&quot;button&quot;&gt;Upload File&lt;/span&gt;
+&lt;/label&gt;</code></pre>
 </div>
 
 

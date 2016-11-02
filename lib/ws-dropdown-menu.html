@@ -1,0 +1,273 @@
+<!-- inject:global -->
+<!-- endinject -->
+<dom-module id="ws-dropdown-menu">
+    <template>
+        <!-- inject:html -->
+        <content id="menu"></content>
+<template is="dom-if" if="{{hasItems}}">
+    <ul class$="[[menuClass]]">
+        <template is="dom-if" if="{{hasParent}}">
+            <li class="dropdown-item" on-click="back" item="[[item]]">
+                <a class="text back" href$="[[item.href]]">&lsaquo; Back</a>
+            </li>
+        </template>
+        <template is="dom-repeat" items="[[items]]" on-dom-change="itemsChanged">
+            <li class="dropdown-item" on-click="next" item="[[item]]">
+                <template is="dom-if" if="[[item.icon]]">
+                    <i class$="[[getItemIconClass(item.icon)]]"></i>
+                </template>
+                <a class$="[[getItemAnchorClass(item.*)]]" href$="[[item.href]]">[[getItemLabel(item)]]</a>
+                <template is="dom-if" if="[[item.children]]">
+                    <ws-dropdown-menu items="[[item.children]]" has-parent></ws-dropdown-menu>
+                </template>
+            </li>
+        </template>
+    </ul>
+</template>
+        <!-- endinject -->
+        <style>
+            /* inject:styles */
+            /* endinject */
+        </style>
+    </template>
+
+    <script>
+    (function(){
+        /* inject:js */
+        'use strict';
+
+var ANIMATION_START_EVENTS = ['oAnimationStart', 'MSAnimationStart', 'animationstart'];
+var ANIMATION_END_EVENTS = ['oAnimationEnd', 'MSAnimationEnd', 'animationend'];
+
+Polymer({
+    is: 'ws-dropdown-menu',
+
+    properties: {
+        hasParent: {
+            type: Boolean,
+            value: false
+        },
+        items: {
+            type: Array
+        },
+        hasItems: {
+            type: Boolean,
+            computed: 'itemsAreBound(items)'
+        },
+        menuClass: {
+            type: String,
+            computed: 'getMenuClass(hasParent)'
+        }
+    },
+
+    itemsChanged: function itemsChanged() {
+        if (this.menuContainer) {
+            this.fire('change-size', { height: this.getHeight() });
+        }
+    },
+    attached: function attached() {
+        this.grabElements();
+        this.setupListeners();
+    },
+    grabElements: function grabElements() {
+        this.menuContainer = this.$$('.dropdown-menu');
+        // Get the elements which were via <content> projected as menu
+        // nodeType 1 === ELEMENT_NODE, see http://www.w3schools.com/xml/dom_nodetype.asp
+        this.distributedNodes = Array.from(Polymer.dom(this.$.menu).getDistributedNodes());
+        this.projection = this.distributedNodes.find(function (node) {
+            return node.nodeType === 1 && node.classList.contains('dropdown-menu');
+        });
+        if (this.projection) {
+            this.menuContainer = this.projection;
+        }
+    },
+    setupListeners: function setupListeners() {
+        var _this = this;
+
+        this.menuContainer.addEventListener('click', function (event) {
+            // If the menu is projected we just want to close the menu since the original click will be handled elsewhere
+            if (!_this.projection) {
+                event.stopPropagation();
+            }
+        });
+        this.menuContainer.addEventListener('go-back', function (event) {
+            event.stopPropagation();
+            _this.showParent();
+        }, true);
+    },
+    getHeight: function getHeight() {
+        return this.menuContainer.clientHeight;
+    },
+    itemsAreBound: function itemsAreBound() {
+        return !!this.items;
+    },
+    getMenuClass: function getMenuClass(hasParent) {
+        return 'dropdown-menu ' + (hasParent ? '' : 'dropdown-root-menu');
+    },
+    getItemLabel: function getItemLabel(item) {
+        return item.label || item;
+    },
+    getItemIconClass: function getItemIconClass(icon) {
+        return 'icon ' + icon;
+    },
+    getItemAnchorClass: function getItemAnchorClass(change) {
+        return 'text ' + (change.base.selected ? 'is-active' : change.base.focused ? 'is-focused' : '');
+    },
+    next: function next(event) {
+        var item = event.currentTarget.item;
+        // Show next menu if children are available
+        if (item.children && item.children.length) {
+            this.showChild(event.currentTarget.querySelector('ws-dropdown-menu'));
+        } else if (item) {
+            this.propagate('change', item);
+        } else {
+            this.propagate('click', item);
+        }
+        return false;
+    },
+    back: function back() {
+        // Call the parent menu to start back animation (sub out and main in)
+        this.propagate('go-back');
+    },
+    close: function close() {
+        this.menuContainer.classList.remove('mod-sub-open', 'mod-menu-open');
+        if (!!this.openSubMenu) {
+            this.openSubMenu.close();
+        }
+    },
+    showChild: function showChild(subMenu) {
+        this.openSubMenu = subMenu;
+        this.propagate('change-size', { height: subMenu.getHeight() });
+        this.animateOut();
+        subMenu.animateIn();
+    },
+    showParent: function showParent() {
+        if (this.openSubMenu) {
+            this.propagate('change-size', { height: this.getHeight() });
+            this.openSubMenu.animateOut(true);
+            this.animateIn(true);
+            this.openSubMenu = null;
+        }
+    },
+    animateIn: function animateIn(goBack) {
+        this.isOpen = true;
+        var inAnimation = goBack ? 'animate-in' : 'animate-sub-in';
+        // Create a clone of new sub menu for animations
+        this.animateElement(this.menuContainer, inAnimation, function (menu) {
+            menu.classList.remove('mod-sub-open');
+            menu.classList.add('mod-menu-open');
+        });
+    },
+    animateOut: function animateOut(goBack) {
+        this.isOpen = false;
+        var outAnimation = !goBack ? 'animate-out' : 'animate-sub-out';
+        // Fade out old element and set mod-item-open if going back and mod-sub-open for going deeper
+        this.animateElement(this.menuContainer, outAnimation, function (menu) {
+            menu.classList.remove('mod-menu-open');
+            if (!goBack) {
+                menu.classList.add('mod-sub-open');
+            }
+        });
+    },
+    animateElement: function animateElement(item, animationClass, callback) {
+        var eventCounter = 0;
+        // Handler for animation end event
+        var handler = function handler(event) {
+            // Do nothing until all started events are done
+            if (--eventCounter) {
+                return;
+            }
+            // Remove all animation end event listeners from this item. They won't get called anymore
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = ANIMATION_END_EVENTS[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var eventName = _step.value;
+
+                    item.removeEventListener(eventName, handler);
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+
+            item.classList.remove(animationClass);
+            callback(item);
+        };
+        // Listen for all possible animation end events
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
+
+        try {
+            for (var _iterator2 = ANIMATION_END_EVENTS[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                var eventName = _step2.value;
+
+                item.addEventListener(eventName, handler);
+            }
+            // Increase started event counter for each animation start event
+        } catch (err) {
+            _didIteratorError2 = true;
+            _iteratorError2 = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                    _iterator2.return();
+                }
+            } finally {
+                if (_didIteratorError2) {
+                    throw _iteratorError2;
+                }
+            }
+        }
+
+        var _iteratorNormalCompletion3 = true;
+        var _didIteratorError3 = false;
+        var _iteratorError3 = undefined;
+
+        try {
+            for (var _iterator3 = ANIMATION_START_EVENTS[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                var _eventName = _step3.value;
+
+                item.addEventListener(_eventName, function () {
+                    return eventCounter++;
+                });
+            }
+            // Add class to start animation
+        } catch (err) {
+            _didIteratorError3 = true;
+            _iteratorError3 = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                    _iterator3.return();
+                }
+            } finally {
+                if (_didIteratorError3) {
+                    throw _iteratorError3;
+                }
+            }
+        }
+
+        item.classList.add(animationClass);
+    },
+    propagate: function propagate(eventName, detail) {
+        this.fire(eventName, detail);
+    }
+});
+        /* endinject */
+    })()
+    </script>
+</dom-module>

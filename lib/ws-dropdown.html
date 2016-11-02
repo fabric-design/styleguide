@@ -1,0 +1,425 @@
+<!-- inject:global -->
+<link rel="import" href="ws-dropdown-menu.html"/>
+
+<!-- endinject -->
+<dom-module id="ws-dropdown">
+    <template>
+        <!-- inject:html -->
+        <div class="dropdown">
+    <content select="button,a,.select-box,.target-element" id="button"></content>
+    <div class$="[[containerClass]]">
+        <ws-dropdown-menu items="[[items]]">
+            <content select=".dropdown-menu" id="menu"></content>
+        </ws-dropdown-menu>
+    </div>
+    <div class="dropdown-arrow"></div>
+</div>
+        <!-- endinject -->
+        <style>
+            /* inject:styles */
+            :host ::content {
+  /**
+ * Parse a numeric value from a string
+ */
+  /**
+ * Convert a pixel value to rem
+ */
+  /**
+ * Convert a list of pixel values to rem values
+ */
+  /**
+* Z-index function for managing the values
+*/ }
+  :host ::content .dropdown {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle; }
+    :host ::content .dropdown .dropdown-container {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      width: 12.5rem;
+      margin-top: 1.25rem;
+      height: 0;
+      display: none;
+      background-color: #FFFFFF;
+      border-radius: 3px;
+      box-shadow: 0 2px 6px #626166;
+      transition: height .25s ease;
+      will-change: height;
+      overflow: hidden;
+      z-index: 3; }
+      :host ::content .dropdown .dropdown-container.left {
+        right: auto;
+        left: 0; }
+      :host ::content .dropdown .dropdown-container.left .dropdown-arrow {
+        left: 1.25rem;
+        right: auto; }
+      :host ::content .dropdown .dropdown-container .dropdown-root-menu {
+        right: 0;
+        left: auto; }
+      :host ::content .dropdown .dropdown-container.mod-open {
+        display: block; }
+        :host ::content .dropdown .dropdown-container.mod-open + .dropdown-arrow {
+          display: block; }
+    :host ::content .dropdown .dropdown-trigger {
+      cursor: pointer; }
+    :host ::content .dropdown .dropdown-menu {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 100%;
+      margin: 0;
+      padding: 0.3125rem 0rem;
+      width: 100%; }
+      :host ::content .dropdown .dropdown-menu.mod-menu-open, :host ::content .dropdown .dropdown-menu.mod-sub-open {
+        left: 0; }
+      :host ::content .dropdown .dropdown-menu.mod-sub-open > .dropdown-item > .text {
+        opacity: 0;
+        z-index: -1; }
+    :host ::content .dropdown .dropdown-item {
+      list-style: none; }
+      :host ::content .dropdown .dropdown-item .text {
+        position: relative;
+        font-size: 0.875rem;
+        color: #626166;
+        font-family: "acumin-pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        line-height: 2;
+        cursor: pointer;
+        padding: 0.5rem 1.875rem 0.5rem 0.8125rem;
+        box-sizing: border-box;
+        white-space: nowrap;
+        width: 100%;
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-weight: normal; }
+        :host ::content .dropdown .dropdown-item .text:hover, :host ::content .dropdown .dropdown-item .text.is-selected {
+          background-color: #E9EAEF; }
+        :host ::content .dropdown .dropdown-item .text.is-active {
+          background-color: #DEF5FE; }
+    :host ::content .dropdown .dropdown-arrow {
+      display: none;
+      position: absolute;
+      width: 0.625rem;
+      height: 0.625rem;
+      bottom: -1.5625rem;
+      right: 1.25rem;
+      background: linear-gradient(-45deg, rgba(255, 255, 255, 0) 50%, #FFFFFF 50%);
+      transform: rotate(45deg);
+      z-index: 3;
+      box-shadow: -1px -1px 1px #88878d; }
+    :host ::content .dropdown .dropdown-container.animate-close {
+      animation: closeContainer .2s ease-in-out forwards; }
+    :host ::content .dropdown .dropdown-menu.animate-in > .dropdown-item > .text {
+      animation: dropDownIn 0.3s cubic-bezier(0.53, 1.49, 1, 0.87) 0s forwards; }
+    :host ::content .dropdown .dropdown-menu.animate-out > .dropdown-item > .text {
+      animation: dropDownOut 0.3s cubic-bezier(0.32, 0.97, 0.71, 0.95) 0.05s forwards; }
+    :host ::content .dropdown .dropdown-menu.animate-sub-in > .dropdown-item > .text {
+      animation: dropDownSubIn 0.3s cubic-bezier(0.53, 1.49, 1, 0.87) 0s forwards; }
+    :host ::content .dropdown .dropdown-menu.animate-sub-out > .dropdown-item > .text {
+      animation: dropDownSubOut 0.3s cubic-bezier(0.32, 0.97, 0.71, 0.95) 0.05s forwards; }
+    :host ::content .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(1) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(1) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(1) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(1) > .text {
+      animation-delay: 0.035s; }
+    :host ::content .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(2) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(2) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(2) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(2) > .text {
+      animation-delay: 0.07s; }
+    :host ::content .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(3) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(3) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(3) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(3) > .text {
+      animation-delay: 0.105s; }
+    :host ::content .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(4) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(4) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(4) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(4) > .text {
+      animation-delay: 0.14s; }
+    :host ::content .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(5) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(5) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(5) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(5) > .text {
+      animation-delay: 0.175s; }
+    :host ::content .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(6) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(6) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(6) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(6) > .text {
+      animation-delay: 0.21s; }
+    :host ::content .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(7) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(7) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(7) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(7) > .text {
+      animation-delay: 0.245s; }
+    :host ::content .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(8) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(8) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(8) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(8) > .text {
+      animation-delay: 0.28s; }
+    :host ::content .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(9) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(9) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(9) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(9) > .text {
+      animation-delay: 0.315s; }
+    :host ::content .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(10) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(10) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(10) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(10) > .text {
+      animation-delay: 0.35s; }
+    :host ::content .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(11) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(11) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(11) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(11) > .text {
+      animation-delay: 0.385s; }
+    :host ::content .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(12) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(12) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(12) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(12) > .text {
+      animation-delay: 0.42s; }
+    :host ::content .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(13) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(13) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(13) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(13) > .text {
+      animation-delay: 0.455s; }
+    :host ::content .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(14) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(14) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(14) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(14) > .text {
+      animation-delay: 0.49s; }
+    :host ::content .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(15) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(15) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(15) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(15) > .text {
+      animation-delay: 0.525s; }
+    :host ::content .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(16) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(16) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(16) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(16) > .text {
+      animation-delay: 0.56s; }
+    :host ::content .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(17) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(17) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(17) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(17) > .text {
+      animation-delay: 0.595s; }
+    :host ::content .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(18) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(18) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(18) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(18) > .text {
+      animation-delay: 0.63s; }
+    :host ::content .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(19) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(19) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(19) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(19) > .text {
+      animation-delay: 0.665s; }
+    :host ::content .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(20) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(20) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(20) > .text,
+    :host ::content .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(20) > .text {
+      animation-delay: 0.7s; }
+
+@keyframes closeContainer {
+  100% {
+    height: 0; } }
+
+@keyframes dropDownOut {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1; }
+  70% {
+    opacity: 0; }
+  100% {
+    transform: translate3d(-100%, 0, 0); } }
+
+@keyframes dropDownIn {
+  0% {
+    transform: translate3d(-100%, 0, 0);
+    opacity: 0; }
+  100% {
+    transform: translate3d(0%, 0, 0);
+    opacity: 1; } }
+
+@keyframes dropDownSubOut {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1; }
+  70% {
+    opacity: 0; }
+  100% {
+    transform: translate3d(100%, 0, 0); } }
+
+@keyframes dropDownSubIn {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0; }
+  100% {
+    transform: translate3d(-100%, 0, 0);
+    opacity: 1; } }
+
+            /* endinject */
+        </style>
+    </template>
+
+    <script>
+    (function(){
+        /* inject:js */
+        'use strict';
+
+var ANIMATION_END_EVENTS = ['oAnimationEnd', 'MSAnimationEnd', 'animationend'];
+
+window.WSDropdown = Polymer({
+    is: 'ws-dropdown',
+
+    properties: {
+        items: {
+            type: Array,
+            readOnly: false,
+            notify: false
+        },
+        noTrigger: {
+            type: Boolean,
+            value: false
+        },
+        isSelect: {
+            type: Boolean,
+            value: true
+        },
+        orientation: {
+            type: String,
+            readOnly: false,
+            notify: false,
+            value: 'left'
+        },
+        containerClass: {
+            type: String,
+            computed: 'getContainerClass(orientation)'
+        }
+    },
+
+    getContainerClass: function getContainerClass(orientation) {
+        return 'dropdown-container ' + orientation;
+    },
+    attached: function attached() {
+        this.onDocumentClick = this.onDocumentClick.bind(this);
+        this.grabElements();
+        this.setupListeners();
+        this.adjustSize(this.dropdownMenu);
+    },
+    grabElements: function grabElements() {
+        this.dropdownContainer = this.$$('.dropdown-container');
+        this.dropdownMenu = this.$$('ws-dropdown-menu');
+        this.button = Polymer.dom(this.$.button).getDistributedNodes()[0];
+    },
+    setupListeners: function setupListeners() {
+        var _this = this;
+
+        var stop = function stop(event) {
+            event.stopPropagation();
+            event.preventDefault();
+        };
+        this.dropdownMenu.addEventListener('change-size', function (event) {
+            stop(event);
+            _this.adjustSize(event.detail.height);
+        });
+        // this event will bubble up to the listener outside
+        this.dropdownMenu.addEventListener('change', function (event) {
+            _this.selectedItem = event.detail.item;
+            _this.isOpen ? _this.close() : _this.open();
+        });
+        this.dropdownMenu.addEventListener('click', function (event) {
+            stop(event);
+            _this.isOpen && _this.close();
+        });
+        if (!this.noTrigger) {
+            this.button.addEventListener('click', function (event) {
+                stop(event);
+                _this.isOpen ? _this.close() : _this.open();
+            });
+        }
+        this.addEventListener('open', function () {
+            return _this.open();
+        });
+        this.addEventListener('close', function () {
+            return _this.close();
+        });
+    },
+    onDocumentClick: function onDocumentClick(event) {
+        // Close the dropdown if the click was not inside
+        if (!this.contains(event.target)) {
+            this.close();
+        }
+    },
+    open: function open() {
+        if (this.isOpen) {
+            return;
+        }
+        this.isOpen = true;
+        this.dropdownContainer.style.height = 0;
+        this.dropdownContainer.classList.add('mod-open');
+        this.adjustSize(this.dropdownMenu.getHeight());
+        document.addEventListener('click', this.onDocumentClick, true);
+    },
+
+
+    /**
+     * Hide the drop down on clicking outside of dropdown
+     */
+    close: function close() {
+        if (!this.isOpen) {
+            return;
+        }
+        this.isOpen = false;
+        this.animateElement(this.dropdownContainer, 'animate-close', function (container) {
+            container.classList.remove('mod-open');
+        });
+        document.removeEventListener('click', this.onDocumentClick, true);
+    },
+    adjustSize: function adjustSize(newSize) {
+        this.dropdownContainer.style.height = newSize + 'px';
+    },
+    animateElement: function animateElement(item, animationClass, callback) {
+        // Define callback for animation end events
+        var getEventHandler = function getEventHandler(eventName) {
+            var eventHandler = function eventHandler() {
+                item.classList.remove(animationClass);
+                item.removeEventListener(eventName, eventHandler);
+                callback(item);
+            };
+            return eventHandler;
+        };
+        // Listen for all possible animation end events
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+            for (var _iterator = ANIMATION_END_EVENTS[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                var eventName = _step.value;
+
+                item.addEventListener(eventName, getEventHandler(eventName));
+            }
+            // Add class to start animation
+        } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion && _iterator.return) {
+                    _iterator.return();
+                }
+            } finally {
+                if (_didIteratorError) {
+                    throw _iteratorError;
+                }
+            }
+        }
+
+        item.classList.add(animationClass);
+    }
+});
+        /* endinject */
+    })()
+    </script>
+</dom-module>

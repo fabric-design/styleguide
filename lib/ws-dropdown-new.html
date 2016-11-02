@@ -1,0 +1,821 @@
+<!-- inject:global -->
+<!-- endinject -->
+<dom-module id="ws-dropdown-new">
+    <template>
+        <!-- inject:html -->
+        <template id="ws-dropdown-menu-item">
+    <li class="dropdown-item">
+        <a class="text"></a>
+        <ws-dropdown-menu></ws-dropdown-menu>
+    </li>
+</template>
+
+        <template id="ws-dropdown-menu">
+    <ul class="dropdown-menu">
+    </ul>
+</template>
+
+        <template id="ws-dropdown-new">
+    <div class="dropdown">
+        <content select="button,a,.select-box" id="content"></content>
+        <div class="dropdown-container">
+            <ws-dropdown-menu>
+                <content id="menu"></content>
+            </ws-dropdown-menu>
+        </div>
+        <div class="dropdown-arrow"></div>
+    </div>
+</template>
+        <!-- endinject -->
+        <style>
+            /* inject:styles */
+            /**
+ * Parse a numeric value from a string
+ */
+/**
+ * Convert a pixel value to rem
+ */
+/**
+ * Convert a list of pixel values to rem values
+ */
+/**
+* Z-index function for managing the values
+*/
+.dropdown {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle; }
+  .dropdown .dropdown-container {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 12.5rem;
+    margin-top: 1.25rem;
+    height: 0;
+    display: none;
+    background-color: #FFFFFF;
+    border-radius: 3px;
+    box-shadow: 0 2px 6px #626166;
+    transition: height .25s ease;
+    will-change: height;
+    overflow: hidden;
+    z-index: 3; }
+    .dropdown .dropdown-container.left {
+      right: auto;
+      left: 0; }
+    .dropdown .dropdown-container.left .dropdown-arrow {
+      left: 1.25rem;
+      right: auto; }
+    .dropdown .dropdown-container .dropdown-root-menu {
+      right: 0;
+      left: auto; }
+    .dropdown .dropdown-container.mod-open {
+      display: block; }
+      .dropdown .dropdown-container.mod-open + .dropdown-arrow {
+        display: block; }
+  .dropdown .dropdown-trigger {
+    cursor: pointer; }
+  .dropdown .dropdown-menu {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 100%;
+    margin: 0;
+    padding: 0.3125rem 0rem;
+    width: 100%; }
+    .dropdown .dropdown-menu.mod-menu-open, .dropdown .dropdown-menu.mod-sub-open {
+      left: 0; }
+    .dropdown .dropdown-menu.mod-sub-open > .dropdown-item > .text {
+      opacity: 0;
+      z-index: -1; }
+  .dropdown .dropdown-item {
+    list-style: none; }
+    .dropdown .dropdown-item .text {
+      position: relative;
+      font-size: 0.875rem;
+      color: #626166;
+      font-family: "acumin-pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      line-height: 2;
+      cursor: pointer;
+      padding: 0.5rem 1.875rem 0.5rem 0.8125rem;
+      box-sizing: border-box;
+      white-space: nowrap;
+      width: 100%;
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: normal; }
+      .dropdown .dropdown-item .text:hover, .dropdown .dropdown-item .text.is-selected {
+        background-color: #E9EAEF; }
+      .dropdown .dropdown-item .text.is-active {
+        background-color: #DEF5FE; }
+  .dropdown .dropdown-arrow {
+    display: none;
+    position: absolute;
+    width: 0.625rem;
+    height: 0.625rem;
+    bottom: -1.5625rem;
+    right: 1.25rem;
+    background: linear-gradient(-45deg, rgba(255, 255, 255, 0) 50%, #FFFFFF 50%);
+    transform: rotate(45deg);
+    z-index: 3;
+    box-shadow: -1px -1px 1px #88878d; }
+  .dropdown .dropdown-container.animate-close {
+    animation: closeContainer .2s ease-in-out forwards; }
+  .dropdown .dropdown-menu.animate-in > .dropdown-item > .text {
+    animation: dropDownIn 0.3s cubic-bezier(0.53, 1.49, 1, 0.87) 0s forwards; }
+  .dropdown .dropdown-menu.animate-out > .dropdown-item > .text {
+    animation: dropDownOut 0.3s cubic-bezier(0.32, 0.97, 0.71, 0.95) 0.05s forwards; }
+  .dropdown .dropdown-menu.animate-sub-in > .dropdown-item > .text {
+    animation: dropDownSubIn 0.3s cubic-bezier(0.53, 1.49, 1, 0.87) 0s forwards; }
+  .dropdown .dropdown-menu.animate-sub-out > .dropdown-item > .text {
+    animation: dropDownSubOut 0.3s cubic-bezier(0.32, 0.97, 0.71, 0.95) 0.05s forwards; }
+  .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(1) > .text,
+  .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(1) > .text,
+  .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(1) > .text,
+  .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(1) > .text {
+    animation-delay: 0.035s; }
+  .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(2) > .text,
+  .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(2) > .text,
+  .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(2) > .text,
+  .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(2) > .text {
+    animation-delay: 0.07s; }
+  .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(3) > .text,
+  .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(3) > .text,
+  .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(3) > .text,
+  .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(3) > .text {
+    animation-delay: 0.105s; }
+  .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(4) > .text,
+  .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(4) > .text,
+  .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(4) > .text,
+  .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(4) > .text {
+    animation-delay: 0.14s; }
+  .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(5) > .text,
+  .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(5) > .text,
+  .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(5) > .text,
+  .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(5) > .text {
+    animation-delay: 0.175s; }
+  .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(6) > .text,
+  .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(6) > .text,
+  .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(6) > .text,
+  .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(6) > .text {
+    animation-delay: 0.21s; }
+  .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(7) > .text,
+  .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(7) > .text,
+  .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(7) > .text,
+  .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(7) > .text {
+    animation-delay: 0.245s; }
+  .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(8) > .text,
+  .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(8) > .text,
+  .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(8) > .text,
+  .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(8) > .text {
+    animation-delay: 0.28s; }
+  .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(9) > .text,
+  .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(9) > .text,
+  .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(9) > .text,
+  .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(9) > .text {
+    animation-delay: 0.315s; }
+  .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(10) > .text,
+  .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(10) > .text,
+  .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(10) > .text,
+  .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(10) > .text {
+    animation-delay: 0.35s; }
+  .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(11) > .text,
+  .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(11) > .text,
+  .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(11) > .text,
+  .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(11) > .text {
+    animation-delay: 0.385s; }
+  .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(12) > .text,
+  .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(12) > .text,
+  .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(12) > .text,
+  .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(12) > .text {
+    animation-delay: 0.42s; }
+  .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(13) > .text,
+  .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(13) > .text,
+  .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(13) > .text,
+  .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(13) > .text {
+    animation-delay: 0.455s; }
+  .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(14) > .text,
+  .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(14) > .text,
+  .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(14) > .text,
+  .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(14) > .text {
+    animation-delay: 0.49s; }
+  .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(15) > .text,
+  .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(15) > .text,
+  .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(15) > .text,
+  .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(15) > .text {
+    animation-delay: 0.525s; }
+  .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(16) > .text,
+  .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(16) > .text,
+  .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(16) > .text,
+  .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(16) > .text {
+    animation-delay: 0.56s; }
+  .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(17) > .text,
+  .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(17) > .text,
+  .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(17) > .text,
+  .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(17) > .text {
+    animation-delay: 0.595s; }
+  .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(18) > .text,
+  .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(18) > .text,
+  .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(18) > .text,
+  .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(18) > .text {
+    animation-delay: 0.63s; }
+  .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(19) > .text,
+  .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(19) > .text,
+  .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(19) > .text,
+  .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(19) > .text {
+    animation-delay: 0.665s; }
+  .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(20) > .text,
+  .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(20) > .text,
+  .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(20) > .text,
+  .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(20) > .text {
+    animation-delay: 0.7s; }
+
+@keyframes closeContainer {
+  100% {
+    height: 0; } }
+
+@keyframes dropDownOut {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1; }
+  70% {
+    opacity: 0; }
+  100% {
+    transform: translate3d(-100%, 0, 0); } }
+
+@keyframes dropDownIn {
+  0% {
+    transform: translate3d(-100%, 0, 0);
+    opacity: 0; }
+  100% {
+    transform: translate3d(0%, 0, 0);
+    opacity: 1; } }
+
+@keyframes dropDownSubOut {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1; }
+  70% {
+    opacity: 0; }
+  100% {
+    transform: translate3d(100%, 0, 0); } }
+
+@keyframes dropDownSubIn {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0; }
+  100% {
+    transform: translate3d(-100%, 0, 0);
+    opacity: 1; } }
+
+            /* endinject */
+        </style>
+    </template>
+
+    <script>
+    (function(){
+        /* inject:js */
+        'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var rootTemplate = (document._currentScript || document.currentScript).ownerDocument.querySelector('template').content;
+var menuTplElement = rootTemplate.getElementById('ws-dropdown-menu');
+var menuItem = rootTemplate.getElementById('ws-dropdown-menu-item').content.querySelector('li');
+
+var WSDropdownMenu = function (_HTMLElement) {
+    _inherits(WSDropdownMenu, _HTMLElement);
+
+    function WSDropdownMenu() {
+        _classCallCheck(this, WSDropdownMenu);
+
+        return _possibleConstructorReturn(this, (WSDropdownMenu.__proto__ || Object.getPrototypeOf(WSDropdownMenu)).apply(this, arguments));
+    }
+
+    _createClass(WSDropdownMenu, [{
+        key: 'createdCallback',
+        value: function createdCallback() {
+            var clone = document.importNode(menuTplElement.content, true);
+            this.appendChild(clone);
+
+            this.state = {};
+        }
+    }, {
+        key: 'attachedCallback',
+        value: function attachedCallback() {
+            this.grabElements();
+            this.readAttributes();
+            this.setupListeners();
+        }
+    }, {
+        key: 'grabElements',
+        value: function grabElements() {
+            this.menuContainer = this.querySelector('.dropdown-menu');
+            // Get the elements which were via <content> projected as menu
+            // nodeType 1 === ELEMENT_NODE, see http://www.w3schools.com/xml/dom_nodetype.asp
+            var contentProjection = this.querySelector('#menu');
+            if (contentProjection) {
+                this.distributedNodes = Array.from(contentProjection.getDistributedNodes());
+                this.menuProjection = this.distributedNodes.find(function (node) {
+                    return node.nodeType === 1 && node.classList.contains('dropdown-menu');
+                });
+                this.replaceChild(this.menuProjection, this.menuContainer);
+            }
+        }
+    }, {
+        key: 'setupListeners',
+        value: function setupListeners() {
+            var _this2 = this;
+
+            this.menuContainer.addEventListener('click', function (event) {
+                event.stopPropagation();
+            });
+            this.menuContainer.addEventListener('go-back', function (event) {
+                event.stopPropagation();
+                _this2.showParent();
+            }, true);
+        }
+    }, {
+        key: 'draw',
+        value: function draw() {
+            var _this3 = this;
+
+            if (this.menuProjection) {
+                this.menuContainer = this.menuProjection;
+                return;
+            }
+            this.menuContainer.innerHTML = '';
+            if (!this.state.hasParent) {
+                this.menuContainer.classList.add('dropdown-root-menu');
+            } else {
+                var backItem = this.createMenuItem({ label: '‹ Back' }, 'back');
+                this.menuContainer.appendChild(backItem);
+                this.menuContainer.classList.remove('dropdown-root-menu');
+            }
+
+            (this.state.items || []).forEach(function (item) {
+                var listItem = _this3.createMenuItem(item, 'next');
+                _this3.menuContainer.appendChild(listItem);
+            });
+        }
+    }, {
+        key: 'readAttributes',
+        value: function readAttributes() {
+            this.state.hasParent = this.hasAttribute('has-parent');
+            this.state.items = this.hasAttribute('items') && JSON.parse(this.getAttribute('items'));
+            this.draw();
+        }
+    }, {
+        key: 'attributeChangedCallback',
+        value: function attributeChangedCallback(attrName) {
+            switch (attrName) {
+                case "items":
+                case "has-parent":
+                    this.readAttributes();
+                    break;
+            }
+        }
+    }, {
+        key: 'createMenuItem',
+        value: function createMenuItem(item, action) {
+            var _this4 = this;
+
+            var node = document.importNode(menuItem, true);
+            var menuNode = node.querySelector('ws-dropdown-menu');
+            var anchorNode = node.querySelector('.text');
+            anchorNode.textContent = item.label || item;
+
+            if (item.selected) {
+                anchorNode.classList.add('is-active');
+            }
+
+            if (item.icon) {
+                var iconItem = document.createElement("i");
+                iconItem.className = 'icon ' + item.icon;
+                anchorNode.insertBefore(iconItem, anchorNode.firstChild);
+            }
+
+            if (item.href) {
+                anchorNode.setAttribute('href', item.href);
+            } else {
+                anchorNode.addEventListener('click', function () {
+                    return _this4[action](item, menuNode);
+                });
+            }
+
+            if (item.children && item.children.length) {
+                menuNode.setAttribute('items', JSON.stringify(item.children));
+                menuNode.setAttribute('has-parent', true);
+            } else {
+                node.removeChild(menuNode);
+            }
+
+            return node;
+        }
+    }, {
+        key: 'next',
+        value: function next(item, subMenu) {
+            // Show next menu if children are available
+            if (item.children && item.children.length) {
+                this.showChild(subMenu);
+            } else if (item) {
+                this.propagate('change', { item: item });
+            } else {
+                this.propagate('click', { item: item });
+            }
+            return false;
+        }
+    }, {
+        key: 'back',
+        value: function back() {
+            // Call the parent menu to start back animation (sub out and main in)
+            this.propagate('go-back');
+        }
+    }, {
+        key: 'close',
+        value: function close() {
+            this.menuContainer.classList.remove('mod-sub-open', 'mod-menu-open');
+            if (!!this.state.openSubMenu) {
+                this.state.openSubMenu.close();
+            }
+        }
+    }, {
+        key: 'showChild',
+        value: function showChild(subMenu) {
+            this.state.openSubMenu = subMenu;
+            this.propagate('change-size', { height: subMenu.height });
+            this.animateOut();
+            subMenu.animateIn();
+        }
+    }, {
+        key: 'showParent',
+        value: function showParent() {
+            if (this.state.openSubMenu) {
+                this.propagate('change-size', { height: this.height });
+                this.state.openSubMenu.animateOut(true);
+                this.animateIn(true);
+                this.state.openSubMenu = null;
+            }
+        }
+    }, {
+        key: 'animateIn',
+        value: function animateIn(goBack) {
+            this.state.open = true;
+            var inAnimation = goBack ? 'animate-in' : 'animate-sub-in';
+            // Create a clone of new sub menu for animations
+            this.animateElement(this.menuContainer, inAnimation, function (menu) {
+                menu.classList.remove('mod-sub-open');
+                menu.classList.add('mod-menu-open');
+            });
+        }
+    }, {
+        key: 'animateOut',
+        value: function animateOut(goBack) {
+            this.state.open = false;
+            var outAnimation = !goBack ? 'animate-out' : 'animate-sub-out';
+            // Fade out old element and set mod-item-open if going back and mod-sub-open for going deeper
+            this.animateElement(this.menuContainer, outAnimation, function (menu) {
+                menu.classList.remove('mod-menu-open');
+                if (!goBack) {
+                    menu.classList.add('mod-sub-open');
+                }
+            });
+        }
+    }, {
+        key: 'animateElement',
+        value: function animateElement(item, animationClass, callback) {
+            var eventCounter = 0;
+            // Handler for animation end event
+            var handler = function handler(event) {
+                // Do nothing until all started events are done
+                if (--eventCounter) {
+                    return;
+                }
+                // Remove all animation end event listeners from this item. They won't get called anymore
+                var _iteratorNormalCompletion = true;
+                var _didIteratorError = false;
+                var _iteratorError = undefined;
+
+                try {
+                    for (var _iterator = WSDropdownMenu.ANIMATION_END_EVENTS[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                        var eventName = _step.value;
+
+                        item.removeEventListener(eventName, handler);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return) {
+                            _iterator.return();
+                        }
+                    } finally {
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+
+                item.classList.remove(animationClass);
+                callback(item);
+            };
+            // Listen for all possible animation end events
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
+
+            try {
+                for (var _iterator2 = WSDropdownMenu.ANIMATION_END_EVENTS[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                    var eventName = _step2.value;
+
+                    item.addEventListener(eventName, handler);
+                }
+                // Increase started event counter for each animation start event
+            } catch (err) {
+                _didIteratorError2 = true;
+                _iteratorError2 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                        _iterator2.return();
+                    }
+                } finally {
+                    if (_didIteratorError2) {
+                        throw _iteratorError2;
+                    }
+                }
+            }
+
+            var _iteratorNormalCompletion3 = true;
+            var _didIteratorError3 = false;
+            var _iteratorError3 = undefined;
+
+            try {
+                for (var _iterator3 = WSDropdownMenu.ANIMATION_START_EVENTS[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                    var _eventName = _step3.value;
+
+                    item.addEventListener(_eventName, function () {
+                        return eventCounter++;
+                    });
+                }
+                // Add class to start animation
+            } catch (err) {
+                _didIteratorError3 = true;
+                _iteratorError3 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                        _iterator3.return();
+                    }
+                } finally {
+                    if (_didIteratorError3) {
+                        throw _iteratorError3;
+                    }
+                }
+            }
+
+            item.classList.add(animationClass);
+        }
+    }, {
+        key: 'propagate',
+        value: function propagate(eventName, detail) {
+            var event = new CustomEvent(eventName, { detail: detail });
+            this.dispatchEvent(event);
+        }
+    }, {
+        key: 'height',
+        get: function get() {
+            return this.menuContainer.clientHeight;
+        }
+    }]);
+
+    return WSDropdownMenu;
+}(HTMLElement);
+
+//Register the element with the document
+
+
+WSDropdownMenu.ANIMATION_START_EVENTS = ['oAnimationStart', 'MSAnimationStart', 'animationstart'];
+WSDropdownMenu.ANIMATION_END_EVENTS = ['oAnimationEnd', 'MSAnimationEnd', 'animationend'];
+document.registerElement('ws-dropdown-menu', WSDropdownMenu);
+        'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var rootTemplate = (document._currentScript || document.currentScript).ownerDocument.querySelector('template').content;
+var dropdownTplElement = rootTemplate.getElementById('ws-dropdown-new');
+var styleTplElement = rootTemplate.querySelector('style');
+
+var WSDropdownNew = function (_HTMLElement) {
+    _inherits(WSDropdownNew, _HTMLElement);
+
+    function WSDropdownNew() {
+        _classCallCheck(this, WSDropdownNew);
+
+        return _possibleConstructorReturn(this, (WSDropdownNew.__proto__ || Object.getPrototypeOf(WSDropdownNew)).apply(this, arguments));
+    }
+
+    _createClass(WSDropdownNew, [{
+        key: 'createdCallback',
+        value: function createdCallback() {
+            var dropdownElement = document.importNode(dropdownTplElement.content, true);
+            var styleElement = styleTplElement.cloneNode(true);
+
+            this.createShadowRoot();
+            this.shadowRoot.appendChild(dropdownElement);
+            this.shadowRoot.appendChild(styleElement);
+
+            this.state = {};
+            // Ensure the functions got the correct scope
+            for (var key in this) {
+                if (typeof this[key] === 'function') {
+                    this[key] = this[key].bind(this);
+                }
+            }
+        }
+    }, {
+        key: 'attachedCallback',
+        value: function attachedCallback() {
+            this.grabElements();
+            this.readAttributes();
+            this.draw();
+            this.setupListeners();
+            this.adjustSize(this.dropdownMenu);
+        }
+    }, {
+        key: 'grabElements',
+        value: function grabElements() {
+            this.dropdownContainer = this.shadowRoot.querySelector('.dropdown-container');
+            this.dropdownMenu = this.shadowRoot.querySelector('ws-dropdown-menu');
+            this.button = this.querySelector('button,a,.select-box');
+            // Detect if there was an Element via content projected
+            // nodeType 1 === ELEMENT_NODE, see http://www.w3schools.com/xml/dom_nodetype.asp
+            var menuContent = this.shadowRoot.querySelector('#menu');
+            this.hasMenuProjection = Array.from(menuContent.getDistributedNodes()).some(function (node) {
+                return node.nodeType === 1;
+            });
+        }
+    }, {
+        key: 'readAttributes',
+        value: function readAttributes() {
+            this.state.items = this.hasAttribute('items') ? JSON.parse(this.getAttribute('items')) : [];
+            this.state.isSelect = this.hasAttribute('is-select');
+            this.state.orientation = this.getAttribute('orientation') || 'left';
+        }
+    }, {
+        key: 'draw',
+        value: function draw() {
+            this.dropdownContainer.classList.remove("left", "right");
+            this.dropdownContainer.classList.add(this.state.orientation);
+            // Only set items on menu if there is no projected content
+            if (!this.hasMenuProjection) {
+                this.dropdownMenu.setAttribute('items', JSON.stringify(this.state.items));
+            }
+            // @todo handle select value update
+        }
+    }, {
+        key: 'setupListeners',
+        value: function setupListeners() {
+            var _this2 = this;
+
+            var stop = function stop(event) {
+                event.stopPropagation();
+                event.preventDefault();
+            };
+            this.dropdownMenu.addEventListener('change-size', function (event) {
+                stop(event);
+                _this2.adjustSize(event.detail.height);
+            });
+            // this event will bubble up to the listener outside
+            this.dropdownMenu.addEventListener('change', function (event) {
+                stop(event);
+                _this2.state.selectedItem = event.detail.item;
+                _this2.draw();
+                _this2.state.open ? _this2.close() : _this2.open();
+            });
+            this.dropdownMenu.addEventListener('click', function (event) {
+                stop(event);
+                _this2.state.open ? _this2.close() : _this2.open();
+            });
+            this.button.addEventListener('click', function (event) {
+                stop(event);
+                _this2.state.open ? _this2.close() : _this2.open();
+            });
+        }
+    }, {
+        key: 'attributeChangedCallback',
+        value: function attributeChangedCallback(attrName) {
+            switch (attrName) {
+                case "items":
+                case "is-select":
+                case "orientation":
+                    this.readAttributes();
+                    this.draw();
+                    break;
+            }
+        }
+    }, {
+        key: 'onDocumentClick',
+        value: function onDocumentClick(event) {
+            // Close the dropdown if the click was not inside
+            if (!this.contains(event.target)) {
+                this.close();
+                document.removeEventListener('click', this.onDocumentClick, true);
+            }
+        }
+    }, {
+        key: 'open',
+        value: function open(event) {
+            this.state.open = true;
+            this.dropdownContainer.style.height = 0;
+            this.dropdownContainer.classList.add('mod-open');
+            this.adjustSize(this.dropdownMenu.height);
+            document.addEventListener('click', this.onDocumentClick, true);
+        }
+
+        /**
+         * Hide the drop down on clicking outside of dropdown
+         */
+
+    }, {
+        key: 'close',
+        value: function close() {
+            this.state.open = false;
+            this.animateElement(this.dropdownContainer, 'animate-close', function (container) {
+                container.classList.remove('mod-open');
+            });
+            document.removeEventListener('click', this.onDocumentClick, true);
+        }
+    }, {
+        key: 'adjustSize',
+        value: function adjustSize(newSize) {
+            this.dropdownContainer.style.height = newSize + 'px';
+        }
+    }, {
+        key: 'animateElement',
+        value: function animateElement(item, animationClass, callback) {
+            // Define callback for animation end events
+            var getEventHandler = function getEventHandler(eventName) {
+                var eventHandler = function eventHandler() {
+                    item.classList.remove(animationClass);
+                    item.removeEventListener(eventName, eventHandler);
+                    callback(item);
+                };
+                return eventHandler;
+            };
+            // Listen for all possible animation end events
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = WSDropdownNew.ANIMATION_END_EVENTS[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var eventName = _step.value;
+
+                    item.addEventListener(eventName, getEventHandler(eventName));
+                }
+                // Add class to start animation
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+
+            item.classList.add(animationClass);
+        }
+    }]);
+
+    return WSDropdownNew;
+}(HTMLElement);
+
+WSDropdownNew.ANIMATION_END_EVENTS = ['oAnimationEnd', 'MSAnimationEnd', 'animationend'];
+
+
+document.registerElement('ws-dropdown-new', WSDropdownNew);
+        /* endinject */
+    })()
+    </script>
+</dom-module>

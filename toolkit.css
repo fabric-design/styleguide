@@ -374,7 +374,7 @@ button,
 input[type="reset"],
 input[type="button"],
 input[type="submit"] {
-  font-family: acuminpro, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "acumin-pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   line-height: 1;
   text-decoration: none;
@@ -659,7 +659,7 @@ input,
 label,
 select {
   display: block;
-  font-family: acuminpro, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "acumin-pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 1rem; }
 
 label {
@@ -670,7 +670,13 @@ label {
   label abbr {
     display: none; }
 
-input:not([type=radio]):not([type=checkbox]),
+input[type=text],
+input[type=url],
+input[type=password],
+input[type=tel],
+input[type=number],
+input[type=color],
+input[type=email],
 select,
 textarea {
   padding: 0.5rem;
@@ -678,17 +684,29 @@ textarea {
   box-shadow: inset 0px 1px 3px 0px #e6e7ea;
   box-sizing: border-box;
   outline: none;
-  background-color: white;
+  background-color: #FFFFFF;
   height: 2.125rem;
   font-weight: normal;
   -webkit-transition: border-color .2s linear, box-shadow .2s linear;
           transition: border-color .2s linear, box-shadow .2s linear; }
-  input:not([type=radio]):not([type=checkbox]):focus,
+  input[type=text]:focus,
+  input[type=url]:focus,
+  input[type=password]:focus,
+  input[type=tel]:focus,
+  input[type=number]:focus,
+  input[type=color]:focus,
+  input[type=email]:focus,
   select:focus,
   textarea:focus {
     border-color: #008DC9;
     box-shadow: inset 0 1px 3px 0px #96e0ff; }
-  input:not([type=radio]):not([type=checkbox]):disabled,
+  input[type=text]:disabled,
+  input[type=url]:disabled,
+  input[type=password]:disabled,
+  input[type=tel]:disabled,
+  input[type=number]:disabled,
+  input[type=color]:disabled,
+  input[type=email]:disabled,
   select:disabled,
   textarea:disabled {
     background-color: #F5F6F9; }
@@ -721,30 +739,31 @@ select {
   width: auto; }
 
 .select-box {
-  padding: 0.5rem;
+  padding: 0.5rem 1.25rem 0.5rem 0.5rem;
   border: 1px solid #BDBFC7;
-  box-shadow: inset 0px 1px 3px 0px #e6e7ea;
   box-sizing: border-box;
-  outline: none;
-  background-color: white;
+  background-color: #FFFFFF;
   height: 2.125rem;
+  line-height: 1.0625rem;
   font-weight: normal;
-  -webkit-transition: border-color .2s linear, box-shadow .2s linear;
-          transition: border-color .2s linear, box-shadow .2s linear;
-  -webkit-appearance: menulist-button;
-  -moz-appearance: menulist-button;
-  box-shadow: none;
-  padding-right: 1.25rem;
+  position: relative;
+  display: block;
   cursor: pointer;
   -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none; }
-  .select-box:focus {
-    border-color: #008DC9;
-    box-shadow: inset 0 1px 3px 0px #96e0ff; }
-  .select-box:disabled {
-    background-color: #F5F6F9; }
+  -moz-user-select: none;
+   -ms-user-select: none;
+       user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; }
+  .select-box:after {
+    content: '';
+    position: absolute;
+    right: 0.4375rem;
+    top: 50%;
+    margin-top: -0.125rem;
+    border: 4px solid transparent;
+    border-top-color: #BDBFC7; }
 
 ul,
 ol {
@@ -797,6 +816,8 @@ table {
     border-bottom: 1px solid #E1E2E8;
     background-color: #F5F6F9;
     color: #626166; }
+    table thead th {
+      text-align: left; }
     table thead tr:not(:last-child) th {
       border-bottom: 1px solid #FAFBFC; }
     table thead tr:not(:first-child) th {
@@ -807,7 +828,6 @@ table {
     table thead tr:first-child th {
       padding: 0.5rem 1.5625rem 0.5rem 0.6875rem;
       white-space: nowrap;
-      text-align: left;
       position: relative; }
       table thead tr:first-child th label {
         font-size: 0.8125rem;
@@ -845,7 +865,7 @@ body {
      -moz-font-feature-settings: "kern", "liga", "pnum";
           font-feature-settings: "kern", "liga", "pnum";
   color: #626166;
-  font-family: acuminpro, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "acumin-pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 1rem;
   -webkit-font-smoothing: antialiased;
   line-height: 1.5rem; }
@@ -856,7 +876,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "acumin-pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 1.5rem;
   line-height: 1.2rem;
   margin: 1.4375rem 0.625rem;
@@ -1828,10 +1848,10 @@ header.navigation {
     height: 1.125rem;
     border: 0 none; }
   .checkbox[type="radio"] + .label:after {
-    top: .3rem;
-    left: .3rem;
-    width: 1.125rem;
-    height: 1.125rem;
+    top: 0.375rem;
+    left: 0.375rem;
+    width: 1rem;
+    height: 1rem;
     background: #008DC9;
     border: none;
     vertical-align: middle; }
@@ -1895,10 +1915,10 @@ header.navigation {
     height: 1.125rem;
     border: 0 none; }
   .checkbox-switch[type="radio"] + .label:after {
-    top: .3rem;
-    left: .3rem;
-    width: 1.125rem;
-    height: 1.125rem;
+    top: 0.375rem;
+    left: 0.375rem;
+    width: 1rem;
+    height: 1rem;
     background: #008DC9;
     border: none;
     vertical-align: middle; }
@@ -1998,10 +2018,10 @@ header.navigation {
     height: 1.125rem;
     border: 0 none; }
   .radio[type="radio"] + .label:after {
-    top: .3rem;
-    left: .3rem;
-    width: 1.125rem;
-    height: 1.125rem;
+    top: 0.375rem;
+    left: 0.375rem;
+    width: 1rem;
+    height: 1rem;
     background: #008DC9;
     border: none;
     vertical-align: middle; }
@@ -2090,12 +2110,10 @@ header.navigation {
   background-color: #e3e4eb;
   color: #626166; }
 
-.dropdown-menu {
-  display: block; }
-
 .dropdown {
   position: relative;
-  display: inline-block; }
+  display: inline-block;
+  vertical-align: middle; }
   .dropdown .dropdown-container {
     position: absolute;
     top: 100%;
@@ -2107,11 +2125,14 @@ header.navigation {
     background-color: #FFFFFF;
     border-radius: 3px;
     box-shadow: 0 2px 6px #626166;
-    -webkit-transition: height .125s ease;
-            transition: height .125s ease;
+    -webkit-transition: height .25s ease;
+            transition: height .25s ease;
     will-change: height;
     overflow: hidden;
     z-index: 3; }
+    .dropdown .dropdown-container.left {
+      right: auto;
+      left: 0; }
     .dropdown .dropdown-container.left .dropdown-arrow {
       left: 1.25rem;
       right: auto; }
@@ -2125,9 +2146,11 @@ header.navigation {
   .dropdown .dropdown-trigger {
     cursor: pointer; }
   .dropdown .dropdown-menu {
+    display: block;
     position: absolute;
     top: 0;
     left: 100%;
+    margin: 0;
     padding: 0.3125rem 0rem;
     width: 100%; }
     .dropdown .dropdown-menu.mod-menu-open, .dropdown .dropdown-menu.mod-sub-open {
@@ -2135,22 +2158,27 @@ header.navigation {
     .dropdown .dropdown-menu.mod-sub-open > .dropdown-item > .text {
       opacity: 0;
       z-index: -1; }
-  .dropdown .dropdown-item .text {
-    position: relative;
-    font-size: 0.875rem;
-    color: #626166;
-    font-family: acuminpro, "Helvetica Neue", Helvetica, Arial, sans-serif;
-    line-height: 2;
-    cursor: pointer;
-    padding: 0.5rem 1.875rem 0.5rem 0.8125rem;
-    white-space: nowrap;
-    width: 100%;
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-weight: normal; }
-    .dropdown .dropdown-item .text:hover, .dropdown .dropdown-item .text.is-active {
-      background-color: #B0D6FB; }
+  .dropdown .dropdown-item {
+    list-style: none; }
+    .dropdown .dropdown-item .text {
+      position: relative;
+      font-size: 0.875rem;
+      color: #626166;
+      font-family: "acumin-pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      line-height: 2;
+      cursor: pointer;
+      padding: 0.5rem 1.875rem 0.5rem 0.8125rem;
+      box-sizing: border-box;
+      white-space: nowrap;
+      width: 100%;
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: normal; }
+      .dropdown .dropdown-item .text:hover, .dropdown .dropdown-item .text.is-selected {
+        background-color: #E9EAEF; }
+      .dropdown .dropdown-item .text.is-active {
+        background-color: #DEF5FE; }
   .dropdown .dropdown-arrow {
     display: none;
     position: absolute;
@@ -2162,143 +2190,143 @@ header.navigation {
     background: linear-gradient(-45deg, rgba(255, 255, 255, 0) 50%, #FFFFFF 50%);
     -webkit-transform: rotate(45deg);
             transform: rotate(45deg);
-    z-index: 2;
-    box-shadow: -1px -1px 1px #E9EAEF; }
+    z-index: 3;
+    box-shadow: -1px -1px 1px #88878d; }
   .dropdown .dropdown-container.animate-close {
     -webkit-animation: closeContainer .2s ease-in-out forwards;
             animation: closeContainer .2s ease-in-out forwards; }
   .dropdown .dropdown-menu.animate-in > .dropdown-item > .text {
-    -webkit-animation: dropDownIn 0.3s cubic-bezier(0.32, 0.97, 0.71, 0.95) 0s forwards;
-            animation: dropDownIn 0.3s cubic-bezier(0.32, 0.97, 0.71, 0.95) 0s forwards; }
+    -webkit-animation: dropDownIn 0.3s cubic-bezier(0.53, 1.49, 1, 0.87) 0s forwards;
+            animation: dropDownIn 0.3s cubic-bezier(0.53, 1.49, 1, 0.87) 0s forwards; }
   .dropdown .dropdown-menu.animate-out > .dropdown-item > .text {
-    -webkit-animation: dropDownOut 0.3s cubic-bezier(0.53, 1.49, 1, 0.87) forwards;
-            animation: dropDownOut 0.3s cubic-bezier(0.53, 1.49, 1, 0.87) forwards; }
+    -webkit-animation: dropDownOut 0.3s cubic-bezier(0.32, 0.97, 0.71, 0.95) 0.05s forwards;
+            animation: dropDownOut 0.3s cubic-bezier(0.32, 0.97, 0.71, 0.95) 0.05s forwards; }
   .dropdown .dropdown-menu.animate-sub-in > .dropdown-item > .text {
-    -webkit-animation: dropDownSubIn 0.3s cubic-bezier(0.32, 0.97, 0.71, 0.95) 0s forwards;
-            animation: dropDownSubIn 0.3s cubic-bezier(0.32, 0.97, 0.71, 0.95) 0s forwards; }
+    -webkit-animation: dropDownSubIn 0.3s cubic-bezier(0.53, 1.49, 1, 0.87) 0s forwards;
+            animation: dropDownSubIn 0.3s cubic-bezier(0.53, 1.49, 1, 0.87) 0s forwards; }
   .dropdown .dropdown-menu.animate-sub-out > .dropdown-item > .text {
-    -webkit-animation: dropDownSubOut 0.3s cubic-bezier(0.53, 1.49, 1, 0.87) forwards;
-            animation: dropDownSubOut 0.3s cubic-bezier(0.53, 1.49, 1, 0.87) forwards; }
+    -webkit-animation: dropDownSubOut 0.3s cubic-bezier(0.32, 0.97, 0.71, 0.95) 0.05s forwards;
+            animation: dropDownSubOut 0.3s cubic-bezier(0.32, 0.97, 0.71, 0.95) 0.05s forwards; }
   .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(1) > .text,
   .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(1) > .text,
   .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(1) > .text,
   .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(1) > .text {
-    -webkit-animation-delay: 0.025s;
-            animation-delay: 0.025s; }
+    -webkit-animation-delay: 0.035s;
+            animation-delay: 0.035s; }
   .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(2) > .text,
   .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(2) > .text,
   .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(2) > .text,
   .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(2) > .text {
-    -webkit-animation-delay: 0.05s;
-            animation-delay: 0.05s; }
+    -webkit-animation-delay: 0.07s;
+            animation-delay: 0.07s; }
   .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(3) > .text,
   .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(3) > .text,
   .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(3) > .text,
   .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(3) > .text {
-    -webkit-animation-delay: 0.075s;
-            animation-delay: 0.075s; }
+    -webkit-animation-delay: 0.105s;
+            animation-delay: 0.105s; }
   .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(4) > .text,
   .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(4) > .text,
   .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(4) > .text,
   .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(4) > .text {
-    -webkit-animation-delay: 0.1s;
-            animation-delay: 0.1s; }
+    -webkit-animation-delay: 0.14s;
+            animation-delay: 0.14s; }
   .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(5) > .text,
   .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(5) > .text,
   .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(5) > .text,
   .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(5) > .text {
-    -webkit-animation-delay: 0.125s;
-            animation-delay: 0.125s; }
+    -webkit-animation-delay: 0.175s;
+            animation-delay: 0.175s; }
   .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(6) > .text,
   .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(6) > .text,
   .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(6) > .text,
   .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(6) > .text {
-    -webkit-animation-delay: 0.15s;
-            animation-delay: 0.15s; }
+    -webkit-animation-delay: 0.21s;
+            animation-delay: 0.21s; }
   .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(7) > .text,
   .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(7) > .text,
   .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(7) > .text,
   .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(7) > .text {
-    -webkit-animation-delay: 0.175s;
-            animation-delay: 0.175s; }
+    -webkit-animation-delay: 0.245s;
+            animation-delay: 0.245s; }
   .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(8) > .text,
   .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(8) > .text,
   .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(8) > .text,
   .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(8) > .text {
-    -webkit-animation-delay: 0.2s;
-            animation-delay: 0.2s; }
+    -webkit-animation-delay: 0.28s;
+            animation-delay: 0.28s; }
   .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(9) > .text,
   .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(9) > .text,
   .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(9) > .text,
   .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(9) > .text {
-    -webkit-animation-delay: 0.225s;
-            animation-delay: 0.225s; }
+    -webkit-animation-delay: 0.315s;
+            animation-delay: 0.315s; }
   .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(10) > .text,
   .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(10) > .text,
   .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(10) > .text,
   .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(10) > .text {
-    -webkit-animation-delay: 0.25s;
-            animation-delay: 0.25s; }
+    -webkit-animation-delay: 0.35s;
+            animation-delay: 0.35s; }
   .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(11) > .text,
   .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(11) > .text,
   .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(11) > .text,
   .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(11) > .text {
-    -webkit-animation-delay: 0.275s;
-            animation-delay: 0.275s; }
+    -webkit-animation-delay: 0.385s;
+            animation-delay: 0.385s; }
   .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(12) > .text,
   .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(12) > .text,
   .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(12) > .text,
   .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(12) > .text {
-    -webkit-animation-delay: 0.3s;
-            animation-delay: 0.3s; }
+    -webkit-animation-delay: 0.42s;
+            animation-delay: 0.42s; }
   .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(13) > .text,
   .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(13) > .text,
   .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(13) > .text,
   .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(13) > .text {
-    -webkit-animation-delay: 0.325s;
-            animation-delay: 0.325s; }
+    -webkit-animation-delay: 0.455s;
+            animation-delay: 0.455s; }
   .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(14) > .text,
   .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(14) > .text,
   .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(14) > .text,
   .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(14) > .text {
-    -webkit-animation-delay: 0.35s;
-            animation-delay: 0.35s; }
+    -webkit-animation-delay: 0.49s;
+            animation-delay: 0.49s; }
   .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(15) > .text,
   .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(15) > .text,
   .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(15) > .text,
   .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(15) > .text {
-    -webkit-animation-delay: 0.375s;
-            animation-delay: 0.375s; }
+    -webkit-animation-delay: 0.525s;
+            animation-delay: 0.525s; }
   .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(16) > .text,
   .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(16) > .text,
   .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(16) > .text,
   .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(16) > .text {
-    -webkit-animation-delay: 0.4s;
-            animation-delay: 0.4s; }
+    -webkit-animation-delay: 0.56s;
+            animation-delay: 0.56s; }
   .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(17) > .text,
   .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(17) > .text,
   .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(17) > .text,
   .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(17) > .text {
-    -webkit-animation-delay: 0.425s;
-            animation-delay: 0.425s; }
+    -webkit-animation-delay: 0.595s;
+            animation-delay: 0.595s; }
   .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(18) > .text,
   .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(18) > .text,
   .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(18) > .text,
   .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(18) > .text {
-    -webkit-animation-delay: 0.45s;
-            animation-delay: 0.45s; }
+    -webkit-animation-delay: 0.63s;
+            animation-delay: 0.63s; }
   .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(19) > .text,
   .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(19) > .text,
   .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(19) > .text,
   .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(19) > .text {
-    -webkit-animation-delay: 0.475s;
-            animation-delay: 0.475s; }
+    -webkit-animation-delay: 0.665s;
+            animation-delay: 0.665s; }
   .dropdown .dropdown-menu.animate-in > .dropdown-item:nth-child(20) > .text,
   .dropdown .dropdown-menu.animate-out > .dropdown-item:nth-child(20) > .text,
   .dropdown .dropdown-menu.animate-sub-in > .dropdown-item:nth-child(20) > .text,
   .dropdown .dropdown-menu.animate-sub-out > .dropdown-item:nth-child(20) > .text {
-    -webkit-animation-delay: 0.5s;
-            animation-delay: 0.5s; }
+    -webkit-animation-delay: 0.7s;
+            animation-delay: 0.7s; }
 
 @-webkit-keyframes closeContainer {
   100% {
