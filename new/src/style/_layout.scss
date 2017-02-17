@@ -1,0 +1,60 @@
+.site-wrapper {
+    .site-header {
+        line-height: rem(60px);
+        height: rem(60px);
+        box-shadow: map-get($elevation-shadows, resting);
+        .logo {
+            margin: rem(0 0 0 17px);
+            height: rem(40px);
+            display: inline-block;
+            vertical-align: middle;
+            img {
+                height: inherit;
+            }
+        }
+    }
+    .site-nav {
+        margin-top: rem(30px);
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            width: 90%;
+            .nav-item {
+                padding: rem(17px 0 17px 40px);
+                > a {
+                    text-transform: uppercase;
+                    color: $jumbo;
+                    line-height: rem(18px);
+                }
+                &.is-active {
+                    > a {
+                        color: $primary-color;
+                        font-weight: bold;
+                    }
+                    background-color: $silver;
+                }
+                .sub-nav {
+                    display: none;
+                }
+                &.is-active .sub-nav,
+                &:hover .sub-nav {
+                    display: block;
+                }
+            }
+            .subnav-item {
+                > a {
+                    color: $asphalt;
+                }
+                &.is-active > a {
+                    font-weight: bold;
+                }
+            }
+        }
+    }
+    .site-content {
+        background-color: $white;
+        margin-top: rem(20px);
+        box-shadow: map-get($elevation-shadows, resting);
+    }
+}

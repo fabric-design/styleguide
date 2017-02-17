@@ -1,0 +1,19 @@
+<template>
+    <require from="../style/index.css"></require>
+    <div class="site-wrapper">
+        <header class="site-header">
+            <figure class="logo">
+                <img src="src/style/assets/logo.png">
+            </figure>
+        </header>
+        <div class="row collapse">
+            <aside class="column small-4">
+                <require from="app/navigation"></require>
+                <navigation></navigation>
+            </aside>
+            <section class="column small-20 site-content">
+                <router-view></router-view>
+            </section>
+        </div>
+    </div>
+</template>
