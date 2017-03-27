@@ -1,13 +1,6 @@
 $icon-font-path: 'node_modules/wholesale-styleguide-scss/icons/';
 
-@import "../../node_modules/wholesale-styleguide-scss/util";
-@import "../../node_modules/wholesale-styleguide-scss/variables";
-@import "../../node_modules/wholesale-styleguide-scss/components/base/buttons";
-@import "../../node_modules/wholesale-styleguide-scss/components/base/forms";
-@import "../../node_modules/wholesale-styleguide-scss/components/base/typography";
-@import "../../node_modules/wholesale-styleguide-scss/components/base/icons";
-@import "../../node_modules/wholesale-styleguide-scss/components/base/grid";
-
+@import "../../node_modules/wholesale-styleguide-scss/index";
 @import "base";
 @import "layout";
 @import "article";
