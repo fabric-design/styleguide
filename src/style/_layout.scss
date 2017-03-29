@@ -1,0 +1,94 @@
+.site-wrapper {
+    .site-header {
+        line-height: rem(60px);
+        height: rem(60px);
+        box-shadow: map-get($elevation-shadows, resting);
+        .site-logo {
+            margin: rem(0 0 0 17px);
+            height: rem(40px);
+            display: inline-block;
+            vertical-align: middle;
+            img {
+                height: inherit;
+            }
+        }
+        .github {
+            float: right;
+            color: $primary-color;
+            margin-right: rem(24px);
+            .logo {
+                margin: rem(0 5px 0 0);
+                height: rem(24px);
+                width: rem(24px);
+                display: inline-block;
+                vertical-align: middle;
+                svg {
+                    height: inherit;
+                    width: inherit;
+                    vertical-align: top;
+                }
+            }
+        }
+    }
+    .site-nav {
+        margin-top: rem(30px);
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            width: 90%;
+            .nav-item {
+                padding: rem(17px 0 17px 40px);
+                > a {
+                    text-transform: uppercase;
+                    color: $jumbo;
+                    line-height: rem(28px);
+                }
+                &.is-active {
+                    > a {
+                        color: $primary-color;
+                        font-weight: bold;
+                    }
+                    background-color: $silver;
+                }
+                .sub-nav {
+                    height: 0;
+                    overflow: hidden;
+                }
+                &.is-active .sub-nav,
+                &:hover .sub-nav {
+                    height: auto;
+                    .subnav-item a {
+                        opacity: 1;
+                        transform: translate3d(0, 0, 0);
+                    }
+                    @for $i from 1 through 20 {
+                        .subnav-item:nth-child(#{$i}) a {
+                            $delay: $i * .03s;
+                            transition-delay: $delay, $delay;
+                        }
+                    }
+                }
+            }
+            .subnav-item {
+                > a {
+                    display: block;
+                    color: $asphalt;
+                    line-height: rem(28px);
+                    transform: translate3d(60px, 0, 0);
+                    opacity: 0;
+                    transition: transform .2s cubic-bezier(.32, 1.13, .79, .98) .2s,
+                                opacity .18s linear .2s;
+                }
+                &.is-active > a {
+                    font-weight: bold;
+                }
+            }
+        }
+    }
+    .site-content {
+        background-color: $white;
+        margin: rem(20px 0);
+        box-shadow: map-get($elevation-shadows, resting);
+    }
+}
