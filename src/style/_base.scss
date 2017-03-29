@@ -5,6 +5,12 @@ body {
     font-family: "acumin-pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-*, *:before, *:after {
-    box-sizing: border-box;
+h1 {
+    font-size: rem(40px);
+}
+
+h1, h2 {
+    margin-left: 0;
+    margin-top: rem(50px);
+    font-weight: normal;
 }

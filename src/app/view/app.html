@@ -1,0 +1,16 @@
+<template>
+    <require from="../../style/index.css"></require>
+    <div class="site-wrapper">
+        <require from="app/view/app-header.html"></require>
+        <app-header></app-header>
+        <div class="row collapse">
+            <aside class="column small-4">
+                <require from="app/view/navigation"></require>
+                <navigation></navigation>
+            </aside>
+            <section class="column small-19 end site-content">
+                <router-view></router-view>
+            </section>
+        </div>
+    </div>
+</template>
