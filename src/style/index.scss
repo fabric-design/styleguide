@@ -1,15 +1,15 @@
 $use-embedded-font: true;
 
-@import "../../node_modules/wholesale-styleguide-scss/util";
-@import "../../node_modules/wholesale-styleguide-scss/variables";
-@import "../../node_modules/wholesale-styleguide-scss/components/base/buttons";
-@import "../../node_modules/wholesale-styleguide-scss/components/base/forms";
+@import "../../node_modules/wholesale-styleguide-scss/utils/helpers";
+@import "../../node_modules/wholesale-styleguide-scss/utils/variables";
+@import "../../node_modules/wholesale-styleguide-scss/base/buttons";
+@import "../../node_modules/wholesale-styleguide-scss/base/forms";
 @import "../../node_modules/wholesale-styleguide-scss/components/base/typography";
 @import "../../node_modules/wholesale-styleguide-scss/components/base/icons";
-@import "../../node_modules/wholesale-styleguide-scss/components/base/grid";
+@import "../../node_modules/wholesale-styleguide-scss/utils/grid";
 
-@import "../../node_modules/wholesale-styleguide-scss/components/complex/icons";
-@import "../../node_modules/wholesale-styleguide-scss/components/complex/checkbox-radio-inputs";
+@import "../../node_modules/wholesale-styleguide-scss/components/icons";
+@import "../../node_modules/wholesale-styleguide-scss/components/checkbox-radio-inputs";
 
 @import "base";
 @import "layout";
