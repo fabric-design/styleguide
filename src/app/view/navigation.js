@@ -55,9 +55,13 @@ export class NavigationCustomElement {
     }
 
     pageChanged({instruction}: Object) {
-        if (instruction.params) {
-            this.currentCategory = instruction.params.category;
-            this.currentPage = instruction.params.page;
+        let params = instruction.params;
+        // Fix when initial instruction / was redirected to any page
+        // So the initial instruction has no params but the final (currentInstruction) has
+        if (!params || !params.category) {
+            params = instruction.router.currentInstruction.params || {};
         }
+        this.currentCategory = params.category;
+        this.currentPage = params.page;
     }
 }
