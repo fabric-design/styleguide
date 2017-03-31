@@ -4,7 +4,7 @@ export function configure(aurelia) {
     aurelia.use
         .standardConfiguration()
         .globalResources([
-            'app/shared/iterable-converter'
+            'app/view/iterable-converter'
         ]);
 
     if (environment.debug) {
@@ -15,5 +15,5 @@ export function configure(aurelia) {
         aurelia.use.plugin('aurelia-testing');
     }
 
-    aurelia.start().then(() => aurelia.setRoot());
+    aurelia.start().then(() => aurelia.setRoot('app/view/app', document.body));
 }

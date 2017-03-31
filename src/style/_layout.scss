@@ -3,13 +3,30 @@
         line-height: rem(60px);
         height: rem(60px);
         box-shadow: map-get($elevation-shadows, resting);
-        .logo {
+        .site-logo {
             margin: rem(0 0 0 17px);
-            height: 40px;
+            height: rem(40px);
             display: inline-block;
             vertical-align: middle;
             img {
                 height: inherit;
+            }
+        }
+        .github {
+            float: right;
+            color: $primary-color;
+            margin-right: rem(24px);
+            .logo {
+                margin: rem(0 5px 0 0);
+                height: rem(24px);
+                width: rem(24px);
+                display: inline-block;
+                vertical-align: middle;
+                svg {
+                    height: inherit;
+                    width: inherit;
+                    vertical-align: top;
+                }
             }
         }
     }
@@ -25,7 +42,7 @@
                 > a {
                     text-transform: uppercase;
                     color: $jumbo;
-                    line-height: rem(18px);
+                    line-height: rem(28px);
                 }
                 &.is-active {
                     > a {
@@ -35,16 +52,33 @@
                     background-color: $silver;
                 }
                 .sub-nav {
-                    display: none;
+                    height: 0;
+                    overflow: hidden;
                 }
                 &.is-active .sub-nav,
                 &:hover .sub-nav {
-                    display: block;
+                    height: auto;
+                    .subnav-item a {
+                        opacity: 1;
+                        transform: translate3d(0, 0, 0);
+                    }
+                    @for $i from 1 through 20 {
+                        .subnav-item:nth-child(#{$i}) a {
+                            $delay: $i * .03s;
+                            transition-delay: $delay, $delay;
+                        }
+                    }
                 }
             }
             .subnav-item {
                 > a {
+                    display: block;
                     color: $asphalt;
+                    line-height: rem(28px);
+                    transform: translate3d(60px, 0, 0);
+                    opacity: 0;
+                    transition: transform .2s cubic-bezier(.32, 1.13, .79, .98) .2s,
+                                opacity .18s linear .2s;
                 }
                 &.is-active > a {
                     font-weight: bold;
@@ -54,7 +88,7 @@
     }
     .site-content {
         background-color: $white;
-        margin-top: rem(20px);
+        margin: rem(20px 0);
         box-shadow: map-get($elevation-shadows, resting);
     }
 }
