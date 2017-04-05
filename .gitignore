@@ -1,8 +1,3 @@
-/src/assets/toolkit/styles/main.scss
-.idea
 node_modules
-/tokens/styleguide
-/tokens/web
-dist
-bower_components
-jspm_packages
+.idea
+.DS_STORE

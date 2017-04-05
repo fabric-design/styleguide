@@ -1,0 +1,20 @@
+<template>
+    <nav class="site-nav">
+        <ul>
+            <li class="nav-item ${category === $parent.currentCategory ? 'is-active' : ''}"
+                repeat.for="[category, articles] of categories | iterable"
+                mouseenter.trigger="$parent.showSubMenu($event.currentTarget)"
+                mouseleave.trigger="$parent.hideSubMenu($event.currentTarget)">
+                <a href="#${category}">${category}</a>
+                <ul class="sub-nav" if.bind="articles">
+                    <li class="subnav-item ${article.name === $parent.$parent.currentPage ? 'is-active' : ''}"
+                        repeat.for="article of articles">
+                        <a route-href="route: article-page; params.bind: {category: $parent.category, page: article.name}">
+                            ${article.title}
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+</template>
