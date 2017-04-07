@@ -116,7 +116,7 @@ function cleanup() {
  * @return {Promise}
  */
 async function prepare() {
-    const targetFolder = CLIOptions.hasFlag('target') ? CLIOptions.getFlagValue('target') : project.publish.targetFolder;
+    const targetFolder = CLIOptions.getFlagValue('target') || project.publish.targetFolder;
     const projectUrl = await git('config', '--get', 'remote.origin.url');
 
     console.info('Cloning repository');
