@@ -13,6 +13,6 @@ before_script:
 script:
   - au build
 after_success:
-  - git config --global user.email "travis@travis-ci.org"
-  - git config --global user.name "Travis CI"
+  - git config --global user.email "t.schlage@gmx.net"
+  - git config --global user.name "fragsalat"
   - au publish --commit "${TRAVIS_COMMIT}" --repo "${BRANCH}" --target "${TARGET}"
