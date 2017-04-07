@@ -94,7 +94,7 @@ async function updateBranch() {
     const message = `${project.publish.commitMsg} ${repo || 'CLI'}${commit ? '#' + commit : ''}`;
     // Switch location to temporary folder
     process.chdir(path.join(process.cwd(), project.publish.tempFolder));
-    console.log('Pushing data into target branch');
+    console.log(`Pushing into target branch: '${message}'`);
     // Push target branch
     await git('add', '.');
     await git('commit', '-m', `"${message}"`);
@@ -125,7 +125,7 @@ async function prepare() {
     console.info('Cleaning old deployment');
     del.sync([path.join(project.publish.tempFolder, targetFolder, '*')]);
 
-    console.info('Copy new data');
+    console.info(`Copy new data to '${targetFolder}'`);
     await copy(project.publish.sources, path.join(project.publish.tempFolder, targetFolder));
 }
 
