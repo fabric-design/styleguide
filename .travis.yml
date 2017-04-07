@@ -2,6 +2,9 @@ language: node_js
 node_js:
 - '7'
 env:
+  matrix:
+  - BRANCH=$(test "${TRAVIS_PULL_REQUEST}" == "false" && echo "${TRAVIS_BRANCH}" || echo "${TRAVIS_PULL_REQUEST_BRANCH}")
+    TARGET=$(test "${BRANCH}" == "master" && echo "" || echo "${BRANCH}")
   global:
     secure: WBvTmtAZ/BZPaqB6elVuG9zmVrwzVQpcsyuuQsfIP/NtN0MDz73girKyCLhHbonxgGdOEL3HiYKJoQum4kUD/a8pGHcUV0+lKA1YGrKb06t+E8AjB4HP2wcjm1nDTmMA7hvnB77EKNlMMyQZRStiB9sz93iTgs6GJCdr8Htmg1eFIZUt7hqMseAvAT4dUvKbG8tafH8cpcx98uJTOnXCAKhvgqpH1q8W1byfEPxACU2+sHjfoR5p4p4E38rFvQeKYORUKzdZDWsNQ7kL/RcnXvKQJjXWrYDR0di9Vsxox55GTzZIAp+GeMCFefGImQjX4Xnw7LC+v93jMATTXcj4zsahPLUTQafJMUR//03SZvs9oc4SxXMQKBP1JyyqnxqaZ6DlrkgDX6Ev3463fzNo2Q7o+N6VloLT7MTkbtnL+QzrM3ZeDvn0E4GwO8nyhmtJGQWbEaK/wpR2zYDThNK2sruJ6w6ML3ycOt1ohuYERFWNzkx6kHcI2+2tmISHgRK9z5ombcC8J+v9Vw+VUuQfVdi1n6X93ThnuiGcS+JFa+CKDc6C2IwGhlK4AuuldKhdIkXMUrhlsY6fs1NvxDkp78D1kMlCYB6sGPXXOUuDB+75wrljAfVF4aR/GhpTO5QSGXkN3941S0696m96fBiOEXrYCh89NsUvb5Qfn+pkMrI=
 before_script:
@@ -10,8 +13,6 @@ before_script:
 script:
   - au build
 after_success:
-  - export BRANCH=$(test -z "${TRAVIS_PULL_REQUEST}" && echo "${TRAVIS_BRANCH}" || echo "${TRAVIS_PULL_REQUEST_BRANCH}")
-  - export TARGET=$(test "${BRANCH}" == "master" && echo "" || echo "${BRANCH}")
   - echo "${TRAVIS_PULL_REQUEST} | ${TRAVIS_BRANCH} | ${TRAVIS_PULL_REQUEST_BRANCH} | ${STYLEGUIDE_TOKEN}"
   - echo "${BRANCH} | ${TARGET}"
   - git config --global user.email "t.schlage@gmx.net"
