@@ -13,6 +13,8 @@ before_script:
 script:
   - au build
 after_success:
+  - echo "${TRAVIS_PULL_REQUEST} | ${TRAVIS_BRANCH} | ${TRAVIS_PULL_REQUEST_BRANCH} | ${STYLEGUIDE_TOKEN}"
   - git config --global user.email "t.schlage@gmx.net"
   - git config --global user.name "fragsalat"
+  - git remote set-url origin https://${STYLEGUIDE_TOKEN}@github.com/wholesale-design-system/styleguide.git
   - au publish --commit "${TRAVIS_COMMIT}" --repo "${BRANCH}" --target "${TARGET}"
