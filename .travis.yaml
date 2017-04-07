@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+  - "7"
+env:
+  - BRANCH=$(test !-e $TRAVIS_PULL_REQUEST && echo \"$TRAVIS_PULL_REQUEST_BRANCH\" || echo \"$TRAVIS_BRANCH\")
+  - TARGET=$(test $BRANCH == "master" && echo "" || echo $BRANCH)
+before_script:
+  - npm install -g aurelia-cli
+  - npm install
+script:
+  - au build
+after_success:
+  - au publish --commit "${TRAVIS_COMMIT}" --repo "${BRANCH}" --target "${TARGET}"
