@@ -97,7 +97,7 @@ async function updateBranch() {
     console.log(`Pushing into target branch: '${message}'`);
     // Push target branch
     await git('add', '.');
-    await git('commit', '-m', `"${message}"`);
+    await git('commit', '-m', message);
     await git('push', 'origin', project.publish.targetBranch);
     // Go back to original location for following processes
     process.chdir(originLocation);
