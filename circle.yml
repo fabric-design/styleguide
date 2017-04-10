@@ -7,13 +7,13 @@ machine:
     TARGET: $(test "${CIRCLE_BRANCH}" == "master" && echo "" || echo ${CIRCLE_BRANCH})
 
 general:
-  branches:
-    ignore:
-      - gh-pages
   artifacts:
       - "index.html"
       - "scripts"
       - "src/style/assets"
+  branches:
+    ignore:
+      - gh-pages
 
 checkout:
   post:
