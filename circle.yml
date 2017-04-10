@@ -29,6 +29,10 @@ compile:
   override:
     - au build
 
+test:
+  override:
+    - echo "No tests to run"
+
 deployment:
   master:
     branch: /.*/
