@@ -19,6 +19,8 @@ general:
 
 dependencies:
   override:
+    - node -v
+    - npm -v
     - npm install -g aurelia-cli
     - npm install
 
@@ -31,4 +33,5 @@ deployment:
     branch: /.*/
     commands:
       - node -v
+      - npm -v
       - au publish --commit ${CIRCLE_SHA1} --repo "${CIRCLE_BRANCH}" --target "${TARGET}"
