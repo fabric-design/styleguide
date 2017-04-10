@@ -11,29 +11,22 @@ general:
     ignore:
       - gh-pages
 
-#checkout:
-#  post:
-#    - git clone git@github.com:wholesale-design-system/styleguide.git -b travis
-#    - git config --global user.email circleci@circleci
-#    - git config --global user.name "${CIRCLE_PROJECT_USERNAME}"
+checkout:
+  post:
+    - git config --global user.email circleci@circleci
+    - git config --global user.name "${CIRCLE_PROJECT_USERNAME}"
 
 dependencies:
   override:
-    - node -v
-    - npm -v
     - npm install -g aurelia-cli
     - npm install
 
 compile:
   override:
-    - node -v
-    - npm -v
     - au build
 
 deployment:
   master:
     branch: /.*/
     commands:
-      - node -v
-      - npm -v
       - au publish --commit ${CIRCLE_SHA1} --repo "${CIRCLE_BRANCH}" --target "${TARGET}"
