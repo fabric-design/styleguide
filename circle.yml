@@ -26,6 +26,8 @@ dependencies:
 
 compile:
   override:
+    - node -v
+    - npm -v
     - au build
 
 deployment:
