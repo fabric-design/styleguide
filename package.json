@@ -47,6 +47,6 @@
     "through2": "^2.0.3",
     "uglify-js": "^2.6.3",
     "vinyl-fs": "^2.4.3",
-    "wholesale-styleguide-scss": "git+ssh://git@github.com/wholesale-design-system/scss.git#doc"
+    "wholesale-styleguide-scss": "git+https://github.com/wholesale-design-system/scss.git#atomic-design"
   }
 }
