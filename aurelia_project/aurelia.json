@@ -42,6 +42,17 @@
     "root": "src",
     "appRoot": "src/app"
   },
+  "publish": {
+    "sources": [
+      "index.html",
+      "scripts/**",
+      "src/style/assets/**"
+    ],
+    "targetBranch": "gh-pages",
+    "targetFolder": "",
+    "tempFolder": ".tmp",
+    "commitMsg": "Deployed from"
+  },
   "build": {
     "targets": [
       {
