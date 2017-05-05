@@ -44,6 +44,7 @@
   },
   "publish": {
     "sources": [
+      "circle.yml",
       "index.html",
       "scripts/**",
       "src/style/assets/**"
