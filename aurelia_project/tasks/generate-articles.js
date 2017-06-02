@@ -24,6 +24,9 @@ function markdownToArticles() {
     }]});
 
     return through.obj(function(file, encoding, done) {
+        if (!file.contents.length) {
+            return done();
+        }
         let fileContent = file.contents.toString();
         // Use folder name as category and file name as page name
         let [path, category, name] = file.path.match(/.*\/(.*)\/(.*)\.[a-zA-Z0-9]+$/);
@@ -58,7 +61,10 @@ function markdownToArticles() {
 }
 
 export default function generateArticles() {
-    return gulp.src('node_modules/wholesale-styleguide-scss/doc/**/*.md')
+    return gulp.src([
+            'node_modules/wholesale-styleguide-scss/doc/*/*.md',
+            'node_modules/styleguide-web-components/doc/*/*.md'
+        ])
         .pipe(changedInPlace({firstPass: true}))
         .pipe(markdownToArticles())
         .pipe(gulp.dest(project.paths.appRoot))

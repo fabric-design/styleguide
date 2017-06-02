@@ -20,6 +20,10 @@ export class ArticlePage {
         }
     }
 
+    log(...args) {
+        console.log(...args);
+    }
+
     scrollToPart(index) {
         const headElements = this.element.querySelectorAll('h2');
         if (headElements[index]) {
