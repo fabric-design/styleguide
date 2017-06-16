@@ -45,6 +45,7 @@
   "publish": {
     "sources": [
       "index.html",
+      "circle.yml",
       "scripts/**",
       "src/style/assets/**"
     ],

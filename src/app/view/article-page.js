@@ -24,6 +24,10 @@ export class ArticlePage {
         console.log(...args);
     }
 
+    notification(options) {
+        window.dispatchEvent(new CustomEvent('ws-notification-open', {detail: options}));
+    }
+
     scrollToPart(index) {
         const headElements = this.element.querySelectorAll('h2');
         if (headElements[index]) {
