@@ -41,7 +41,7 @@
     "preact-compat": "^3.16.0",
     "requirejs": "^2.3.2",
     "showdown": "^1.6.4",
-    "styleguide-web-components": "git+ssh://git@github.com/wholesale-design-system/components.git#release",
+    "styleguide-web-components": "git+ssh://git@github.com/wholesale-design-system/components.git#master",
     "text": "github:requirejs/text#latest",
     "through2": "^2.0.3",
     "uglify-js": "^2.6.3",
