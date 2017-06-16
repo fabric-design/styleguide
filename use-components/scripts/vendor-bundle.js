@@ -24493,7 +24493,7 @@ define('styleguide-web-components/ws-dropdown/ws-dropdown',['exports', '../impor
     }, {
       key: 'open',
       value: function open() {
-        if (this.opened) {
+        if (this.opened || this.props.disabled) {
           return;
         }
         this.opened = true;
@@ -24550,13 +24550,17 @@ define('styleguide-web-components/ws-dropdown/ws-dropdown',['exports', '../impor
         if (this.props.icon) {
           icon = _imports.React.createElement('span', { className: 'icon ' + this.props.icon });
         }
+        var disabledStyle = this.props.disabled ? ' is-disabled' : '';
         switch (this.props.type) {
           case 'anchor':
             return _imports.React.createElement(
               'a',
-              { className: 'dropdown-trigger', onClick: function onClick() {
+              {
+                className: 'dropdown-trigger ' + disabledStyle,
+                onClick: function onClick() {
                   return _this5.open();
-                } },
+                }
+              },
               icon,
               ' ',
               this.state.text
@@ -24564,9 +24568,12 @@ define('styleguide-web-components/ws-dropdown/ws-dropdown',['exports', '../impor
           case 'button':
             return _imports.React.createElement(
               'button',
-              { className: 'dropdown-trigger', onClick: function onClick() {
+              {
+                className: 'dropdown-trigger ' + disabledStyle,
+                onClick: function onClick() {
                   return _this5.open();
-                } },
+                }
+              },
               icon,
               ' ',
               this.state.text
@@ -24574,9 +24581,12 @@ define('styleguide-web-components/ws-dropdown/ws-dropdown',['exports', '../impor
           case 'select':
             return _imports.React.createElement(
               'div',
-              { className: 'dropdown-trigger select-box', onClick: function onClick() {
+              {
+                className: 'dropdown-trigger select-box ' + disabledStyle,
+                onClick: function onClick() {
                   return _this5.open();
-                } },
+                }
+              },
               icon,
               ' ',
               this.state.text
@@ -24585,9 +24595,12 @@ define('styleguide-web-components/ws-dropdown/ws-dropdown',['exports', '../impor
           default:
             return _imports.React.createElement(
               'a',
-              { className: 'dropdown-trigger', onClick: function onClick() {
+              {
+                className: 'dropdown-trigger ' + disabledStyle,
+                onClick: function onClick() {
                   return _this5.open();
-                } },
+                }
+              },
               icon
             );
         }
@@ -24669,7 +24682,8 @@ define('styleguide-web-components/ws-dropdown/ws-dropdown',['exports', '../impor
       orientation: 'left',
       placeholder: '',
       value: null,
-      onChange: function onChange() {}
+      onChange: function onChange() {},
+      disabled: false
     }
   });
   Object.defineProperty(WSDropdown, 'propTypes', {
@@ -24688,7 +24702,8 @@ define('styleguide-web-components/ws-dropdown/ws-dropdown',['exports', '../impor
       orientation: _imports.PropTypes.oneOf(['left', 'right']),
       placeholder: _imports.PropTypes.string,
       value: _imports.PropTypes.oneOfType([_imports.PropTypes.string, _imports.PropTypes.object, _imports.PropTypes.array]),
-      onChange: _imports.PropTypes.func
+      onChange: _imports.PropTypes.func,
+      disabled: _imports.PropTypes.bool
     }
   });
   Object.defineProperty(WSDropdown, 'childContextTypes', {
@@ -26341,7 +26356,7 @@ define('styleguide-web-components/ws-tiles-chart/ws-tiles-chart',['exports', 're
 
       var _this = _possibleConstructorReturn(this, (WSTilesChart.__proto__ || Object.getPrototypeOf(WSTilesChart)).call(this, props));
 
-      _this.state = { tileSize: 0 };
+      _this.state = { tileSize: 0, groupOver: '' };
       _this.titleDivSize = 30;
 
       _this.getTileSize = _this.getTileSize.bind(_this);
@@ -26356,22 +26371,34 @@ define('styleguide-web-components/ws-tiles-chart/ws-tiles-chart',['exports', 're
     }, {
       key: 'getTileSize',
       value: function getTileSize() {
-        var groups = this.props.data.groups || {};
+        var _props = this.props,
+            height = _props.height,
+            width = _props.width,
+            maxTileSize = _props.maxTileSize,
+            minTileSize = _props.minTileSize,
+            data = _props.data;
+
+        var groups = data.groups || {};
+
+        if (maxTileSize === minTileSize || Object.keys(groups).length === 0) {
+          return minTileSize;
+        }
+
         var tilesAmount = Object.keys(groups).map(function (groupName) {
           return groups[groupName].length;
         }).reduce(function (a, b) {
           return a + b;
         });
 
-        var tileSize = this.calculateMaximumPossibleTileSize(this.props.width, this.props.height - this.titleDivSize, tilesAmount);
+        var tileSize = this.calculateMaximumPossibleTileSize(width, height - this.titleDivSize, tilesAmount);
 
-        if (tileSize <= this.props.maxTileSize && tileSize >= this.props.minTileSize) {
+        if (tileSize <= maxTileSize && tileSize >= minTileSize) {
           return tileSize;
-        } else if (tileSize > this.props.maxTileSize) {
-          return this.props.maxTileSize;
+        } else if (tileSize > maxTileSize) {
+          return maxTileSize;
         }
 
-        return this.props.minTileSize;
+        return minTileSize;
       }
     }, {
       key: 'calculateMaximumPossibleTileSize',
@@ -26384,12 +26411,12 @@ define('styleguide-web-components/ws-tiles-chart/ws-tiles-chart',['exports', 're
       value: function render() {
         var _this2 = this;
 
-        var _props = this.props,
-            data = _props.data,
-            config = _props.config,
-            title = _props.title,
-            width = _props.width,
-            height = _props.height;
+        var _props2 = this.props,
+            data = _props2.data,
+            config = _props2.config,
+            title = _props2.title,
+            width = _props2.width,
+            height = _props2.height;
 
         var groups = data.groups || {};
         return _react2.default.createElement(
@@ -26402,14 +26429,27 @@ define('styleguide-web-components/ws-tiles-chart/ws-tiles-chart',['exports', 're
           ),
           _react2.default.createElement(
             'div',
-            { className: 'tiles-chart-container', style: { height: height - this.titleDivSize + 'px' } },
+            {
+              className: 'tiles-chart-container',
+              style: { maxHeight: height - this.titleDivSize + 'px' },
+              onMouseEnter: this.props.onMouseEnter,
+              onMouseLeave: this.props.onMouseLeave
+            },
             Object.keys(groups).map(function (groupName) {
               return groups[groupName].map(function (tile) {
                 return _react2.default.createElement(_tile.Tile, {
-                  data: tile,
-                  tileClass: groupName,
+                  identifier: tile,
+                  className: _this2.state.groupOver === groupName ? 'group-over' : '',
+                  groupName: groupName,
                   config: config[groupName],
-                  size: _this2.state.tileSize
+                  size: _this2.state.tileSize,
+                  onClick: _this2.props.onClick,
+                  onMouseEnter: function onMouseEnter() {
+                    return _this2.setState({ groupOver: groupName });
+                  },
+                  onMouseLeave: function onMouseLeave() {
+                    return _this2.setState({ groupOver: '' });
+                  }
                 });
               });
             })
@@ -26431,7 +26471,10 @@ define('styleguide-web-components/ws-tiles-chart/ws-tiles-chart',['exports', 're
       maxTileSize: 25,
       minTileSize: 8,
       width: 80,
-      height: 80
+      height: 80,
+      onMouseEnter: function onMouseEnter() {},
+      onMouseLeave: function onMouseLeave() {},
+      onClick: function onClick() {}
     }
   });
   Object.defineProperty(WSTilesChart, 'propTypes', {
@@ -26443,7 +26486,10 @@ define('styleguide-web-components/ws-tiles-chart/ws-tiles-chart',['exports', 're
       title: _imports.PropTypes.string,
       maxTileSize: _imports.PropTypes.number,
       width: _imports.PropTypes.number,
-      height: _imports.PropTypes.number
+      height: _imports.PropTypes.number,
+      onMouseEnter: _imports.PropTypes.func,
+      onMouseLeave: _imports.PropTypes.func,
+      onClick: _imports.PropTypes.func
     }
   });
 });
@@ -26523,9 +26569,14 @@ define('styleguide-web-components/ws-tiles-chart/tile',['exports', 'react', '../
     _createClass(Tile, [{
       key: 'render',
       value: function render() {
+        var _this2 = this;
+
         var _props = this.props,
+            identifier = _props.identifier,
             config = _props.config,
-            size = _props.size;
+            size = _props.size,
+            groupName = _props.groupName,
+            className = _props.className;
 
         var style = {
           backgroundColor: config,
@@ -26533,7 +26584,15 @@ define('styleguide-web-components/ws-tiles-chart/tile',['exports', 'react', '../
           height: size + 'px'
         };
 
-        return _react2.default.createElement('div', { className: 'tile ' + this.props.tileClass, style: style });
+        return _react2.default.createElement('div', {
+          className: 'tile ' + groupName + ' ' + className,
+          style: style,
+          onClick: function onClick() {
+            return _this2.props.onClick(groupName, identifier);
+          },
+          onMouseEnter: this.props.onMouseEnter,
+          onMouseLeave: this.props.onMouseLeave
+        });
       }
     }]);
 
@@ -26546,8 +26605,11 @@ define('styleguide-web-components/ws-tiles-chart/tile',['exports', 'react', '../
     value: {
       identifier: _imports.PropTypes.string,
       config: _imports.PropTypes.string,
-      tileClass: _imports.PropTypes.string,
-      size: _imports.PropTypes.number
+      groupName: _imports.PropTypes.string,
+      size: _imports.PropTypes.number,
+      onClick: _imports.PropTypes.func,
+      onMouseEnter: _imports.PropTypes.func.isRequired,
+      onMouseLeave: _imports.PropTypes.func.isRequired
     }
   });
   Object.defineProperty(Tile, 'defaultProps', {
@@ -26556,8 +26618,9 @@ define('styleguide-web-components/ws-tiles-chart/tile',['exports', 'react', '../
     value: {
       identifier: '',
       config: '',
-      tileClass: '',
-      size: 25
+      groupName: '',
+      size: 25,
+      onClick: function onClick() {}
     }
   });
 });
@@ -29776,4 +29839,4 @@ define('aurelia-testing/wait',['exports'], function (exports) {
     }, options);
   }
 });
-function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"styleguide-web-components","location":"../node_modules/styleguide-web-components/dist/amd","main":"index"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","styleguide-web-components/imports","app/view/app-header","style/index"]}})}
+function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"styleguide-web-components","location":"../node_modules/styleguide-web-components/dist/amd","main":"index"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","styleguide-web-components/imports","app/view/app-header","style/index"]}})}
