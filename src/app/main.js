@@ -3,7 +3,9 @@ import environment from './environment';
 export function configure(aurelia) {
     aurelia.use
         .standardConfiguration()
+        .feature('app/feature/components')
         .globalResources([
+            'styleguide-component!styleguide-web-components/index',
             'app/view/iterable-converter'
         ]);
 

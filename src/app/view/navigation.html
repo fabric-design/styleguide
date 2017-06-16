@@ -1,15 +1,15 @@
 <template>
     <nav class="site-nav">
         <ul>
-            <li class="nav-item ${category === $parent.currentCategory ? 'is-active' : ''}"
-                repeat.for="[category, articles] of categories | iterable"
+            <li class="nav-item ${key === $parent.currentCategory ? 'is-active' : ''}"
+                repeat.for="key of categoryOrder"
                 mouseenter.trigger="$parent.showSubMenu($event.currentTarget)"
                 mouseleave.trigger="$parent.hideSubMenu($event.currentTarget)">
-                <a href="#${category}">${category}</a>
-                <ul class="sub-nav" if.bind="articles">
+                <a href="#${key}">${key}</a>
+                <ul class="sub-nav" if.bind="categories[key]">
                     <li class="subnav-item ${article.name === $parent.$parent.currentPage ? 'is-active' : ''}"
-                        repeat.for="article of articles">
-                        <a route-href="route: article-page; params.bind: {category: $parent.category, page: article.name}">
+                        repeat.for="article of categories[key]">
+                        <a route-href="route: article-page; params.bind: {category: $parent.key, page: article.name}">
                             ${article.title}
                         </a>
                     </li>

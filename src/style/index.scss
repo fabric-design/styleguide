@@ -1,6 +1,12 @@
 $use-embedded-font: true;
 @import "../../node_modules/wholesale-styleguide-scss/index";
 
+@import "../../node_modules/styleguide-web-components/dist/amd/ws-date-picker/ws-date-picker";
+@import "../../node_modules/styleguide-web-components/dist/amd/ws-header/ws-header";
+@import "../../node_modules/styleguide-web-components/dist/amd/ws-inline-edit/ws-inline-edit";
+@import "../../node_modules/styleguide-web-components/dist/amd/ws-notification/ws-notification";
+@import "../../node_modules/styleguide-web-components/dist/amd/ws-tiles-chart/ws-tiles-chart";
+
 @import "base";
 @import "layout";
 @import "page";

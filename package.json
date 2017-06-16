@@ -1,21 +1,16 @@
 {
-  "name": "demonstration",
-  "description": "An Aurelia client application.",
+  "name": "Styleguide",
+  "description": "Styleguide representation page",
   "version": "0.1.0",
   "repository": {
-    "type": "???",
-    "url": "???"
+    "type": "git",
+    "url": "https://github.com/wholesale-design-system/styleguide"
   },
   "license": "MIT",
-  "dependencies": {
-    "aurelia-bootstrapper": "^1.0.0",
-    "aurelia-animator-css": "^1.0.0",
-    "bluebird": "^3.4.1",
-    "requirejs": "^2.3.2",
-    "text": "github:requirejs/text#latest"
-  },
+  "dependencies": {},
   "peerDependencies": {},
   "devDependencies": {
+    "aurelia-bootstrapper": "^1.0.0",
     "aurelia-cli": "^0.24.0",
     "aurelia-event-aggregator": "^1.0.1",
     "aurelia-testing": "^1.0.0-beta.2.0.0",
@@ -42,11 +37,15 @@
     "gulp-sass": "^2.3.2",
     "gulp-sourcemaps": "^2.0.0-alpha",
     "minimatch": "^3.0.2",
+    "preact": "^8.1.0",
+    "preact-compat": "^3.16.0",
+    "requirejs": "^2.3.2",
     "showdown": "^1.6.4",
+    "styleguide-web-components": "git+ssh://git@github.com/wholesale-design-system/components.git#master",
     "text": "github:requirejs/text#latest",
     "through2": "^2.0.3",
     "uglify-js": "^2.6.3",
     "vinyl-fs": "^2.4.3",
-    "wholesale-styleguide-scss": "git+https://github.com/wholesale-design-system/scss.git"
+    "wholesale-styleguide-scss": "git+ssh://git@github.com/wholesale-design-system/scss.git"
   }
 }

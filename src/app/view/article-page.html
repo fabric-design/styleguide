@@ -11,7 +11,10 @@
             </nav>
         </header>
         <div class="row">
-            <article class="content" innerhtml.bind="articleHtml"></article>
+            <require from="app/view/dynamic-html"></require>
+            <article class="content">
+                <dynamic-html value.bind="articleHtml"></dynamic-html>
+            </article>
         </div>
     </div>
 </template>

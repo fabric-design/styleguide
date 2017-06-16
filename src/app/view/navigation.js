@@ -9,6 +9,8 @@ export class NavigationCustomElement {
 
     categories = {};
 
+    categoryOrder = ['general', 'atoms', 'molecules', 'organisms', 'components', 'api'];
+
     currentCategory = null;
 
     currentPage = null;

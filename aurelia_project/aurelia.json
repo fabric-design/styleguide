@@ -46,6 +46,7 @@
     "sources": [
       "circle.yml",
       "index.html",
+      "circle.yml",
       "scripts/**",
       "src/style/assets/**"
     ],
@@ -67,6 +68,14 @@
       "type": "require",
       "configTarget": "vendor-bundle.js",
       "includeBundleMetadataInConfig": "auto",
+      "config": {
+        "map": {
+          "*": {
+            "react": "preact",
+            "react-dom": "preact-compat"
+          }
+        }
+      },
       "plugins": [
         {
           "name": "text",
@@ -118,6 +127,21 @@
           "aurelia-templating",
           "aurelia-templating-binding",
           "text",
+          {
+            "name": "preact",
+            "path": "../node_modules/preact/dist",
+            "main": "preact"
+          },
+          {
+            "name": "preact-compat",
+            "path": "../node_modules/preact-compat/dist",
+            "main": "preact-compat"
+          },
+          {
+            "name": "styleguide-web-components",
+            "path": "../node_modules/styleguide-web-components/dist/amd",
+            "main": "index"
+          },
           {
             "name": "aurelia-templating-resources",
             "path": "../node_modules/aurelia-templating-resources/dist/amd",
