@@ -19,6 +19,7 @@ define('prop-types',["exports"], function (exports) {
   exports.oneOfType = oneOfType;
   function oneOf() {}
   function oneOfType() {}
+  var func = exports.func = {};
 });
 define('app/articles',["exports"], function (exports) {
     "use strict";
