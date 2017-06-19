@@ -24483,7 +24483,7 @@ define('styleguide-web-components/ws-dropdown/ws-dropdown',['exports', '../impor
           itemsToWrap = items ? [items] : [];
         }
         return itemsToWrap.map(function (item) {
-          var enriched = (typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object' ? item : { label: item, value: item };
+          var enriched = (typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object' ? item : { label: item };
           if (enriched.children) {
             enriched.children = _this3.enrichItems(enriched.children);
           }
@@ -26356,7 +26356,7 @@ define('styleguide-web-components/ws-tiles-chart/ws-tiles-chart',['exports', 're
 
       var _this = _possibleConstructorReturn(this, (WSTilesChart.__proto__ || Object.getPrototypeOf(WSTilesChart)).call(this, props));
 
-      _this.state = { tileSize: 0 };
+      _this.state = { tileSize: 0, groupOver: '' };
       _this.titleDivSize = 30;
 
       _this.getTileSize = _this.getTileSize.bind(_this);
@@ -26439,10 +26439,17 @@ define('styleguide-web-components/ws-tiles-chart/ws-tiles-chart',['exports', 're
               return groups[groupName].map(function (tile) {
                 return _react2.default.createElement(_tile.Tile, {
                   identifier: tile,
+                  className: _this2.state.groupOver === groupName ? 'group-over' : '',
                   groupName: groupName,
                   config: config[groupName],
                   size: _this2.state.tileSize,
-                  onClick: _this2.props.onClick
+                  onClick: _this2.props.onClick,
+                  onMouseEnter: function onMouseEnter() {
+                    return _this2.setState({ groupOver: groupName });
+                  },
+                  onMouseLeave: function onMouseLeave() {
+                    return _this2.setState({ groupOver: '' });
+                  }
                 });
               });
             })
@@ -26565,8 +26572,11 @@ define('styleguide-web-components/ws-tiles-chart/tile',['exports', 'react', '../
         var _this2 = this;
 
         var _props = this.props,
+            identifier = _props.identifier,
             config = _props.config,
-            size = _props.size;
+            size = _props.size,
+            groupName = _props.groupName,
+            className = _props.className;
 
         var style = {
           backgroundColor: config,
@@ -26575,11 +26585,13 @@ define('styleguide-web-components/ws-tiles-chart/tile',['exports', 'react', '../
         };
 
         return _react2.default.createElement('div', {
-          className: 'tile ' + this.props.groupName,
+          className: 'tile ' + groupName + ' ' + className,
           style: style,
           onClick: function onClick() {
-            return _this2.props.onClick(_this2.props.groupName, _this2.props.identifier);
-          }
+            return _this2.props.onClick(groupName, identifier);
+          },
+          onMouseEnter: this.props.onMouseEnter,
+          onMouseLeave: this.props.onMouseLeave
         });
       }
     }]);
@@ -26595,7 +26607,9 @@ define('styleguide-web-components/ws-tiles-chart/tile',['exports', 'react', '../
       config: _imports.PropTypes.string,
       groupName: _imports.PropTypes.string,
       size: _imports.PropTypes.number,
-      onClick: _imports.PropTypes.func
+      onClick: _imports.PropTypes.func,
+      onMouseEnter: _imports.PropTypes.func.isRequired,
+      onMouseLeave: _imports.PropTypes.func.isRequired
     }
   });
   Object.defineProperty(Tile, 'defaultProps', {
@@ -29825,4 +29839,4 @@ define('aurelia-testing/wait',['exports'], function (exports) {
     }, options);
   }
 });
-function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"styleguide-web-components","location":"../node_modules/styleguide-web-components/dist/amd","main":"index"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","styleguide-web-components/imports","app/view/app-header","style/index"]}})}
+function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"styleguide-web-components","location":"../node_modules/styleguide-web-components/dist/amd","main":"index"},{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","styleguide-web-components/imports","app/view/app-header","style/index"]}})}
