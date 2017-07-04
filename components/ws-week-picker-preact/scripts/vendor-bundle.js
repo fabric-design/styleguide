@@ -21941,6 +21941,14 @@ define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '..
     }
   }
 
+  function _possibleConstructorReturn(self, call) {
+    if (!self) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return call && (typeof call === "object" || typeof call === "function") ? call : self;
+  }
+
   var _createClass = function () {
     function defineProperties(target, props) {
       for (var i = 0; i < props.length; i++) {
@@ -21958,14 +21966,6 @@ define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '..
       return Constructor;
     };
   }();
-
-  function _possibleConstructorReturn(self, call) {
-    if (!self) {
-      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-    }
-
-    return call && (typeof call === "object" || typeof call === "function") ? call : self;
-  }
 
   function _inherits(subClass, superClass) {
     if (typeof superClass !== "function" && superClass !== null) {
@@ -21985,6 +21985,13 @@ define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '..
 
   var WSDatePicker = exports.WSDatePicker = function (_Component) {
     _inherits(WSDatePicker, _Component);
+
+    _createClass(WSDatePicker, null, [{
+      key: 'setFormat',
+      value: function setFormat(format) {
+        this.format = format;
+      }
+    }]);
 
     function WSDatePicker(props) {
       _classCallCheck(this, WSDatePicker);
@@ -22006,7 +22013,7 @@ define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '..
         this.flatpickr = new _flatpickr2.default(this.input, _extends({
           weekNumbers: true,
           defaultDate: this.state.value,
-          dateFormat: this.props.format
+          dateFormat: this.constructor.format
         }, this.props.options, {
           onChange: this.onChange.bind(this)
         }));
@@ -22091,7 +22098,6 @@ define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '..
     writable: true,
     value: {
       value: null,
-      format: 'd.m.Y',
       placeholder: '',
       iconOnly: false,
       options: {},
@@ -22103,12 +22109,16 @@ define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '..
     writable: true,
     value: {
       value: _imports.PropTypes.oneOfType([_imports.PropTypes.string, _imports.PropTypes.number]),
-      format: _imports.PropTypes.string,
       placeholder: _imports.PropTypes.string,
       iconOnly: _imports.PropTypes.bool,
       options: _imports.PropTypes.object,
       onChange: _imports.PropTypes.func
     }
+  });
+  Object.defineProperty(WSDatePicker, 'format', {
+    enumerable: true,
+    writable: true,
+    value: 'd.m.Y'
   });
 });
 define('styleguide-web-components/ws-date-picker/flatpickr',['module'], function (module) {
