@@ -11414,7 +11414,7 @@ define('aurelia-polyfills',['aurelia-pal'], function (_aureliaPal) {
       },
           propertyIsEnumerable = function propertyIsEnumerable(key) {
         var uid = '' + key;
-        return onlySymbols(uid) ? hOP.call(this, uid) && this[internalSymbol]['@@' + uid] : pIE.call(this, key);
+        return onlySymbols(uid) ? hOP.call(this, uid) && this[internalSymbol] && this[internalSymbol]['@@' + uid] : pIE.call(this, key);
       },
           setAndGetSymbol = function setAndGetSymbol(uid) {
         var descriptor = {
@@ -11467,7 +11467,16 @@ define('aurelia-polyfills',['aurelia-pal'], function (_aureliaPal) {
       descriptor.value = $getOwnPropertySymbols;
       defineProperty(Object, GOPS, descriptor);
 
+      var cachedWindowNames = (typeof window === 'undefined' ? 'undefined' : _typeof(window)) === 'object' ? Object.getOwnPropertyNames(window) : [];
+      var originalObjectGetOwnPropertyNames = Object.getOwnPropertyNames;
       descriptor.value = function getOwnPropertyNames(o) {
+        if (toString.call(o) === '[object Window]') {
+          try {
+            return originalObjectGetOwnPropertyNames(o);
+          } catch (e) {
+            return [].concat([], cachedWindowNames);
+          }
+        }
         return gOPN(o).filter(onlyNonSymbols);
       };
       defineProperty(Object, GOPN, descriptor);
@@ -21932,6 +21941,14 @@ define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '..
     }
   }
 
+  function _possibleConstructorReturn(self, call) {
+    if (!self) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return call && (typeof call === "object" || typeof call === "function") ? call : self;
+  }
+
   var _createClass = function () {
     function defineProperties(target, props) {
       for (var i = 0; i < props.length; i++) {
@@ -21949,14 +21966,6 @@ define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '..
       return Constructor;
     };
   }();
-
-  function _possibleConstructorReturn(self, call) {
-    if (!self) {
-      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-    }
-
-    return call && (typeof call === "object" || typeof call === "function") ? call : self;
-  }
 
   function _inherits(subClass, superClass) {
     if (typeof superClass !== "function" && superClass !== null) {
@@ -21976,6 +21985,13 @@ define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '..
 
   var WSDatePicker = exports.WSDatePicker = function (_Component) {
     _inherits(WSDatePicker, _Component);
+
+    _createClass(WSDatePicker, null, [{
+      key: 'setFormat',
+      value: function setFormat(format) {
+        this.format = format;
+      }
+    }]);
 
     function WSDatePicker(props) {
       _classCallCheck(this, WSDatePicker);
@@ -21997,7 +22013,7 @@ define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '..
         this.flatpickr = new _flatpickr2.default(this.input, _extends({
           weekNumbers: true,
           defaultDate: this.state.value,
-          dateFormat: this.props.format
+          dateFormat: this.constructor.format
         }, this.props.options, {
           onChange: this.onChange.bind(this)
         }));
@@ -22082,7 +22098,6 @@ define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '..
     writable: true,
     value: {
       value: null,
-      format: 'd.m.Y',
       placeholder: '',
       iconOnly: false,
       options: {},
@@ -22094,12 +22109,16 @@ define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '..
     writable: true,
     value: {
       value: _imports.PropTypes.oneOfType([_imports.PropTypes.string, _imports.PropTypes.number]),
-      format: _imports.PropTypes.string,
       placeholder: _imports.PropTypes.string,
       iconOnly: _imports.PropTypes.bool,
       options: _imports.PropTypes.object,
       onChange: _imports.PropTypes.func
     }
+  });
+  Object.defineProperty(WSDatePicker, 'format', {
+    enumerable: true,
+    writable: true,
+    value: 'd.m.Y'
   });
 });
 define('styleguide-web-components/ws-date-picker/flatpickr',['module'], function (module) {
@@ -24483,7 +24502,7 @@ define('styleguide-web-components/ws-dropdown/ws-dropdown',['exports', '../impor
           itemsToWrap = items ? [items] : [];
         }
         return itemsToWrap.map(function (item) {
-          var enriched = (typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object' ? item : { label: item };
+          var enriched = (typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object' ? item : { label: item, value: item };
           if (enriched.children) {
             enriched.children = _this3.enrichItems(enriched.children);
           }
@@ -25947,7 +25966,7 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker',['exports', '..
             readOnly: true
           }),
           _imports.React.createElement('span', {
-            className: 'icon icon-' + (this.state.show ? 'cross' : 'calendar'),
+            className: 'icon icon16 ' + (this.state.show ? '' : 'icon-calendar'),
             onClick: function onClick() {
               return _this3.toggleCalendar();
             }
@@ -26115,7 +26134,7 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker-calendar',['expo
             { key: weekIndex },
             allMonths.map(function (month, monthIndex) {
               var weekInMonth = weeksPerMonth[monthIndex][weekIndex];
-              if (weekInMonth === null) {
+              if (weekInMonth === null || weekInMonth === undefined) {
                 return _imports.React.createElement('td', { key: monthIndex + '_' + weekIndex });
               }
               var week = weekInMonth.week,
@@ -26278,7 +26297,7 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker-calendar',['expo
     for (var i = startWeek; i <= endWeek; i++) {
       weeks.push({
         week: i,
-        actualYear: actualYear
+        year: actualYear
       });
     }
     return weeks;
