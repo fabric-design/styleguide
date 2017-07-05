@@ -25893,6 +25893,7 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker',['exports', '..
 
       var _this = _possibleConstructorReturn(this, (WSWeekPicker.__proto__ || Object.getPrototypeOf(WSWeekPicker)).call(this, props));
 
+      _this.element = null;
       _this.state = {
         show: false,
         selectedYear: props.selectedYear,
@@ -25907,7 +25908,7 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker',['exports', '..
         var _this2 = this;
 
         this.outsideClickListener = document.body.addEventListener('click', function (e) {
-          if (_this2.state.show && !isDescendant(_this2.elem, e.target)) {
+          if (_this2.state.show && !isDescendant(_this2.element, e.target)) {
             _this2.setState({ show: false });
           }
         });
@@ -25939,6 +25940,8 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker',['exports', '..
           });
           if (this.props.onChange) {
             this.props.onChange({ week: week, year: year });
+          } else {
+            this.element.dispatchEvent(new CustomEvent('change', { week: week, year: year }, { bubbles: true }));
           }
         }
       }
@@ -25954,8 +25957,8 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker',['exports', '..
 
         return _imports.React.createElement(
           'div',
-          { className: 'ws-week-picker', ref: function ref(elem) {
-              _this3.elem = elem;
+          { className: 'ws-week-picker', ref: function ref(element) {
+              _this3.element = element;
             } },
           _imports.React.createElement('input', {
             value: this.state.selectedWeek !== null ? 'Week ' + this.state.selectedWeek + ', ' + this.state.selectedYear : '',
@@ -26183,7 +26186,7 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker-calendar',['expo
               ),
               _imports.React.createElement(
                 'span',
-                null,
+                { className: 'current_year' },
                 this.state.showingYear
               ),
               _imports.React.createElement(
