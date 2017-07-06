@@ -11414,7 +11414,7 @@ define('aurelia-polyfills',['aurelia-pal'], function (_aureliaPal) {
       },
           propertyIsEnumerable = function propertyIsEnumerable(key) {
         var uid = '' + key;
-        return onlySymbols(uid) ? hOP.call(this, uid) && this[internalSymbol]['@@' + uid] : pIE.call(this, key);
+        return onlySymbols(uid) ? hOP.call(this, uid) && this[internalSymbol] && this[internalSymbol]['@@' + uid] : pIE.call(this, key);
       },
           setAndGetSymbol = function setAndGetSymbol(uid) {
         var descriptor = {
@@ -11467,7 +11467,16 @@ define('aurelia-polyfills',['aurelia-pal'], function (_aureliaPal) {
       descriptor.value = $getOwnPropertySymbols;
       defineProperty(Object, GOPS, descriptor);
 
+      var cachedWindowNames = (typeof window === 'undefined' ? 'undefined' : _typeof(window)) === 'object' ? Object.getOwnPropertyNames(window) : [];
+      var originalObjectGetOwnPropertyNames = Object.getOwnPropertyNames;
       descriptor.value = function getOwnPropertyNames(o) {
+        if (toString.call(o) === '[object Window]') {
+          try {
+            return originalObjectGetOwnPropertyNames(o);
+          } catch (e) {
+            return [].concat([], cachedWindowNames);
+          }
+        }
         return gOPN(o).filter(onlyNonSymbols);
       };
       defineProperty(Object, GOPN, descriptor);
@@ -21932,6 +21941,14 @@ define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '..
     }
   }
 
+  function _possibleConstructorReturn(self, call) {
+    if (!self) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return call && (typeof call === "object" || typeof call === "function") ? call : self;
+  }
+
   var _createClass = function () {
     function defineProperties(target, props) {
       for (var i = 0; i < props.length; i++) {
@@ -21949,14 +21966,6 @@ define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '..
       return Constructor;
     };
   }();
-
-  function _possibleConstructorReturn(self, call) {
-    if (!self) {
-      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-    }
-
-    return call && (typeof call === "object" || typeof call === "function") ? call : self;
-  }
 
   function _inherits(subClass, superClass) {
     if (typeof superClass !== "function" && superClass !== null) {
@@ -21976,6 +21985,13 @@ define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '..
 
   var WSDatePicker = exports.WSDatePicker = function (_Component) {
     _inherits(WSDatePicker, _Component);
+
+    _createClass(WSDatePicker, null, [{
+      key: 'setFormat',
+      value: function setFormat(format) {
+        this.format = format;
+      }
+    }]);
 
     function WSDatePicker(props) {
       _classCallCheck(this, WSDatePicker);
@@ -21997,7 +22013,7 @@ define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '..
         this.flatpickr = new _flatpickr2.default(this.input, _extends({
           weekNumbers: true,
           defaultDate: this.state.value,
-          dateFormat: this.props.format
+          dateFormat: this.constructor.format
         }, this.props.options, {
           onChange: this.onChange.bind(this)
         }));
@@ -22082,7 +22098,6 @@ define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '..
     writable: true,
     value: {
       value: null,
-      format: 'd.m.Y',
       placeholder: '',
       iconOnly: false,
       options: {},
@@ -22094,12 +22109,16 @@ define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '..
     writable: true,
     value: {
       value: _imports.PropTypes.oneOfType([_imports.PropTypes.string, _imports.PropTypes.number]),
-      format: _imports.PropTypes.string,
       placeholder: _imports.PropTypes.string,
       iconOnly: _imports.PropTypes.bool,
       options: _imports.PropTypes.object,
       onChange: _imports.PropTypes.func
     }
+  });
+  Object.defineProperty(WSDatePicker, 'format', {
+    enumerable: true,
+    writable: true,
+    value: 'd.m.Y'
   });
 });
 define('styleguide-web-components/ws-date-picker/flatpickr',['module'], function (module) {
@@ -24483,7 +24502,7 @@ define('styleguide-web-components/ws-dropdown/ws-dropdown',['exports', '../impor
           itemsToWrap = items ? [items] : [];
         }
         return itemsToWrap.map(function (item) {
-          var enriched = (typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object' ? item : { label: item };
+          var enriched = (typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object' ? item : { label: item, value: item };
           if (enriched.children) {
             enriched.children = _this3.enrichItems(enriched.children);
           }
@@ -24876,7 +24895,7 @@ define('styleguide-web-components/ws-dropdown/dropdown-menu',['exports', '../imp
           }
 
           if (_this2.props.filterable || _this2.context.multiple) {
-            return !item.stored && !item.selected;
+            return !item.stored;
           }
           return true;
         });
@@ -25874,6 +25893,7 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker',['exports', '..
 
       var _this = _possibleConstructorReturn(this, (WSWeekPicker.__proto__ || Object.getPrototypeOf(WSWeekPicker)).call(this, props));
 
+      _this.element = null;
       _this.state = {
         show: false,
         selectedYear: props.selectedYear,
@@ -25888,7 +25908,7 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker',['exports', '..
         var _this2 = this;
 
         this.outsideClickListener = document.body.addEventListener('click', function (e) {
-          if (_this2.state.show && !isDescendant(_this2.elem, e.target)) {
+          if (_this2.state.show && !isDescendant(_this2.element, e.target)) {
             _this2.setState({ show: false });
           }
         });
@@ -25920,6 +25940,8 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker',['exports', '..
           });
           if (this.props.onChange) {
             this.props.onChange({ week: week, year: year });
+          } else {
+            this.element.dispatchEvent(new CustomEvent('change', { week: week, year: year }, { bubbles: true }));
           }
         }
       }
@@ -25935,8 +25957,8 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker',['exports', '..
 
         return _imports.React.createElement(
           'div',
-          { className: 'ws-week-picker', ref: function ref(elem) {
-              _this3.elem = elem;
+          { className: 'ws-week-picker', ref: function ref(element) {
+              _this3.element = element;
             } },
           _imports.React.createElement('input', {
             value: this.state.selectedWeek !== null ? 'Week ' + this.state.selectedWeek + ', ' + this.state.selectedYear : '',
@@ -25947,7 +25969,7 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker',['exports', '..
             readOnly: true
           }),
           _imports.React.createElement('span', {
-            className: 'icon icon-' + (this.state.show ? 'cross' : 'calendar'),
+            className: 'icon icon16 ' + (this.state.show ? '' : 'icon-calendar'),
             onClick: function onClick() {
               return _this3.toggleCalendar();
             }
@@ -26115,7 +26137,7 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker-calendar',['expo
             { key: weekIndex },
             allMonths.map(function (month, monthIndex) {
               var weekInMonth = weeksPerMonth[monthIndex][weekIndex];
-              if (weekInMonth === null) {
+              if (weekInMonth === null || weekInMonth === undefined) {
                 return _imports.React.createElement('td', { key: monthIndex + '_' + weekIndex });
               }
               var week = weekInMonth.week,
@@ -26164,7 +26186,7 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker-calendar',['expo
               ),
               _imports.React.createElement(
                 'span',
-                null,
+                { className: 'current_year' },
                 this.state.showingYear
               ),
               _imports.React.createElement(
@@ -26278,7 +26300,7 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker-calendar',['expo
     for (var i = startWeek; i <= endWeek; i++) {
       weeks.push({
         week: i,
-        actualYear: actualYear
+        year: actualYear
       });
     }
     return weeks;
@@ -29839,4 +29861,4 @@ define('aurelia-testing/wait',['exports'], function (exports) {
     }, options);
   }
 });
-function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","text":"../node_modules/text/text","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"styleguide-web-components","location":"../node_modules/styleguide-web-components/dist/amd","main":"index"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","styleguide-web-components/imports","app/view/app-header","style/index"]}})}
+function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"styleguide-web-components","location":"../node_modules/styleguide-web-components/dist/amd","main":"index"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","styleguide-web-components/imports","app/view/app-header","style/index"]}})}
