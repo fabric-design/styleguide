@@ -20358,7 +20358,7 @@ define('preact/preact',['require','exports','module'],function (require, exports
             delete attributes.children;
         }
         while (stack.length) if ((child = stack.pop()) && void 0 !== child.pop) for (i = child.length; i--; ) stack.push(child[i]); else {
-            if (child === !0 || child === !1) child = null;
+            if ('boolean' == typeof child) child = null;
             if (simple = 'function' != typeof nodeName) if (null == child) child = ''; else if ('number' == typeof child) child = String(child); else if ('string' != typeof child) simple = !1;
             if (simple && lastSimple) children[children.length - 1] += child; else if (children === EMPTY_CHILDREN) children = [ child ]; else children.push(child);
             lastSimple = simple;
@@ -20379,7 +20379,7 @@ define('preact/preact',['require','exports','module'],function (require, exports
         return h(vnode.nodeName, extend(extend({}, vnode.attributes), props), arguments.length > 2 ? [].slice.call(arguments, 2) : vnode.children);
     }
     function enqueueRender(component) {
-        if (!component.__d && (component.__d = !0) && 1 == items.push(component)) (options.debounceRendering || setTimeout)(rerender);
+        if (!component.__d && (component.__d = !0) && 1 == items.push(component)) (options.debounceRendering || defer)(rerender);
     }
     function rerender() {
         var p, list = items;
@@ -20406,7 +20406,8 @@ define('preact/preact',['require','exports','module'],function (require, exports
         return node;
     }
     function removeNode(node) {
-        if (node.parentNode) node.parentNode.removeChild(node);
+        var parentNode = node.parentNode;
+        if (parentNode) parentNode.removeChild(node);
     }
     function setAccessor(node, name, old, value, isSvg) {
         if ('className' === name) name = 'class';
@@ -20417,7 +20418,7 @@ define('preact/preact',['require','exports','module'],function (require, exports
             if (!value || 'string' == typeof value || 'string' == typeof old) node.style.cssText = value || '';
             if (value && 'object' == typeof value) {
                 if ('string' != typeof old) for (var i in old) if (!(i in value)) node.style[i] = '';
-                for (var i in value) node.style[i] = 'number' == typeof value[i] && IS_NON_DIMENSIONAL.test(i) === !1 ? value[i] + 'px' : value[i];
+                for (var i in value) node.style[i] = 'number' == typeof value[i] && !1 === IS_NON_DIMENSIONAL.test(i) ? value[i] + 'px' : value[i];
             }
         } else if ('dangerouslySetInnerHTML' === name) {
             if (value) node.innerHTML = value.__html || '';
@@ -20430,10 +20431,10 @@ define('preact/preact',['require','exports','module'],function (require, exports
             (node.__l || (node.__l = {}))[name] = value;
         } else if ('list' !== name && 'type' !== name && !isSvg && name in node) {
             setProperty(node, name, null == value ? '' : value);
-            if (null == value || value === !1) node.removeAttribute(name);
+            if (null == value || !1 === value) node.removeAttribute(name);
         } else {
             var ns = isSvg && name !== (name = name.replace(/^xlink\:?/, ''));
-            if (null == value || value === !1) if (ns) node.removeAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase()); else node.removeAttribute(name); else if ('function' != typeof value) if (ns) node.setAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase(), value); else node.setAttribute(name, value);
+            if (null == value || !1 === value) if (ns) node.removeAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase()); else node.removeAttribute(name); else if ('function' != typeof value) if (ns) node.setAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase(), value); else node.setAttribute(name, value);
         }
     }
     function setProperty(node, name, value) {
@@ -20466,8 +20467,8 @@ define('preact/preact',['require','exports','module'],function (require, exports
     }
     function idiff(dom, vnode, context, mountAll, componentRoot) {
         var out = dom, prevSvgMode = isSvgMode;
-        if (null == vnode) vnode = '';
-        if ('string' == typeof vnode) {
+        if (null == vnode || 'boolean' == typeof vnode) vnode = '';
+        if ('string' == typeof vnode || 'number' == typeof vnode) {
             if (dom && void 0 !== dom.splitText && dom.parentNode && (!dom._component || componentRoot)) {
                 if (dom.nodeValue != vnode) dom.nodeValue = vnode;
             } else {
@@ -20480,17 +20481,23 @@ define('preact/preact',['require','exports','module'],function (require, exports
             out.__preactattr_ = !0;
             return out;
         }
-        if ('function' == typeof vnode.nodeName) return buildComponentFromVNode(dom, vnode, context, mountAll);
-        isSvgMode = 'svg' === vnode.nodeName ? !0 : 'foreignObject' === vnode.nodeName ? !1 : isSvgMode;
-        if (!dom || !isNamedNode(dom, String(vnode.nodeName))) {
-            out = createNode(String(vnode.nodeName), isSvgMode);
+        var vnodeName = vnode.nodeName;
+        if ('function' == typeof vnodeName) return buildComponentFromVNode(dom, vnode, context, mountAll);
+        isSvgMode = 'svg' === vnodeName ? !0 : 'foreignObject' === vnodeName ? !1 : isSvgMode;
+        vnodeName = String(vnodeName);
+        if (!dom || !isNamedNode(dom, vnodeName)) {
+            out = createNode(vnodeName, isSvgMode);
             if (dom) {
                 while (dom.firstChild) out.appendChild(dom.firstChild);
                 if (dom.parentNode) dom.parentNode.replaceChild(out, dom);
                 recollectNodeTree(dom, !0);
             }
         }
-        var fc = out.firstChild, props = out.__preactattr_ || (out.__preactattr_ = {}), vchildren = vnode.children;
+        var fc = out.firstChild, props = out.__preactattr_, vchildren = vnode.children;
+        if (null == props) {
+            props = out.__preactattr_ = {};
+            for (var a = out.attributes, i = a.length; i--; ) props[a[i].name] = a[i].value;
+        }
         if (!hydrating && vchildren && 1 === vchildren.length && 'string' == typeof vchildren[0] && null != fc && void 0 !== fc.splitText && null == fc.nextSibling) {
             if (fc.nodeValue != vchildren[0]) fc.nodeValue = vchildren[0];
         } else if (vchildren && vchildren.length || null != fc) innerDiffNode(out, vchildren, context, mountAll, hydrating || null != props.dangerouslySetInnerHTML);
@@ -20499,7 +20506,7 @@ define('preact/preact',['require','exports','module'],function (require, exports
         return out;
     }
     function innerDiffNode(dom, vchildren, context, mountAll, isHydrating) {
-        var j, c, vchild, child, originalChildren = dom.childNodes, children = [], keyed = {}, keyedLen = 0, min = 0, len = originalChildren.length, childrenLen = 0, vlen = vchildren ? vchildren.length : 0;
+        var j, c, f, vchild, child, originalChildren = dom.childNodes, children = [], keyed = {}, keyedLen = 0, min = 0, len = originalChildren.length, childrenLen = 0, vlen = vchildren ? vchildren.length : 0;
         if (0 !== len) for (var i = 0; i < len; i++) {
             var _child = originalChildren[i], props = _child.__preactattr_, key = vlen && props ? _child._component ? _child._component.__k : props.key : null;
             if (null != key) {
@@ -20525,7 +20532,8 @@ define('preact/preact',['require','exports','module'],function (require, exports
                 break;
             }
             child = idiff(child, vchild, context, mountAll);
-            if (child && child !== dom) if (i >= len) dom.appendChild(child); else if (child !== originalChildren[i]) if (child === originalChildren[i + 1]) removeNode(originalChildren[i]); else dom.insertBefore(child, originalChildren[i] || null);
+            f = originalChildren[i];
+            if (child && child !== dom && child !== f) if (null == f) dom.appendChild(child); else if (child === f.nextSibling) removeNode(f); else dom.insertBefore(child, f);
         }
         if (keyedLen) for (var i in keyed) if (void 0 !== keyed[i]) recollectNodeTree(keyed[i], !1);
         while (min <= childrenLen) if (void 0 !== (child = children[childrenLen--])) recollectNodeTree(child, !1);
@@ -20534,7 +20542,7 @@ define('preact/preact',['require','exports','module'],function (require, exports
         var component = node._component;
         if (component) unmountComponent(component); else {
             if (null != node.__preactattr_ && node.__preactattr_.ref) node.__preactattr_.ref(null);
-            if (unmountOnly === !1 || null == node.__preactattr_) removeNode(node);
+            if (!1 === unmountOnly || null == node.__preactattr_) removeNode(node);
             removeChildren(node);
         }
     }
@@ -20590,7 +20598,7 @@ define('preact/preact',['require','exports','module'],function (require, exports
             if (!component.__p) component.__p = component.props;
             component.props = props;
             component.__x = !1;
-            if (0 !== opts) if (1 === opts || options.syncComponentUpdates !== !1 || !component.base) renderComponent(component, 1, mountAll); else enqueueRender(component);
+            if (0 !== opts) if (1 === opts || !1 !== options.syncComponentUpdates || !component.base) renderComponent(component, 1, mountAll); else enqueueRender(component);
             if (component.__r) component.__r(component);
         }
     }
@@ -20601,7 +20609,7 @@ define('preact/preact',['require','exports','module'],function (require, exports
                 component.props = previousProps;
                 component.state = previousState;
                 component.context = previousContext;
-                if (2 !== opts && component.shouldComponentUpdate && component.shouldComponentUpdate(props, state, context) === !1) skip = !0; else if (component.componentWillUpdate) component.componentWillUpdate(props, state, context);
+                if (2 !== opts && component.shouldComponentUpdate && !1 === component.shouldComponentUpdate(props, state, context)) skip = !0; else if (component.componentWillUpdate) component.componentWillUpdate(props, state, context);
                 component.props = props;
                 component.state = state;
                 component.context = context;
@@ -20714,6 +20722,7 @@ define('preact/preact',['require','exports','module'],function (require, exports
     var options = {};
     var stack = [];
     var EMPTY_CHILDREN = [];
+    var defer = 'function' == typeof Promise ? Promise.resolve().then.bind(Promise.resolve()) : setTimeout;
     var IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|ows|mnc|ntw|ine[ch]|zoo|^ord/i;
     var items = [];
     var mounts = [];
@@ -29863,4 +29872,4 @@ define('aurelia-testing/wait',['exports'], function (exports) {
     }, options);
   }
 });
-function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"styleguide-web-components","location":"../node_modules/styleguide-web-components/dist/amd","main":"index"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","styleguide-web-components/imports","app/view/app-header","style/index"]}})}
+function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"styleguide-web-components","location":"../node_modules/styleguide-web-components/dist/amd","main":"index"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","styleguide-web-components/imports","app/view/app-header","style/index"]}})}
