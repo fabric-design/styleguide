@@ -42,6 +42,12 @@
     "root": "src",
     "appRoot": "src/app"
   },
+  "documentation": {
+    "source": [
+      "node_modules/wholesale-styleguide-scss/doc/*/*.md",
+      "node_modules/styleguide-web-components/doc/*/*.md"
+    ]
+  },
   "publish": {
     "sources": [
       "circle.yml",
