@@ -61,10 +61,7 @@ function markdownToArticles() {
 }
 
 export default function generateArticles() {
-    return gulp.src([
-            'node_modules/wholesale-styleguide-scss/doc/*/*.md',
-            'node_modules/styleguide-web-components/doc/*/*.md'
-        ])
+    return gulp.src(project.documentation.source)
         .pipe(changedInPlace({firstPass: true}))
         .pipe(markdownToArticles())
         .pipe(gulp.dest(project.paths.appRoot))
