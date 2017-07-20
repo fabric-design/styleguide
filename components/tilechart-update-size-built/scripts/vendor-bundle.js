@@ -26397,6 +26397,11 @@ define('styleguide-web-components/ws-tiles-chart/ws-tiles-chart',['exports', 're
     }
 
     _createClass(WSTilesChart, [{
+      key: 'componentWillMount',
+      value: function componentWillMount() {
+        this.setState({ tileSize: this.getTileSize(this.props) });
+      }
+    }, {
       key: 'componentWillReceiveProps',
       value: function componentWillReceiveProps(nextProps) {
         this.setState({ tileSize: this.getTileSize(nextProps) });
