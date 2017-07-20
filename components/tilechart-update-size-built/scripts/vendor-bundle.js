@@ -26398,18 +26398,17 @@ define('styleguide-web-components/ws-tiles-chart/ws-tiles-chart',['exports', 're
 
     _createClass(WSTilesChart, [{
       key: 'componentWillReceiveProps',
-      value: function componentWillReceiveProps() {
-        this.setState({ tileSize: this.getTileSize() });
+      value: function componentWillReceiveProps(nextProps) {
+        this.setState({ tileSize: this.getTileSize(nextProps) });
       }
     }, {
       key: 'getTileSize',
-      value: function getTileSize() {
-        var _props = this.props,
-            height = _props.height,
-            width = _props.width,
-            maxTileSize = _props.maxTileSize,
-            minTileSize = _props.minTileSize,
-            data = _props.data;
+      value: function getTileSize(props) {
+        var height = props.height,
+            width = props.width,
+            maxTileSize = props.maxTileSize,
+            minTileSize = props.minTileSize,
+            data = props.data;
 
         var groups = data.groups || {};
 
@@ -26444,12 +26443,12 @@ define('styleguide-web-components/ws-tiles-chart/ws-tiles-chart',['exports', 're
       value: function render() {
         var _this2 = this;
 
-        var _props2 = this.props,
-            data = _props2.data,
-            config = _props2.config,
-            title = _props2.title,
-            width = _props2.width,
-            height = _props2.height;
+        var _props = this.props,
+            data = _props.data,
+            config = _props.config,
+            title = _props.title,
+            width = _props.width,
+            height = _props.height;
 
         var groups = data.groups || {};
         return _react2.default.createElement(
