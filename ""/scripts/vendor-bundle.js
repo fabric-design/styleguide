@@ -1,5 +1,5 @@
 /** vim: et:ts=4:sw=4:sts=4
- * @license RequireJS 2.3.3 Copyright jQuery Foundation and other contributors.
+ * @license RequireJS 2.3.4 Copyright jQuery Foundation and other contributors.
  * Released under MIT license, https://github.com/requirejs/requirejs/blob/master/LICENSE
  */
 //Not using strict: uneven strict support in browsers, #392, and causes
@@ -11,7 +11,7 @@ var requirejs, require, define;
 (function (global, setTimeout) {
     var req, s, head, baseElement, dataMain, src,
         interactiveScript, currentlyAddingScript, mainScript, subPath,
-        version = '2.3.3',
+        version = '2.3.4',
         commentRegExp = /\/\*[\s\S]*?\*\/|([^:"'=]|^)\/\/.*$/mg,
         cjsRequireRegExp = /[^.]\s*require\s*\(\s*["']([^'"\s]+)["']\s*\)/g,
         jsSuffixRegExp = /\.js$/,
@@ -24667,6 +24667,7 @@ define('styleguide-web-components/ws-dropdown/ws-dropdown',['exports', '../impor
       value: function render() {
         var _this7 = this;
 
+        var isWide = this.props.type === 'select' ? 'mod-wide' : '';
         return _imports.React.createElement(
           'div',
           { className: 'dropdown', ref: function ref(element) {
@@ -24678,7 +24679,7 @@ define('styleguide-web-components/ws-dropdown/ws-dropdown',['exports', '../impor
           _imports.React.createElement(
             'div',
             {
-              className: 'dropdown-container ' + this.props.orientation,
+              className: 'dropdown-container ' + this.props.orientation + ' ' + isWide,
               ref: function ref(element) {
                 if (element) {
                   _this7.dropdownContainer = element;
@@ -25720,8 +25721,8 @@ define('styleguide-web-components/ws-notification/ws-notification',['exports', '
     }, {
       key: 'componentWillUnmount',
       value: function componentWillUnmount() {
-        window.removeEventListener('ws-notification-open');
-        window.removeEventListener('ws-notification-close');
+        window.removeEventListener('ws-notification-open', this.addNotify);
+        window.removeEventListener('ws-notification-close', this.closeAllEvents);
       }
     }, {
       key: 'addNotify',
@@ -26191,7 +26192,7 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker-calendar',['expo
                 { className: 'prev', onClick: function onClick() {
                     return _this3.prevYear();
                   } },
-                _imports.React.createElement('span', { className: 'icon icon-left' }),
+                _imports.React.createElement('span', { className: 'icon icon32 icon-left' }),
                 this.state.showingYear - 1
               ),
               _imports.React.createElement(
@@ -26205,7 +26206,7 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker-calendar',['expo
                     return _this3.nextYear();
                   } },
                 this.state.showingYear + 1,
-                _imports.React.createElement('span', { className: 'icon icon-right' })
+                _imports.React.createElement('span', { className: 'icon icon32 icon-right' })
               )
             ),
             _imports.React.createElement(
@@ -26398,17 +26399,21 @@ define('styleguide-web-components/ws-tiles-chart/ws-tiles-chart',['exports', 're
     _createClass(WSTilesChart, [{
       key: 'componentWillMount',
       value: function componentWillMount() {
-        this.setState({ tileSize: this.getTileSize() });
+        this.setState({ tileSize: this.getTileSize(this.props) });
+      }
+    }, {
+      key: 'componentWillReceiveProps',
+      value: function componentWillReceiveProps(nextProps) {
+        this.setState({ tileSize: this.getTileSize(nextProps) });
       }
     }, {
       key: 'getTileSize',
-      value: function getTileSize() {
-        var _props = this.props,
-            height = _props.height,
-            width = _props.width,
-            maxTileSize = _props.maxTileSize,
-            minTileSize = _props.minTileSize,
-            data = _props.data;
+      value: function getTileSize(props) {
+        var height = props.height,
+            width = props.width,
+            maxTileSize = props.maxTileSize,
+            minTileSize = props.minTileSize,
+            data = props.data;
 
         var groups = data.groups || {};
 
@@ -26443,12 +26448,12 @@ define('styleguide-web-components/ws-tiles-chart/ws-tiles-chart',['exports', 're
       value: function render() {
         var _this2 = this;
 
-        var _props2 = this.props,
-            data = _props2.data,
-            config = _props2.config,
-            title = _props2.title,
-            width = _props2.width,
-            height = _props2.height;
+        var _props = this.props,
+            data = _props.data,
+            config = _props.config,
+            title = _props.title,
+            width = _props.width,
+            height = _props.height;
 
         var groups = data.groups || {};
         return _react2.default.createElement(
