@@ -1,5 +1,5 @@
 /** vim: et:ts=4:sw=4:sts=4
- * @license RequireJS 2.3.3 Copyright jQuery Foundation and other contributors.
+ * @license RequireJS 2.3.4 Copyright jQuery Foundation and other contributors.
  * Released under MIT license, https://github.com/requirejs/requirejs/blob/master/LICENSE
  */
 //Not using strict: uneven strict support in browsers, #392, and causes
@@ -11,7 +11,7 @@ var requirejs, require, define;
 (function (global, setTimeout) {
     var req, s, head, baseElement, dataMain, src,
         interactiveScript, currentlyAddingScript, mainScript, subPath,
-        version = '2.3.3',
+        version = '2.3.4',
         commentRegExp = /\/\*[\s\S]*?\*\/|([^:"'=]|^)\/\/.*$/mg,
         cjsRequireRegExp = /[^.]\s*require\s*\(\s*["']([^'"\s]+)["']\s*\)/g,
         jsSuffixRegExp = /\.js$/,
@@ -21513,7 +21513,7 @@ define('styleguide-web-components/ws-header/ws-header',['exports', '../imports',
 
         return new Promise(function (resolve) {
           var authorization = new _authorization.Authorization(_this2.storage);
-          authorization.authorized.subscribe(function (accessToken) {
+          authorization.onAccessTokenChange(function (accessToken) {
             return resolve(accessToken);
           });
           authorization.tryFetchToken(queryString);
@@ -21576,7 +21576,7 @@ define('styleguide-web-components/ws-header/ws-header',['exports', '../imports',
 
         this.authorization = new _authorization.Authorization(WSHeader.storage, props.loginUrl, props.refreshUrl, props.clientId, props.businessPartnerId);
 
-        this.authorization.authorized.subscribe(function (accessToken) {
+        this.authorization.onAccessTokenChange(function (accessToken) {
           if (_this3.mounted) {
             _this3.setState({ isLoggedIn: !!accessToken });
           } else {
@@ -21714,7 +21714,7 @@ define('styleguide-web-components/ws-header/ws-header',['exports', '../imports',
                   null,
                   _imports.React.createElement(_wsDropdown.WSDropdown, {
                     className: 'locale',
-                    icon: 'icon-sort-down',
+                    icon: 'icon24 icon-sort-down',
                     items: this.locales,
                     text: this.state.locale,
                     onChange: function onChange(item) {
@@ -21742,7 +21742,7 @@ define('styleguide-web-components/ws-header/ws-header',['exports', '../imports',
                   _imports.React.createElement(
                     'a',
                     null,
-                    _imports.React.createElement('span', { className: 'icon-power icon24' })
+                    _imports.React.createElement('span', { className: 'icon icon24 icon-power' })
                   )
                 )
               )
@@ -22089,13 +22089,12 @@ define('styleguide-web-components/ws-header/storage/local-storage',['exports', '
     return LocalStorage;
   }(_abstractStorage.AbstractStorage);
 });
-define('styleguide-web-components/ws-header/authorization',['exports', './simple-steam'], function (exports, _simpleSteam) {
+define('styleguide-web-components/ws-header/authorization',['exports'], function (exports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.Authorization = undefined;
 
   var _slicedToArray = function () {
     function sliceIterator(arr, i) {
@@ -22173,12 +22172,23 @@ define('styleguide-web-components/ws-header/authorization',['exports', './simple
       this.refreshUrl = refreshUrl;
       this.clientId = clientId;
       this.businessPartnerId = businessPartnerId;
-      this.authorized = new _simpleSteam.SimpleSteam();
 
       this.checkExpiration();
     }
 
     _createClass(Authorization, [{
+      key: 'onAccessTokenChange',
+      value: function onAccessTokenChange(callback) {
+        this.accessTokenChange = callback;
+      }
+    }, {
+      key: 'changeAccessToken',
+      value: function changeAccessToken(accessToken) {
+        if (typeof this.accessTokenChange === 'function') {
+          this.accessTokenChange(accessToken);
+        }
+      }
+    }, {
       key: 'checkExpiration',
       value: function checkExpiration() {
         var _this = this;
@@ -22216,9 +22226,9 @@ define('styleguide-web-components/ws-header/authorization',['exports', './simple
           }
           this.updateTokens(queryParams);
         } else if (this.storage.get('access_token')) {
-          this.authorized.publish(this.storage.get('access_token'));
+          this.changeAccessToken(this.storage.get('access_token'));
         } else {
-          this.authorized.publish(null);
+          this.changeAccessToken(null);
         }
       }
     }, {
@@ -22229,7 +22239,7 @@ define('styleguide-web-components/ws-header/authorization',['exports', './simple
         this.storage.set('refresh_token', params.refresh_token);
         this.storage.set('expires_at', new Date().getTime() + expires * 1000);
 
-        this.authorized.publish(params.access_token);
+        this.changeAccessToken(params.access_token);
       }
     }, {
       key: 'authorize',
@@ -22268,7 +22278,7 @@ define('styleguide-web-components/ws-header/authorization',['exports', './simple
         this.storage.remove('access_key');
         this.storage.remove('refresh_key');
         this.storage.remove('expires_at');
-        this.authorized.publish(null);
+        this.changeAccessToken(null);
       }
     }, {
       key: 'createAndRememberUUID',
@@ -22290,85 +22300,6 @@ define('styleguide-web-components/ws-header/authorization',['exports', './simple
     }]);
 
     return Authorization;
-  }();
-});
-define('styleguide-web-components/ws-header/simple-steam',["exports"], function (exports) {
-  "use strict";
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-
-  function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  }
-
-  var _createClass = function () {
-    function defineProperties(target, props) {
-      for (var i = 0; i < props.length; i++) {
-        var descriptor = props[i];
-        descriptor.enumerable = descriptor.enumerable || false;
-        descriptor.configurable = true;
-        if ("value" in descriptor) descriptor.writable = true;
-        Object.defineProperty(target, descriptor.key, descriptor);
-      }
-    }
-
-    return function (Constructor, protoProps, staticProps) {
-      if (protoProps) defineProperties(Constructor.prototype, protoProps);
-      if (staticProps) defineProperties(Constructor, staticProps);
-      return Constructor;
-    };
-  }();
-
-  var SimpleSteam = exports.SimpleSteam = function () {
-    function SimpleSteam() {
-      _classCallCheck(this, SimpleSteam);
-
-      this.data = [];
-      this.subscribers = [];
-    }
-
-    _createClass(SimpleSteam, [{
-      key: "subscribe",
-      value: function subscribe(callback) {
-        var subscriber = {
-          offset: 0,
-          callback: callback
-        };
-        this.subscribers.push(subscriber);
-
-        this.callSubscriber(subscriber);
-      }
-    }, {
-      key: "publish",
-      value: function publish(data) {
-        this.data.push(data);
-        this.callSubscribers();
-      }
-    }, {
-      key: "callSubscribers",
-      value: function callSubscribers() {
-        var _this = this;
-
-        this.subscribers.forEach(function (subscriber) {
-          return _this.callSubscriber(subscriber);
-        });
-      }
-    }, {
-      key: "callSubscriber",
-      value: function callSubscriber(subscriber) {
-        var subscriberData = this.data.slice(subscriber.offset);
-        subscriberData.forEach(function (entry) {
-          return subscriber.callback(entry);
-        });
-        subscriber.offset = this.data.length;
-      }
-    }]);
-
-    return SimpleSteam;
   }();
 });
 define('styleguide-web-components/ws-dropdown/ws-dropdown',['exports', '../imports', './dropdown-menu', './dropdown-input'], function (exports, _imports, _dropdownMenu, _dropdownInput) {
