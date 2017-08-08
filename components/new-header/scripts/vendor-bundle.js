@@ -21524,7 +21524,7 @@ define('styleguide-web-components/ws-header/ws-header',['exports', '../imports',
 
         return new Promise(function (resolve) {
           var authorization = new _authorization.Authorization(_this2.storage);
-          authorization.authorized.subscribe(function (accessToken) {
+          authorization.onAccessTokenChange(function (accessToken) {
             return resolve(accessToken);
           });
           authorization.tryFetchToken(queryString);
@@ -21587,7 +21587,7 @@ define('styleguide-web-components/ws-header/ws-header',['exports', '../imports',
 
         this.authorization = new _authorization.Authorization(WSHeader.storage, props.loginUrl, props.refreshUrl, props.clientId, props.businessPartnerId);
 
-        this.authorization.authorized.subscribe(function (accessToken) {
+        this.authorization.onAccessTokenChange(function (accessToken) {
           if (_this3.mounted) {
             _this3.setState({ isLoggedIn: !!accessToken });
           } else {
@@ -21677,7 +21677,7 @@ define('styleguide-web-components/ws-header/ws-header',['exports', '../imports',
               { className: 'application-name' },
               this.props.appLogo && _imports.React.createElement(
                 'figure',
-                { className: 'app-logo' },
+                { className: 'application-logo' },
                 _imports.React.createElement('img', { src: this.props.appLogo, alt: 'Application logo' })
               ),
               this.props.appName
@@ -21726,7 +21726,7 @@ define('styleguide-web-components/ws-header/ws-header',['exports', '../imports',
                   null,
                   _imports.React.createElement(_wsDropdown.WSDropdown, {
                     className: 'locale',
-                    icon: 'icon-sort-down',
+                    icon: 'icon24 icon-sort-down',
                     items: this.locales,
                     text: this.state.locale,
                     onChange: function onChange(item) {
@@ -21754,7 +21754,7 @@ define('styleguide-web-components/ws-header/ws-header',['exports', '../imports',
                   _imports.React.createElement(
                     'a',
                     null,
-                    _imports.React.createElement('span', { className: 'icon-power icon24' })
+                    _imports.React.createElement('span', { className: 'icon icon24 icon-power' })
                   )
                 )
               )
@@ -22104,13 +22104,12 @@ define('styleguide-web-components/ws-header/storage/local-storage',['exports', '
     return LocalStorage;
   }(_abstractStorage.AbstractStorage);
 });
-define('styleguide-web-components/ws-header/authorization',['exports', './simple-steam'], function (exports, _simpleSteam) {
+define('styleguide-web-components/ws-header/authorization',['exports'], function (exports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.Authorization = undefined;
 
   var _slicedToArray = function () {
     function sliceIterator(arr, i) {
@@ -22188,12 +22187,23 @@ define('styleguide-web-components/ws-header/authorization',['exports', './simple
       this.refreshUrl = refreshUrl;
       this.clientId = clientId;
       this.businessPartnerId = businessPartnerId;
-      this.authorized = new _simpleSteam.SimpleSteam();
 
       this.checkExpiration();
     }
 
     _createClass(Authorization, [{
+      key: 'onAccessTokenChange',
+      value: function onAccessTokenChange(callback) {
+        this.accessTokenChange = callback;
+      }
+    }, {
+      key: 'changeAccessToken',
+      value: function changeAccessToken(accessToken) {
+        if (typeof this.accessTokenChange === 'function') {
+          this.accessTokenChange(accessToken);
+        }
+      }
+    }, {
       key: 'checkExpiration',
       value: function checkExpiration() {
         var _this = this;
@@ -22231,9 +22241,9 @@ define('styleguide-web-components/ws-header/authorization',['exports', './simple
           }
           this.updateTokens(queryParams);
         } else if (this.storage.get('access_token')) {
-          this.authorized.publish(this.storage.get('access_token'));
+          this.changeAccessToken(this.storage.get('access_token'));
         } else {
-          this.authorized.publish(null);
+          this.changeAccessToken(null);
         }
       }
     }, {
@@ -22244,7 +22254,7 @@ define('styleguide-web-components/ws-header/authorization',['exports', './simple
         this.storage.set('refresh_token', params.refresh_token);
         this.storage.set('expires_at', new Date().getTime() + expires * 1000);
 
-        this.authorized.publish(params.access_token);
+        this.changeAccessToken(params.access_token);
       }
     }, {
       key: 'authorize',
@@ -22283,7 +22293,7 @@ define('styleguide-web-components/ws-header/authorization',['exports', './simple
         this.storage.remove('access_key');
         this.storage.remove('refresh_key');
         this.storage.remove('expires_at');
-        this.authorized.publish(null);
+        this.changeAccessToken(null);
       }
     }, {
       key: 'createAndRememberUUID',
@@ -22305,85 +22315,6 @@ define('styleguide-web-components/ws-header/authorization',['exports', './simple
     }]);
 
     return Authorization;
-  }();
-});
-define('styleguide-web-components/ws-header/simple-steam',["exports"], function (exports) {
-  "use strict";
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-
-  function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  }
-
-  var _createClass = function () {
-    function defineProperties(target, props) {
-      for (var i = 0; i < props.length; i++) {
-        var descriptor = props[i];
-        descriptor.enumerable = descriptor.enumerable || false;
-        descriptor.configurable = true;
-        if ("value" in descriptor) descriptor.writable = true;
-        Object.defineProperty(target, descriptor.key, descriptor);
-      }
-    }
-
-    return function (Constructor, protoProps, staticProps) {
-      if (protoProps) defineProperties(Constructor.prototype, protoProps);
-      if (staticProps) defineProperties(Constructor, staticProps);
-      return Constructor;
-    };
-  }();
-
-  var SimpleSteam = exports.SimpleSteam = function () {
-    function SimpleSteam() {
-      _classCallCheck(this, SimpleSteam);
-
-      this.data = [];
-      this.subscribers = [];
-    }
-
-    _createClass(SimpleSteam, [{
-      key: "subscribe",
-      value: function subscribe(callback) {
-        var subscriber = {
-          offset: 0,
-          callback: callback
-        };
-        this.subscribers.push(subscriber);
-
-        this.callSubscriber(subscriber);
-      }
-    }, {
-      key: "publish",
-      value: function publish(data) {
-        this.data.push(data);
-        this.callSubscribers();
-      }
-    }, {
-      key: "callSubscribers",
-      value: function callSubscribers() {
-        var _this = this;
-
-        this.subscribers.forEach(function (subscriber) {
-          return _this.callSubscriber(subscriber);
-        });
-      }
-    }, {
-      key: "callSubscriber",
-      value: function callSubscriber(subscriber) {
-        var subscriberData = this.data.slice(subscriber.offset);
-        subscriberData.forEach(function (entry) {
-          return subscriber.callback(entry);
-        });
-        subscriber.offset = this.data.length;
-      }
-    }]);
-
-    return SimpleSteam;
   }();
 });
 define('styleguide-web-components/ws-dropdown/ws-dropdown',['exports', '../imports', './dropdown-menu', './dropdown-input'], function (exports, _imports, _dropdownMenu, _dropdownInput) {
@@ -22513,15 +22444,16 @@ define('styleguide-web-components/ws-dropdown/ws-dropdown',['exports', '../impor
     }, {
       key: 'getTextFromValue',
       value: function getTextFromValue(value) {
-        var text = this.state ? this.state.text : '';
+        var propsText = (arguments.length <= 1 ? 0 : arguments.length - 1) > 0 ? arguments.length <= 1 ? undefined : arguments[1] : '';
+        var text = propsText || (this.state && this.state.text ? this.state.text : '');
 
         if (this.props.type === 'select') {
-          if (Array.isArray(value)) {
+          if (Array.isArray(value) && value.length) {
             text = value.map(function (item) {
               return item.label || item;
             }).join(', ');
-          } else {
-            text = value ? value.label : value;
+          } else if (value) {
+            text = value.label;
           }
         }
         return text;
@@ -22547,10 +22479,8 @@ define('styleguide-web-components/ws-dropdown/ws-dropdown',['exports', '../impor
     }, {
       key: 'createState',
       value: function createState(props) {
-        var isEmptyValue = !props.value || Array.isArray(props.value) && props.value.length === 0;
-
         var state = {
-          text: !isEmptyValue ? this.getTextFromValue(props.value) : props.text,
+          text: this.getTextFromValue(props.value, props.text),
           value: this.enrichItems(props.value),
           items: this.enrichItems(props.items)
         };
@@ -26232,8 +26162,8 @@ define('styleguide-web-components/ws-notification/ws-notification',['exports', '
     }, {
       key: 'componentWillUnmount',
       value: function componentWillUnmount() {
-        window.removeEventListener('ws-notification-open');
-        window.removeEventListener('ws-notification-close');
+        window.removeEventListener('ws-notification-open', this.addNotify);
+        window.removeEventListener('ws-notification-close', this.closeAllEvents);
       }
     }, {
       key: 'addNotify',
@@ -26910,17 +26840,21 @@ define('styleguide-web-components/ws-tiles-chart/ws-tiles-chart',['exports', 're
     _createClass(WSTilesChart, [{
       key: 'componentWillMount',
       value: function componentWillMount() {
-        this.setState({ tileSize: this.getTileSize() });
+        this.setState({ tileSize: this.getTileSize(this.props) });
+      }
+    }, {
+      key: 'componentWillReceiveProps',
+      value: function componentWillReceiveProps(nextProps) {
+        this.setState({ tileSize: this.getTileSize(nextProps) });
       }
     }, {
       key: 'getTileSize',
-      value: function getTileSize() {
-        var _props = this.props,
-            height = _props.height,
-            width = _props.width,
-            maxTileSize = _props.maxTileSize,
-            minTileSize = _props.minTileSize,
-            data = _props.data;
+      value: function getTileSize(props) {
+        var height = props.height,
+            width = props.width,
+            maxTileSize = props.maxTileSize,
+            minTileSize = props.minTileSize,
+            data = props.data;
 
         var groups = data.groups || {};
 
@@ -26955,12 +26889,12 @@ define('styleguide-web-components/ws-tiles-chart/ws-tiles-chart',['exports', 're
       value: function render() {
         var _this2 = this;
 
-        var _props2 = this.props,
-            data = _props2.data,
-            config = _props2.config,
-            title = _props2.title,
-            width = _props2.width,
-            height = _props2.height;
+        var _props = this.props,
+            data = _props.data,
+            config = _props.config,
+            title = _props.title,
+            width = _props.width,
+            height = _props.height;
 
         var groups = data.groups || {};
         return _react2.default.createElement(
@@ -30383,4 +30317,4 @@ define('aurelia-testing/wait',['exports'], function (exports) {
     }, options);
   }
 });
-function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"styleguide-web-components","location":"../node_modules/styleguide-web-components/dist/amd","main":"index"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","styleguide-web-components/imports","app/view/app-header","style/index"]}})}
+function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"styleguide-web-components","location":"../node_modules/styleguide-web-components/dist/amd","main":"index"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","styleguide-web-components/imports","app/view/app-header","style/index"]}})}
