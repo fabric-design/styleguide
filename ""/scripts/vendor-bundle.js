@@ -20789,7 +20789,7 @@ var AUTOBIND_BLACKLIST = {
 };
 
 
-var CAMEL_PROPS = /^(?:accent|alignment|arabic|baseline|cap|clip|color|fill|flood|font|glyph|horiz|marker|overline|paint|stop|strikethrough|stroke|text|underline|unicode|units|v|vert|word|writing|x)[A-Z]/;
+var CAMEL_PROPS = /^(?:accent|alignment|arabic|baseline|cap|clip|color|fill|flood|font|glyph|horiz|marker|overline|paint|stop|strikethrough|stroke|text|underline|unicode|units|v|vector|vert|word|writing|x)[A-Z]/;
 
 
 var BYPASS_HOOK = {};
@@ -20902,7 +20902,7 @@ function render$1(vnode, parent, callback) {
 	if (prev && prev.parentNode!==parent) { prev = null; }
 
 	// default to first Element child
-	if (!prev) { prev = parent.children[0]; }
+	if (!prev && parent) { prev = parent.firstElementChild; }
 
 	// remove unaffected siblings
 	for (var i=parent.childNodes.length; i--; ) {
@@ -20929,9 +20929,10 @@ ContextProvider.prototype.render = function (props) {
 
 function renderSubtreeIntoContainer(parentComponent, vnode, container, callback) {
 	var wrap = preact.h(ContextProvider, { context: parentComponent.context }, vnode);
-	var c = render$1(wrap, container);
-	if (callback) { callback(c); }
-	return c._component || c.base;
+	var renderContainer = render$1(wrap, container);
+	var component = renderContainer._component || renderContainer.base;
+	if (callback) { callback.call(component, renderContainer); }
+	return component;
 }
 
 
@@ -20972,7 +20973,7 @@ var Children = {
 	},
 	toArray: function(children) {
 		if (children == null) { return []; }
-		return Array.isArray && Array.isArray(children) ? children : ARR.concat(children);
+		return ARR.concat(children);
 	}
 };
 
@@ -21132,19 +21133,30 @@ function applyEventNormalization(ref) {
 }
 
 
-function applyClassName(ref) {
-	var attributes = ref.attributes;
-
-	if (!attributes) { return; }
-	var cl = attributes.className || attributes.class;
-	if (cl) { attributes.className = cl; }
+function applyClassName(vnode) {
+	var a = vnode.attributes || (vnode.attributes = {});
+	classNameDescriptor.enumerable = 'className' in a;
+	if (a.className) { a.class = a.className; }
+	Object.defineProperty(a, 'className', classNameDescriptor);
 }
 
 
+var classNameDescriptor = {
+	configurable: true,
+	get: function() { return this.class; },
+	set: function(v) { this.class = v; }
+};
+
 function extend(base, props) {
-	for (var key in props) {
-		if (props.hasOwnProperty(key)) {
-			base[key] = props[key];
+	var arguments$1 = arguments;
+
+	for (var i=1, obj = (void 0); i<arguments.length; i++) {
+		if ((obj = arguments$1[i])) {
+			for (var key in obj) {
+				if (obj.hasOwnProperty(key)) {
+					base[key] = obj[key];
+				}
+			}
 		}
 	}
 	return base;
@@ -21279,7 +21291,7 @@ function propsHook(props, context) {
 
 	// React annoyingly special-cases single children, and some react components are ridiculously strict about this.
 	var c = props.children;
-	if (c && Array.isArray(c) && c.length===1) {
+	if (c && Array.isArray(c) && c.length===1 && (typeof c[0]==='string' || typeof c[0]==='function' || c[0] instanceof VNode)) {
 		props.children = c[0];
 
 		// but its totally still going to be an Array.
@@ -21360,8 +21372,6 @@ PureComponent.prototype.shouldComponentUpdate = function(props, state) {
 	return shallowDiffers(this.props, props) || shallowDiffers(this.state, state);
 };
 
-
-
 var index = {
 	version: version,
 	DOM: DOM,
@@ -21377,7 +21387,8 @@ var index = {
 	unmountComponentAtNode: unmountComponentAtNode,
 	Component: Component$1,
 	PureComponent: PureComponent,
-	unstable_renderSubtreeIntoContainer: renderSubtreeIntoContainer
+	unstable_renderSubtreeIntoContainer: renderSubtreeIntoContainer,
+	__spread: extend
 };
 
 return index;
