@@ -1,5 +1,5 @@
 /** vim: et:ts=4:sw=4:sts=4
- * @license RequireJS 2.3.4 Copyright jQuery Foundation and other contributors.
+ * @license RequireJS 2.3.5 Copyright jQuery Foundation and other contributors.
  * Released under MIT license, https://github.com/requirejs/requirejs/blob/master/LICENSE
  */
 //Not using strict: uneven strict support in browsers, #392, and causes
@@ -11,7 +11,7 @@ var requirejs, require, define;
 (function (global, setTimeout) {
     var req, s, head, baseElement, dataMain, src,
         interactiveScript, currentlyAddingScript, mainScript, subPath,
-        version = '2.3.4',
+        version = '2.3.5',
         commentRegExp = /\/\*[\s\S]*?\*\/|([^:"'=]|^)\/\/.*$/mg,
         cjsRequireRegExp = /[^.]\s*require\s*\(\s*["']([^'"\s]+)["']\s*\)/g,
         jsSuffixRegExp = /\.js$/,
@@ -8224,9 +8224,16 @@ define('aurelia-dependency-injection',['exports', 'aurelia-metadata', 'aurelia-p
   function invokeWithDynamicDependencies(container, fn, staticDependencies, dynamicDependencies) {
     var i = staticDependencies.length;
     var args = new Array(i);
+    var lookup = void 0;
 
     while (i--) {
-      args[i] = container.get(staticDependencies[i]);
+      lookup = staticDependencies[i];
+
+      if (lookup === null || lookup === undefined) {
+        throw new Error('Constructor Parameter with index ' + i + ' cannot be null or undefined. Are you trying to inject/register something that doesn\'t exist with DI?');
+      } else {
+        args[i] = container.get(lookup);
+      }
     }
 
     if (dynamicDependencies !== undefined) {
@@ -10997,6 +11004,9 @@ define('aurelia-pal-browser',['exports', 'aurelia-pal'], function (exports, _aur
     adoptNode: function adoptNode(node) {
       return document.adoptNode(node, true);
     },
+    createAttribute: function createAttribute(name) {
+      return document.createAttribute(name);
+    },
     createElement: function createElement(tagName) {
       return document.createElement(tagName);
     },
@@ -11008,6 +11018,10 @@ define('aurelia-pal-browser',['exports', 'aurelia-pal'], function (exports, _aur
     },
     createDocumentFragment: function createDocumentFragment() {
       return document.createDocumentFragment();
+    },
+    createTemplateElement: function createTemplateElement() {
+      var template = document.createElement('template');
+      return _FEATURE.ensureHTMLTemplateElement(template);
     },
     createMutationObserver: function createMutationObserver(callback) {
       return new (window.MutationObserver || window.WebKitMutationObserver)(callback);
