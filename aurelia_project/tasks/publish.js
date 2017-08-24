@@ -116,7 +116,8 @@ function cleanup() {
  * @return {Promise}
  */
 async function prepare() {
-    const targetFolder = CLIOptions.getFlagValue('target') || project.publish.targetFolder;
+    // Replace wrapping quotes since this is not done on empty values from CLI tool
+    const targetFolder = (CLIOptions.getFlagValue('target') || project.publish.targetFolder).replace(/^"|"$/g, '');
     const projectUrl = await git('config', '--get', 'remote.origin.url');
 
     console.info('Cloning repository');

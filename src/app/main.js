@@ -5,7 +5,7 @@ export function configure(aurelia) {
         .standardConfiguration()
         .feature('app/feature/components')
         .globalResources([
-            'styleguide-component!styleguide-web-components/index',
+            'components!styleguide-web-components/index',
             'app/view/iterable-converter'
         ]);
 
