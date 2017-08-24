@@ -21715,7 +21715,8 @@ define('styleguide-web-components/ws-header/ws-header',['exports', '../imports',
                       },
                       ref: function ref(element) {
                         _this5.menuItems[index] = element;
-                      }
+                      },
+                      className: link.isCurrent ? 'is-current' : null
                     },
                     _imports.React.createElement(
                       'a',
@@ -21783,6 +21784,9 @@ define('styleguide-web-components/ws-header/ws-header',['exports', '../imports',
               onMouseLeave: function onMouseLeave() {
                 return _this5.leaveLevel2();
               },
+              onClick: function onClick() {
+                return _this5.leaveLevel2();
+              },
               ref: function ref(element) {
                 _this5.level2 = element;
               }
@@ -21796,7 +21800,7 @@ define('styleguide-web-components/ws-header/ws-header',['exports', '../imports',
                 parent.children.map(function (child, childIndex) {
                   return _imports.React.createElement(
                     'li',
-                    { key: 'sub-link-' + index + '-' + childIndex },
+                    { key: 'sub-link-' + index + '-' + childIndex, className: child.isCurrent ? 'is-current' : null },
                     _imports.React.createElement(
                       'a',
                       { href: child.href, onClick: function onClick(event) {
@@ -22088,12 +22092,12 @@ define('styleguide-web-components/ws-header/storage/local-storage',['exports', '
       key: 'set',
       value: function set(key, value) {
         var encodedValue = encodeURIComponent(JSON.stringify(value));
-        localStorage.setItem('' + name + key, encodedValue);
+        localStorage.setItem('' + this.name + key, encodedValue);
       }
     }, {
       key: 'get',
       value: function get(key) {
-        var encodedValue = localStorage.getItem(key);
+        var encodedValue = localStorage.getItem('' + this.name + key);
 
         if (encodedValue) {
           try {
