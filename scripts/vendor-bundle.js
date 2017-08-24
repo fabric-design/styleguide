@@ -1,5 +1,5 @@
 /** vim: et:ts=4:sw=4:sts=4
- * @license RequireJS 2.3.3 Copyright jQuery Foundation and other contributors.
+ * @license RequireJS 2.3.5 Copyright jQuery Foundation and other contributors.
  * Released under MIT license, https://github.com/requirejs/requirejs/blob/master/LICENSE
  */
 //Not using strict: uneven strict support in browsers, #392, and causes
@@ -11,7 +11,7 @@ var requirejs, require, define;
 (function (global, setTimeout) {
     var req, s, head, baseElement, dataMain, src,
         interactiveScript, currentlyAddingScript, mainScript, subPath,
-        version = '2.3.3',
+        version = '2.3.5',
         commentRegExp = /\/\*[\s\S]*?\*\/|([^:"'=]|^)\/\/.*$/mg,
         cjsRequireRegExp = /[^.]\s*require\s*\(\s*["']([^'"\s]+)["']\s*\)/g,
         jsSuffixRegExp = /\.js$/,
@@ -8224,9 +8224,16 @@ define('aurelia-dependency-injection',['exports', 'aurelia-metadata', 'aurelia-p
   function invokeWithDynamicDependencies(container, fn, staticDependencies, dynamicDependencies) {
     var i = staticDependencies.length;
     var args = new Array(i);
+    var lookup = void 0;
 
     while (i--) {
-      args[i] = container.get(staticDependencies[i]);
+      lookup = staticDependencies[i];
+
+      if (lookup === null || lookup === undefined) {
+        throw new Error('Constructor Parameter with index ' + i + ' cannot be null or undefined. Are you trying to inject/register something that doesn\'t exist with DI?');
+      } else {
+        args[i] = container.get(lookup);
+      }
     }
 
     if (dynamicDependencies !== undefined) {
@@ -10997,6 +11004,9 @@ define('aurelia-pal-browser',['exports', 'aurelia-pal'], function (exports, _aur
     adoptNode: function adoptNode(node) {
       return document.adoptNode(node, true);
     },
+    createAttribute: function createAttribute(name) {
+      return document.createAttribute(name);
+    },
     createElement: function createElement(tagName) {
       return document.createElement(tagName);
     },
@@ -11008,6 +11018,10 @@ define('aurelia-pal-browser',['exports', 'aurelia-pal'], function (exports, _aur
     },
     createDocumentFragment: function createDocumentFragment() {
       return document.createDocumentFragment();
+    },
+    createTemplateElement: function createTemplateElement() {
+      var template = document.createElement('template');
+      return _FEATURE.ensureHTMLTemplateElement(template);
     },
     createMutationObserver: function createMutationObserver(callback) {
       return new (window.MutationObserver || window.WebKitMutationObserver)(callback);
@@ -11414,7 +11428,7 @@ define('aurelia-polyfills',['aurelia-pal'], function (_aureliaPal) {
       },
           propertyIsEnumerable = function propertyIsEnumerable(key) {
         var uid = '' + key;
-        return onlySymbols(uid) ? hOP.call(this, uid) && this[internalSymbol]['@@' + uid] : pIE.call(this, key);
+        return onlySymbols(uid) ? hOP.call(this, uid) && this[internalSymbol] && this[internalSymbol]['@@' + uid] : pIE.call(this, key);
       },
           setAndGetSymbol = function setAndGetSymbol(uid) {
         var descriptor = {
@@ -11467,7 +11481,16 @@ define('aurelia-polyfills',['aurelia-pal'], function (_aureliaPal) {
       descriptor.value = $getOwnPropertySymbols;
       defineProperty(Object, GOPS, descriptor);
 
+      var cachedWindowNames = (typeof window === 'undefined' ? 'undefined' : _typeof(window)) === 'object' ? Object.getOwnPropertyNames(window) : [];
+      var originalObjectGetOwnPropertyNames = Object.getOwnPropertyNames;
       descriptor.value = function getOwnPropertyNames(o) {
+        if (toString.call(o) === '[object Window]') {
+          try {
+            return originalObjectGetOwnPropertyNames(o);
+          } catch (e) {
+            return [].concat([], cachedWindowNames);
+          }
+        }
         return gOPN(o).filter(onlyNonSymbols);
       };
       defineProperty(Object, GOPN, descriptor);
@@ -20349,7 +20372,7 @@ define('preact/preact',['require','exports','module'],function (require, exports
             delete attributes.children;
         }
         while (stack.length) if ((child = stack.pop()) && void 0 !== child.pop) for (i = child.length; i--; ) stack.push(child[i]); else {
-            if (child === !0 || child === !1) child = null;
+            if ('boolean' == typeof child) child = null;
             if (simple = 'function' != typeof nodeName) if (null == child) child = ''; else if ('number' == typeof child) child = String(child); else if ('string' != typeof child) simple = !1;
             if (simple && lastSimple) children[children.length - 1] += child; else if (children === EMPTY_CHILDREN) children = [ child ]; else children.push(child);
             lastSimple = simple;
@@ -20370,7 +20393,7 @@ define('preact/preact',['require','exports','module'],function (require, exports
         return h(vnode.nodeName, extend(extend({}, vnode.attributes), props), arguments.length > 2 ? [].slice.call(arguments, 2) : vnode.children);
     }
     function enqueueRender(component) {
-        if (!component.__d && (component.__d = !0) && 1 == items.push(component)) (options.debounceRendering || setTimeout)(rerender);
+        if (!component.__d && (component.__d = !0) && 1 == items.push(component)) (options.debounceRendering || defer)(rerender);
     }
     function rerender() {
         var p, list = items;
@@ -20397,7 +20420,8 @@ define('preact/preact',['require','exports','module'],function (require, exports
         return node;
     }
     function removeNode(node) {
-        if (node.parentNode) node.parentNode.removeChild(node);
+        var parentNode = node.parentNode;
+        if (parentNode) parentNode.removeChild(node);
     }
     function setAccessor(node, name, old, value, isSvg) {
         if ('className' === name) name = 'class';
@@ -20408,7 +20432,7 @@ define('preact/preact',['require','exports','module'],function (require, exports
             if (!value || 'string' == typeof value || 'string' == typeof old) node.style.cssText = value || '';
             if (value && 'object' == typeof value) {
                 if ('string' != typeof old) for (var i in old) if (!(i in value)) node.style[i] = '';
-                for (var i in value) node.style[i] = 'number' == typeof value[i] && IS_NON_DIMENSIONAL.test(i) === !1 ? value[i] + 'px' : value[i];
+                for (var i in value) node.style[i] = 'number' == typeof value[i] && !1 === IS_NON_DIMENSIONAL.test(i) ? value[i] + 'px' : value[i];
             }
         } else if ('dangerouslySetInnerHTML' === name) {
             if (value) node.innerHTML = value.__html || '';
@@ -20421,10 +20445,10 @@ define('preact/preact',['require','exports','module'],function (require, exports
             (node.__l || (node.__l = {}))[name] = value;
         } else if ('list' !== name && 'type' !== name && !isSvg && name in node) {
             setProperty(node, name, null == value ? '' : value);
-            if (null == value || value === !1) node.removeAttribute(name);
+            if (null == value || !1 === value) node.removeAttribute(name);
         } else {
             var ns = isSvg && name !== (name = name.replace(/^xlink\:?/, ''));
-            if (null == value || value === !1) if (ns) node.removeAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase()); else node.removeAttribute(name); else if ('function' != typeof value) if (ns) node.setAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase(), value); else node.setAttribute(name, value);
+            if (null == value || !1 === value) if (ns) node.removeAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase()); else node.removeAttribute(name); else if ('function' != typeof value) if (ns) node.setAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase(), value); else node.setAttribute(name, value);
         }
     }
     function setProperty(node, name, value) {
@@ -20457,8 +20481,8 @@ define('preact/preact',['require','exports','module'],function (require, exports
     }
     function idiff(dom, vnode, context, mountAll, componentRoot) {
         var out = dom, prevSvgMode = isSvgMode;
-        if (null == vnode) vnode = '';
-        if ('string' == typeof vnode) {
+        if (null == vnode || 'boolean' == typeof vnode) vnode = '';
+        if ('string' == typeof vnode || 'number' == typeof vnode) {
             if (dom && void 0 !== dom.splitText && dom.parentNode && (!dom._component || componentRoot)) {
                 if (dom.nodeValue != vnode) dom.nodeValue = vnode;
             } else {
@@ -20471,17 +20495,23 @@ define('preact/preact',['require','exports','module'],function (require, exports
             out.__preactattr_ = !0;
             return out;
         }
-        if ('function' == typeof vnode.nodeName) return buildComponentFromVNode(dom, vnode, context, mountAll);
-        isSvgMode = 'svg' === vnode.nodeName ? !0 : 'foreignObject' === vnode.nodeName ? !1 : isSvgMode;
-        if (!dom || !isNamedNode(dom, String(vnode.nodeName))) {
-            out = createNode(String(vnode.nodeName), isSvgMode);
+        var vnodeName = vnode.nodeName;
+        if ('function' == typeof vnodeName) return buildComponentFromVNode(dom, vnode, context, mountAll);
+        isSvgMode = 'svg' === vnodeName ? !0 : 'foreignObject' === vnodeName ? !1 : isSvgMode;
+        vnodeName = String(vnodeName);
+        if (!dom || !isNamedNode(dom, vnodeName)) {
+            out = createNode(vnodeName, isSvgMode);
             if (dom) {
                 while (dom.firstChild) out.appendChild(dom.firstChild);
                 if (dom.parentNode) dom.parentNode.replaceChild(out, dom);
                 recollectNodeTree(dom, !0);
             }
         }
-        var fc = out.firstChild, props = out.__preactattr_ || (out.__preactattr_ = {}), vchildren = vnode.children;
+        var fc = out.firstChild, props = out.__preactattr_, vchildren = vnode.children;
+        if (null == props) {
+            props = out.__preactattr_ = {};
+            for (var a = out.attributes, i = a.length; i--; ) props[a[i].name] = a[i].value;
+        }
         if (!hydrating && vchildren && 1 === vchildren.length && 'string' == typeof vchildren[0] && null != fc && void 0 !== fc.splitText && null == fc.nextSibling) {
             if (fc.nodeValue != vchildren[0]) fc.nodeValue = vchildren[0];
         } else if (vchildren && vchildren.length || null != fc) innerDiffNode(out, vchildren, context, mountAll, hydrating || null != props.dangerouslySetInnerHTML);
@@ -20490,7 +20520,7 @@ define('preact/preact',['require','exports','module'],function (require, exports
         return out;
     }
     function innerDiffNode(dom, vchildren, context, mountAll, isHydrating) {
-        var j, c, vchild, child, originalChildren = dom.childNodes, children = [], keyed = {}, keyedLen = 0, min = 0, len = originalChildren.length, childrenLen = 0, vlen = vchildren ? vchildren.length : 0;
+        var j, c, f, vchild, child, originalChildren = dom.childNodes, children = [], keyed = {}, keyedLen = 0, min = 0, len = originalChildren.length, childrenLen = 0, vlen = vchildren ? vchildren.length : 0;
         if (0 !== len) for (var i = 0; i < len; i++) {
             var _child = originalChildren[i], props = _child.__preactattr_, key = vlen && props ? _child._component ? _child._component.__k : props.key : null;
             if (null != key) {
@@ -20516,7 +20546,8 @@ define('preact/preact',['require','exports','module'],function (require, exports
                 break;
             }
             child = idiff(child, vchild, context, mountAll);
-            if (child && child !== dom) if (i >= len) dom.appendChild(child); else if (child !== originalChildren[i]) if (child === originalChildren[i + 1]) removeNode(originalChildren[i]); else dom.insertBefore(child, originalChildren[i] || null);
+            f = originalChildren[i];
+            if (child && child !== dom && child !== f) if (null == f) dom.appendChild(child); else if (child === f.nextSibling) removeNode(f); else dom.insertBefore(child, f);
         }
         if (keyedLen) for (var i in keyed) if (void 0 !== keyed[i]) recollectNodeTree(keyed[i], !1);
         while (min <= childrenLen) if (void 0 !== (child = children[childrenLen--])) recollectNodeTree(child, !1);
@@ -20525,7 +20556,7 @@ define('preact/preact',['require','exports','module'],function (require, exports
         var component = node._component;
         if (component) unmountComponent(component); else {
             if (null != node.__preactattr_ && node.__preactattr_.ref) node.__preactattr_.ref(null);
-            if (unmountOnly === !1 || null == node.__preactattr_) removeNode(node);
+            if (!1 === unmountOnly || null == node.__preactattr_) removeNode(node);
             removeChildren(node);
         }
     }
@@ -20581,7 +20612,7 @@ define('preact/preact',['require','exports','module'],function (require, exports
             if (!component.__p) component.__p = component.props;
             component.props = props;
             component.__x = !1;
-            if (0 !== opts) if (1 === opts || options.syncComponentUpdates !== !1 || !component.base) renderComponent(component, 1, mountAll); else enqueueRender(component);
+            if (0 !== opts) if (1 === opts || !1 !== options.syncComponentUpdates || !component.base) renderComponent(component, 1, mountAll); else enqueueRender(component);
             if (component.__r) component.__r(component);
         }
     }
@@ -20592,7 +20623,7 @@ define('preact/preact',['require','exports','module'],function (require, exports
                 component.props = previousProps;
                 component.state = previousState;
                 component.context = previousContext;
-                if (2 !== opts && component.shouldComponentUpdate && component.shouldComponentUpdate(props, state, context) === !1) skip = !0; else if (component.componentWillUpdate) component.componentWillUpdate(props, state, context);
+                if (2 !== opts && component.shouldComponentUpdate && !1 === component.shouldComponentUpdate(props, state, context)) skip = !0; else if (component.componentWillUpdate) component.componentWillUpdate(props, state, context);
                 component.props = props;
                 component.state = state;
                 component.context = context;
@@ -20644,7 +20675,6 @@ define('preact/preact',['require','exports','module'],function (require, exports
                 }
             }
             if (!isUpdate || mountAll) mounts.unshift(component); else if (!skip) {
-                flushMounts();
                 if (component.componentDidUpdate) component.componentDidUpdate(previousProps, previousState, previousContext);
                 if (options.afterUpdate) options.afterUpdate(component);
             }
@@ -20705,6 +20735,7 @@ define('preact/preact',['require','exports','module'],function (require, exports
     var options = {};
     var stack = [];
     var EMPTY_CHILDREN = [];
+    var defer = 'function' == typeof Promise ? Promise.resolve().then.bind(Promise.resolve()) : setTimeout;
     var IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|ows|mnc|ntw|ine[ch]|zoo|^ord/i;
     var items = [];
     var mounts = [];
@@ -20772,7 +20803,7 @@ var AUTOBIND_BLACKLIST = {
 };
 
 
-var CAMEL_PROPS = /^(?:accent|alignment|arabic|baseline|cap|clip|color|fill|flood|font|glyph|horiz|marker|overline|paint|stop|strikethrough|stroke|text|underline|unicode|units|v|vert|word|writing|x)[A-Z]/;
+var CAMEL_PROPS = /^(?:accent|alignment|arabic|baseline|cap|clip|color|fill|flood|font|glyph|horiz|marker|overline|paint|stop|strikethrough|stroke|text|underline|unicode|units|v|vector|vert|word|writing|x)[A-Z]/;
 
 
 var BYPASS_HOOK = {};
@@ -20885,7 +20916,7 @@ function render$1(vnode, parent, callback) {
 	if (prev && prev.parentNode!==parent) { prev = null; }
 
 	// default to first Element child
-	if (!prev) { prev = parent.children[0]; }
+	if (!prev && parent) { prev = parent.firstElementChild; }
 
 	// remove unaffected siblings
 	for (var i=parent.childNodes.length; i--; ) {
@@ -20912,9 +20943,10 @@ ContextProvider.prototype.render = function (props) {
 
 function renderSubtreeIntoContainer(parentComponent, vnode, container, callback) {
 	var wrap = preact.h(ContextProvider, { context: parentComponent.context }, vnode);
-	var c = render$1(wrap, container);
-	if (callback) { callback(c); }
-	return c._component || c.base;
+	var renderContainer = render$1(wrap, container);
+	var component = renderContainer._component || renderContainer.base;
+	if (callback) { callback.call(component, renderContainer); }
+	return component;
 }
 
 
@@ -20955,7 +20987,7 @@ var Children = {
 	},
 	toArray: function(children) {
 		if (children == null) { return []; }
-		return Array.isArray && Array.isArray(children) ? children : ARR.concat(children);
+		return ARR.concat(children);
 	}
 };
 
@@ -21115,19 +21147,30 @@ function applyEventNormalization(ref) {
 }
 
 
-function applyClassName(ref) {
-	var attributes = ref.attributes;
-
-	if (!attributes) { return; }
-	var cl = attributes.className || attributes.class;
-	if (cl) { attributes.className = cl; }
+function applyClassName(vnode) {
+	var a = vnode.attributes || (vnode.attributes = {});
+	classNameDescriptor.enumerable = 'className' in a;
+	if (a.className) { a.class = a.className; }
+	Object.defineProperty(a, 'className', classNameDescriptor);
 }
 
 
+var classNameDescriptor = {
+	configurable: true,
+	get: function() { return this.class; },
+	set: function(v) { this.class = v; }
+};
+
 function extend(base, props) {
-	for (var key in props) {
-		if (props.hasOwnProperty(key)) {
-			base[key] = props[key];
+	var arguments$1 = arguments;
+
+	for (var i=1, obj = (void 0); i<arguments.length; i++) {
+		if ((obj = arguments$1[i])) {
+			for (var key in obj) {
+				if (obj.hasOwnProperty(key)) {
+					base[key] = obj[key];
+				}
+			}
 		}
 	}
 	return base;
@@ -21262,7 +21305,7 @@ function propsHook(props, context) {
 
 	// React annoyingly special-cases single children, and some react components are ridiculously strict about this.
 	var c = props.children;
-	if (c && Array.isArray(c) && c.length===1) {
+	if (c && Array.isArray(c) && c.length===1 && (typeof c[0]==='string' || typeof c[0]==='function' || c[0] instanceof VNode)) {
 		props.children = c[0];
 
 		// but its totally still going to be an Array.
@@ -21343,8 +21386,6 @@ PureComponent.prototype.shouldComponentUpdate = function(props, state) {
 	return shallowDiffers(this.props, props) || shallowDiffers(this.state, state);
 };
 
-
-
 var index = {
 	version: version,
 	DOM: DOM,
@@ -21360,7 +21401,8 @@ var index = {
 	unmountComponentAtNode: unmountComponentAtNode,
 	Component: Component$1,
 	PureComponent: PureComponent,
-	unstable_renderSubtreeIntoContainer: renderSubtreeIntoContainer
+	unstable_renderSubtreeIntoContainer: renderSubtreeIntoContainer,
+	__spread: extend
 };
 
 return index;
@@ -21419,7 +21461,7 @@ define('styleguide-web-components/index',['exports', './ws-header/ws-header', '.
   });
 });;define('styleguide-web-components', ['styleguide-web-components/index'], function (main) { return main; });
 
-define('styleguide-web-components/ws-header/ws-header',['exports', '../imports', './ws-header-nav-link'], function (exports, _imports, _wsHeaderNavLink) {
+define('styleguide-web-components/ws-header/ws-header',['exports', '../imports', './storage/cookie-storage', './storage/local-storage', './authorization', '../ws-dropdown/ws-dropdown'], function (exports, _imports, _cookieStorage, _localStorage, _authorization, _wsDropdown) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -21427,13 +21469,396 @@ define('styleguide-web-components/ws-header/ws-header',['exports', '../imports',
   });
   exports.WSHeader = undefined;
 
-  var _wsHeaderNavLink2 = _interopRequireDefault(_wsHeaderNavLink);
-
-  function _interopRequireDefault(obj) {
-    return obj && obj.__esModule ? obj : {
-      default: obj
-    };
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
   }
+
+  function _possibleConstructorReturn(self, call) {
+    if (!self) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return call && (typeof call === "object" || typeof call === "function") ? call : self;
+  }
+
+  var _createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
+  function _inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+    }
+
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+      constructor: {
+        value: subClass,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+  }
+
+  var WSHeader = exports.WSHeader = function (_Component) {
+    _inherits(WSHeader, _Component);
+
+    _createClass(WSHeader, null, [{
+      key: 'setStorageType',
+      value: function setStorageType(type, name) {
+        if (type === 'cookie') {
+          this.storage = new _cookieStorage.CookieStorage(name);
+        } else {
+          this.storage = new _localStorage.LocalStorage(name);
+        }
+      }
+    }, {
+      key: 'getAccessToken',
+      value: function getAccessToken() {
+        var _this2 = this;
+
+        var queryString = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : location.hash.substr(1);
+
+        return new Promise(function (resolve) {
+          var authorization = new _authorization.Authorization(_this2.storage);
+          authorization.onAccessTokenChange(function (accessToken) {
+            return resolve(accessToken);
+          });
+          authorization.tryFetchToken(queryString);
+        });
+      }
+    }, {
+      key: 'getLocale',
+      value: function getLocale() {
+        var locale = WSHeader.storage.get('locale') || window.navigator.language.replace(/([a-z]+)-.*/, '$1');
+        if (['de', 'en'].indexOf(locale) === -1) {
+          return 'en';
+        }
+        return locale;
+      }
+    }]);
+
+    function WSHeader(props) {
+      _classCallCheck(this, WSHeader);
+
+      var _this = _possibleConstructorReturn(this, (WSHeader.__proto__ || Object.getPrototypeOf(WSHeader)).call(this, props));
+
+      _this.initState();
+      _this.initAuthorization(props);
+      _this.mounted = false;
+      _this.locales = [{ label: 'German', value: 'de' }, { label: 'English', value: 'en' }];
+      _this.subMenus = [];
+      _this.menuItems = [];
+      _this.level2 = null;
+      return _this;
+    }
+
+    _createClass(WSHeader, [{
+      key: 'componentDidMount',
+      value: function componentDidMount() {
+        this.mounted = true;
+      }
+    }, {
+      key: 'setLocale',
+      value: function setLocale(newLocale) {
+        this.setState({ locale: newLocale });
+        WSHeader.storage.set('locale', newLocale);
+        this.dispatchEvent('ws-locale-changed', newLocale);
+
+        if (typeof this.props.onLocaleChange === 'function') {
+          this.props.onLocaleChange(newLocale);
+        }
+      }
+    }, {
+      key: 'initState',
+      value: function initState() {
+        this.state = {
+          isLoggedIn: false,
+          locale: WSHeader.getLocale()
+        };
+      }
+    }, {
+      key: 'initAuthorization',
+      value: function initAuthorization(props) {
+        var _this3 = this;
+
+        this.authorization = new _authorization.Authorization(WSHeader.storage, props.loginUrl, props.refreshUrl, props.clientId, props.businessPartnerId);
+
+        this.authorization.onAccessTokenChange(function (accessToken) {
+          if (_this3.mounted) {
+            _this3.setState({ isLoggedIn: !!accessToken });
+          } else {
+            _this3.state.isLoggedIn = !!accessToken;
+          }
+
+          _this3.dispatchEvent('ws-auth-changed', accessToken);
+        });
+
+        this.authorization.tryFetchToken(location.hash.substr(1));
+
+        window.addEventListener('ws-authorize', function () {
+          _this3.authorization.authorize();
+        });
+
+        window.addEventListener('ws-unauthorize', function () {
+          _this3.authorization.unauthorize();
+        });
+      }
+    }, {
+      key: 'enterMenuItem',
+      value: function enterMenuItem(index) {
+        clearInterval(this.leaveTimeout);
+        this.subMenus.forEach(function (subMenu) {
+          return subMenu.classList.remove('is-active');
+        });
+        this.menuItems.forEach(function (item) {
+          return item.classList.remove('is-hovered');
+        });
+
+        if (this.subMenus[index]) {
+          this.level2.classList.add('is-active');
+          var subMenu = this.subMenus[index];
+          subMenu.classList.add('is-active');
+          var item = this.menuItems[index];
+          item.classList.add('is-hovered');
+        } else {
+          this.leaveLevel2();
+        }
+      }
+    }, {
+      key: 'leaveMenuItem',
+      value: function leaveMenuItem(index) {
+        var _this4 = this;
+
+        this.leaveTimeout = setTimeout(function () {
+          _this4.level2.classList.remove('is-active');
+          if (_this4.subMenus[index]) {
+            var subMenu = _this4.subMenus[index];
+            subMenu.classList.remove('is-active');
+            var item = _this4.menuItems[index];
+            item.classList.remove('is-hovered');
+          }
+        }, 10);
+      }
+    }, {
+      key: 'enterLevel2',
+      value: function enterLevel2() {
+        clearInterval(this.leaveTimeout);
+      }
+    }, {
+      key: 'leaveLevel2',
+      value: function leaveLevel2() {
+        this.subMenus.forEach(function (subMenu) {
+          return subMenu.classList.remove('is-active');
+        });
+        this.menuItems.forEach(function (item) {
+          return item.classList.remove('is-hovered');
+        });
+        this.level2.classList.remove('is-active');
+      }
+    }, {
+      key: 'render',
+      value: function render() {
+        var _this5 = this;
+
+        return _imports.React.createElement(
+          'header',
+          { className: 'ws-header', ref: function ref(element) {
+              _this5.element = element;
+            } },
+          _imports.React.createElement(
+            'div',
+            { className: 'level-1' },
+            _imports.React.createElement(
+              'div',
+              { className: 'application-name' },
+              this.props.appLogo && _imports.React.createElement(
+                'figure',
+                { className: 'application-logo' },
+                _imports.React.createElement('img', { src: this.props.appLogo, alt: 'Application logo' })
+              ),
+              this.props.appName
+            ),
+            _imports.React.createElement(
+              'nav',
+              { className: 'main-menu' },
+              _imports.React.createElement(
+                'ul',
+                null,
+                this.props.links.map(function (link, index) {
+                  return _imports.React.createElement(
+                    'li',
+                    {
+                      key: 'header-link' + index,
+                      onMouseEnter: function onMouseEnter() {
+                        return _this5.enterMenuItem(index);
+                      },
+                      onMouseLeave: function onMouseLeave() {
+                        return _this5.leaveMenuItem(index);
+                      },
+                      ref: function ref(element) {
+                        _this5.menuItems[index] = element;
+                      }
+                    },
+                    _imports.React.createElement(
+                      'a',
+                      { href: link.href, onClick: function onClick(event) {
+                          if (link.onClick) link.onClick(event);
+                        } },
+                      link.label
+                    )
+                  );
+                })
+              )
+            ),
+            _imports.React.createElement(
+              'nav',
+              { className: 'menu-controls' },
+              _imports.React.createElement(
+                'ul',
+                null,
+                _imports.React.createElement(
+                  'li',
+                  null,
+                  _imports.React.createElement(_wsDropdown.WSDropdown, {
+                    className: 'locale',
+                    icon: 'icon24 icon-sort-down',
+                    items: this.locales,
+                    text: this.state.locale,
+                    onChange: function onChange(item) {
+                      return _this5.setLocale(item.value);
+                    },
+                    orientation: 'right',
+                    type: 'anchor'
+                  })
+                ),
+                !this.state.isLoggedIn ? _imports.React.createElement(
+                  'li',
+                  { onClick: function onClick() {
+                      return _this5.authorization.authorize();
+                    } },
+                  _imports.React.createElement(
+                    'a',
+                    null,
+                    'Login'
+                  )
+                ) : _imports.React.createElement(
+                  'li',
+                  { onClick: function onClick() {
+                      return _this5.authorization.unauthorize();
+                    } },
+                  _imports.React.createElement(
+                    'a',
+                    null,
+                    _imports.React.createElement('span', { className: 'icon icon24 icon-power' })
+                  )
+                )
+              )
+            )
+          ),
+          _imports.React.createElement(
+            'div',
+            {
+              className: 'level-2',
+              onMouseEnter: function onMouseEnter() {
+                return _this5.enterLevel2();
+              },
+              onMouseLeave: function onMouseLeave() {
+                return _this5.leaveLevel2();
+              },
+              ref: function ref(element) {
+                _this5.level2 = element;
+              }
+            },
+            this.props.links.map(function (parent, index) {
+              return parent.children && parent.children.length && _imports.React.createElement(
+                'ul',
+                { className: 'main-sub-menu', key: 'sub-menu' + index, ref: function ref(element) {
+                    _this5.subMenus[index] = element;
+                  } },
+                parent.children.map(function (child, childIndex) {
+                  return _imports.React.createElement(
+                    'li',
+                    { key: 'sub-link-' + index + '-' + childIndex },
+                    _imports.React.createElement(
+                      'a',
+                      { href: child.href, onClick: function onClick(event) {
+                          if (child.onClick) child.onClick(event);
+                        } },
+                      child.label
+                    )
+                  );
+                })
+              );
+            })
+          )
+        );
+      }
+    }]);
+
+    return WSHeader;
+  }(_imports.Component);
+
+  Object.defineProperty(WSHeader, 'storage', {
+    enumerable: true,
+    writable: true,
+    value: new _localStorage.LocalStorage()
+  });
+  Object.defineProperty(WSHeader, 'defaultProps', {
+    enumerable: true,
+    writable: true,
+    value: {
+      loginUrl: 'https://identity.zalando.com/oauth2/authorize',
+      refreshUrl: null,
+      businessPartnerId: '810d1d00-4312-43e5-bd31-d8373fdd24c7',
+      clientId: null,
+      links: [],
+      appName: 'Zalando',
+      appLogo: null,
+      onLocaleChange: function onLocaleChange() {},
+      onAuthChange: function onAuthChange() {}
+    }
+  });
+  Object.defineProperty(WSHeader, 'propTypes', {
+    enumerable: true,
+    writable: true,
+    value: {
+      loginUrl: _imports.PropTypes.string,
+      refreshUrl: _imports.PropTypes.string,
+      businessPartnerId: _imports.PropTypes.string,
+      clientId: _imports.PropTypes.string,
+      links: _imports.PropTypes.array,
+      appName: _imports.PropTypes.string,
+      appLogo: _imports.PropTypes.string,
+      onLocaleChange: _imports.PropTypes.func,
+      onAuthChange: _imports.PropTypes.func
+    }
+  });
+});
+define('styleguide-web-components/ws-header/storage/cookie-storage',['exports', './abstract-storage'], function (exports, _abstractStorage) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.CookieStorage = undefined;
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -21483,380 +21908,1573 @@ define('styleguide-web-components/ws-header/ws-header',['exports', '../imports',
     if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
   }
 
-  var urlAtStart = window.location.href;
-  var SESSION_TOKEN_NAME = 'session_token';
-  var SESSION_STATE_NAME = 'session_state';
+  var EXTRACT_TOP_LEVEL_DOMAIN = /.*?([a-zA-Z0-9-]{3,}\.[a-zA-Z0-9]{2,})$/;
 
-  var WSHeader = exports.WSHeader = function (_Component) {
-    _inherits(WSHeader, _Component);
+  var CookieStorage = exports.CookieStorage = function (_AbstractStorage) {
+    _inherits(CookieStorage, _AbstractStorage);
 
-    function WSHeader() {
-      _classCallCheck(this, WSHeader);
+    function CookieStorage() {
+      _classCallCheck(this, CookieStorage);
 
-      var _this = _possibleConstructorReturn(this, (WSHeader.__proto__ || Object.getPrototypeOf(WSHeader)).call(this));
+      return _possibleConstructorReturn(this, (CookieStorage.__proto__ || Object.getPrototypeOf(CookieStorage)).apply(this, arguments));
+    }
 
-      _this.state = {
-        cookiePath: '/',
-        cookieDomain: '.zalan.do',
-        lang: null,
-        languageStorageId: 'ws-language',
-        loggedIn: null,
-        id: null,
-        redirectUrl: null,
-        userServiceUrl: null,
-        tokenInfoUrl: '',
-        clientId: null,
-        availableLanguages: ['de', 'en'],
-        userName: null,
-        userEmail: null,
-        userUID: null
-      };
-      _this.state.lang = _this.getLanguage(_this.state);
+    _createClass(CookieStorage, [{
+      key: 'set',
+      value: function set(key, value) {
+        var expires = new Date();
+        expires.setFullYear(expires.getFullYear() + 1);
+        this.createCookie(key, value, expires);
+      }
+    }, {
+      key: 'get',
+      value: function get(key) {
+        var regex = new RegExp('' + this.name + key + '=(.*?)(;|$)');
+        var match = document.cookie.match(regex);
+
+        if (match) {
+          try {
+            return JSON.parse(decodeURIComponent(match[1]));
+          } catch (e) {
+            console.warn('Could not deserialize ' + key);
+          }
+        }
+        return undefined;
+      }
+    }, {
+      key: 'remove',
+      value: function remove(key) {
+        var expires = new Date();
+        expires.setDate(expires.getDate() - 1);
+        this.createCookie(key, null, expires);
+      }
+    }, {
+      key: 'createCookie',
+      value: function createCookie(key, value, expires) {
+        var encodedValue = encodeURIComponent(JSON.stringify(value));
+        var domain = location.hostname.replace(EXTRACT_TOP_LEVEL_DOMAIN, '$1');
+
+        document.cookie = '' + this.name + key + '=' + encodedValue + ';expires=' + expires + ';domain=' + domain;
+      }
+    }]);
+
+    return CookieStorage;
+  }(_abstractStorage.AbstractStorage);
+});
+define('styleguide-web-components/ws-header/storage/abstract-storage',['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  var _createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
+  var AbstractStorage = exports.AbstractStorage = function () {
+    function AbstractStorage(name) {
+      _classCallCheck(this, AbstractStorage);
+
+      this.name = name ? name + '-' : '';
+    }
+
+    _createClass(AbstractStorage, [{
+      key: 'set',
+      value: function set(key, value) {
+        throw new Error('\'' + this.constructor.name + '\' must implement function \'set\'');
+      }
+    }, {
+      key: 'get',
+      value: function get(key) {
+        throw new Error('\'' + this.constructor.name + '\' must implement function \'get\'');
+      }
+    }, {
+      key: 'remove',
+      value: function remove(key) {
+        throw new Error('\'' + this.constructor.name + '\' must implement function \'remove\'');
+      }
+    }]);
+
+    return AbstractStorage;
+  }();
+});
+define('styleguide-web-components/ws-header/storage/local-storage',['exports', './abstract-storage'], function (exports, _abstractStorage) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.LocalStorage = undefined;
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  var _createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
+  function _possibleConstructorReturn(self, call) {
+    if (!self) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return call && (typeof call === "object" || typeof call === "function") ? call : self;
+  }
+
+  function _inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+    }
+
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+      constructor: {
+        value: subClass,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+  }
+
+  var LocalStorage = exports.LocalStorage = function (_AbstractStorage) {
+    _inherits(LocalStorage, _AbstractStorage);
+
+    function LocalStorage() {
+      _classCallCheck(this, LocalStorage);
+
+      return _possibleConstructorReturn(this, (LocalStorage.__proto__ || Object.getPrototypeOf(LocalStorage)).apply(this, arguments));
+    }
+
+    _createClass(LocalStorage, [{
+      key: 'set',
+      value: function set(key, value) {
+        var encodedValue = encodeURIComponent(JSON.stringify(value));
+        localStorage.setItem('' + name + key, encodedValue);
+      }
+    }, {
+      key: 'get',
+      value: function get(key) {
+        var encodedValue = localStorage.getItem(key);
+
+        if (encodedValue) {
+          try {
+            return JSON.parse(decodeURIComponent(encodedValue));
+          } catch (e) {
+            console.warn('Could not deserialize ' + key);
+          }
+        }
+        return undefined;
+      }
+    }, {
+      key: 'remove',
+      value: function remove(key) {
+        localStorage.removeItem('' + this.name + key);
+      }
+    }]);
+
+    return LocalStorage;
+  }(_abstractStorage.AbstractStorage);
+});
+define('styleguide-web-components/ws-header/authorization',['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  var _slicedToArray = function () {
+    function sliceIterator(arr, i) {
+      var _arr = [];
+      var _n = true;
+      var _d = false;
+      var _e = undefined;
+
+      try {
+        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+          _arr.push(_s.value);
+
+          if (i && _arr.length === i) break;
+        }
+      } catch (err) {
+        _d = true;
+        _e = err;
+      } finally {
+        try {
+          if (!_n && _i["return"]) _i["return"]();
+        } finally {
+          if (_d) throw _e;
+        }
+      }
+
+      return _arr;
+    }
+
+    return function (arr, i) {
+      if (Array.isArray(arr)) {
+        return arr;
+      } else if (Symbol.iterator in Object(arr)) {
+        return sliceIterator(arr, i);
+      } else {
+        throw new TypeError("Invalid attempt to destructure non-iterable instance");
+      }
+    };
+  }();
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  var _createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
+  var Authorization = exports.Authorization = function () {
+    function Authorization(storage) {
+      var loginUrl = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+      var refreshUrl = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+      var clientId = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
+      var businessPartnerId = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : '';
+
+      _classCallCheck(this, Authorization);
+
+      this.storage = storage;
+      this.loginUrl = loginUrl;
+      this.refreshUrl = refreshUrl;
+      this.clientId = clientId;
+      this.businessPartnerId = businessPartnerId;
+
+      this.checkExpiration();
+    }
+
+    _createClass(Authorization, [{
+      key: 'onAccessTokenChange',
+      value: function onAccessTokenChange(callback) {
+        this.accessTokenChange = callback;
+      }
+    }, {
+      key: 'changeAccessToken',
+      value: function changeAccessToken(accessToken) {
+        if (typeof this.accessTokenChange === 'function') {
+          this.accessTokenChange(accessToken);
+        }
+      }
+    }, {
+      key: 'checkExpiration',
+      value: function checkExpiration() {
+        var _this = this;
+
+        var expiresAt = this.storage.get('expires_at') || 0;
+        var refreshToken = this.storage.get('refresh_token');
+        if (!refreshToken) {
+          return;
+        }
+
+        if (new Date().getTime() > expiresAt - 60000) {
+          this.refresh(refreshToken);
+        }
+
+        setTimeout(function () {
+          return _this.checkExpiration();
+        }, 59000);
+      }
+    }, {
+      key: 'tryFetchToken',
+      value: function tryFetchToken(queryString) {
+        var queryParams = {};
+        (queryString || '').split('&').forEach(function (keyValue) {
+          var _keyValue$split = keyValue.split('='),
+              _keyValue$split2 = _slicedToArray(_keyValue$split, 2),
+              key = _keyValue$split2[0],
+              value = _keyValue$split2[1];
+
+          queryParams[key] = decodeURIComponent(value);
+        });
+
+        if (queryParams.state) {
+          if (this.storage.get('state') !== queryParams.state) {
+            throw new Error('Unexpected authorisation response');
+          }
+          this.updateTokens(queryParams);
+        } else if (this.storage.get('access_token')) {
+          this.changeAccessToken(this.storage.get('access_token'));
+        } else {
+          this.changeAccessToken(null);
+        }
+      }
+    }, {
+      key: 'updateTokens',
+      value: function updateTokens(params) {
+        var expires = params.expires_in ? parseInt(params.expires_in, 10) : 3600;
+        this.storage.set('access_token', params.access_token);
+        this.storage.set('refresh_token', params.refresh_token);
+        this.storage.set('expires_at', new Date().getTime() + expires * 1000);
+
+        this.changeAccessToken(params.access_token);
+      }
+    }, {
+      key: 'authorize',
+      value: function authorize() {
+        var query = this.buildQuery([['business_partner_id', this.businessPartnerId], ['client_id', this.clientId], ['state', this.createAndRememberUUID()], ['response_type', 'token']]);
+
+        location.href = this.loginUrl + '?' + query;
+      }
+    }, {
+      key: 'refresh',
+      value: function refresh(token) {
+        var _this2 = this;
+
+        if (!this.refreshUrl || !token) {
+          return;
+        }
+        var data = this.buildQuery([['business_partner_id', this.businessPartnerId], ['client_id', this.clientId], ['grant_type', 'refresh_token'], ['refresh_token', token], ['state', this.createAndRememberUUID()], ['response_type', 'token']]);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', this.refreshUrl, true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.addEventListener('load', function () {
+          if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+              _this2.updateTokens(JSON.parse(xhr.responseText));
+            } else {
+              throw new Error('Could not refresh token: ' + xhr.responseText);
+            }
+          }
+        });
+        xhr.send(data);
+      }
+    }, {
+      key: 'unauthorize',
+      value: function unauthorize() {
+        this.storage.remove('access_key');
+        this.storage.remove('refresh_key');
+        this.storage.remove('expires_at');
+        this.changeAccessToken(null);
+      }
+    }, {
+      key: 'createAndRememberUUID',
+      value: function createAndRememberUUID() {
+        var id = function id(length) {
+          return Math.round(Math.random() * Math.pow(10, length)).toString(16).substring(0, length);
+        };
+        var uuid = id(8) + '-' + id(4) + '-' + id(4) + '-' + id(4) + '-' + id(12);
+        this.storage.set('state', uuid);
+        return uuid;
+      }
+    }, {
+      key: 'buildQuery',
+      value: function buildQuery(params) {
+        return params.map(function (pair) {
+          return pair[0] + '=' + encodeURIComponent(pair[1]);
+        }).join('&');
+      }
+    }]);
+
+    return Authorization;
+  }();
+});
+define('styleguide-web-components/ws-dropdown/ws-dropdown',['exports', '../imports', './dropdown-menu', './dropdown-input'], function (exports, _imports, _dropdownMenu, _dropdownInput) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.WSDropdown = undefined;
+
+  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  };
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  var _createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
+  function _possibleConstructorReturn(self, call) {
+    if (!self) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return call && (typeof call === "object" || typeof call === "function") ? call : self;
+  }
+
+  function _inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+    }
+
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+      constructor: {
+        value: subClass,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+  }
+
+  var ANIMATION_END_EVENTS = ['oAnimationEnd', 'MSAnimationEnd', 'animationend'];
+
+  var WSDropdown = exports.WSDropdown = function (_Component) {
+    _inherits(WSDropdown, _Component);
+
+    function WSDropdown(props) {
+      _classCallCheck(this, WSDropdown);
+
+      var _this = _possibleConstructorReturn(this, (WSDropdown.__proto__ || Object.getPrototypeOf(WSDropdown)).call(this, props));
+
+      Object.defineProperty(_this, 'handlePropagation', {
+        enumerable: true,
+        writable: true,
+        value: function value(type, data) {
+          if (type === 'change') {
+            _this.close();
+            _this.setValue(data);
+          } else if (type === 'change-size') {
+            _this.adjustSize(data);
+          }
+        }
+      });
+
+      _this.opened = false;
+      _this.state = _this.createState(props);
       return _this;
     }
 
-    _createClass(WSHeader, [{
+    _createClass(WSDropdown, [{
+      key: 'getChildContext',
+      value: function getChildContext() {
+        return {
+          multiple: this.props.multiple
+        };
+      }
+    }, {
       key: 'componentDidMount',
       value: function componentDidMount() {
-        this.checkIsLoggedIn();
+        window.addEventListener('click', this.onDocumentClick.bind(this));
       }
     }, {
-      key: 'getStateFromUrl',
-      value: function getStateFromUrl(url) {
-        var urlQueryStatePart = /state=([^&]+)/.exec(url);
-        return urlQueryStatePart[1];
+      key: 'componentWillReceiveProps',
+      value: function componentWillReceiveProps(props) {
+        this.setState(this.createState(props));
       }
     }, {
-      key: 'getToken',
-      value: function getToken(orgUrl) {
-        var url = orgUrl;
-        var that = this;
-
-        if (!url) {
-          url = window.location.href;
+      key: 'componentWillUnmount',
+      value: function componentWillUnmount() {
+        window.removeEventListener('click', this.onDocumentClick.bind(this));
+      }
+    }, {
+      key: 'onDocumentClick',
+      value: function onDocumentClick(event) {
+        var element = event.target;
+        while (element && this.element !== element) {
+          element = element.parentNode;
         }
-        var token = getTokenFromUrl(url);
-        if (token) {
-          var sessionState = that.getStateFromUrl(url);
-          if (that.checkSessionState(sessionState)) {
-            that.setCookie(token);
-            return token;
+
+        if (!element) {
+          this.close();
+        }
+      }
+    }, {
+      key: 'getTextFromValue',
+      value: function getTextFromValue(value) {
+        var propsText = (arguments.length <= 1 ? 0 : arguments.length - 1) > 0 ? arguments.length <= 1 ? undefined : arguments[1] : '';
+        var text = propsText || (this.state && this.state.text ? this.state.text : '');
+
+        if (this.props.type === 'select') {
+          if (Array.isArray(value) && value.length) {
+            text = value.map(function (item) {
+              return item.label || item;
+            }).join(', ');
+          } else if (value) {
+            text = value.label;
           }
         }
-        token = getCookieValue(SESSION_TOKEN_NAME);
-        if (token) {
-          return token;
-        }
-        return null;
+        return text;
       }
     }, {
-      key: 'setCookie',
-      value: function setCookie(token) {
-        if (process.env.NODE_ENV !== 'dev') {
-          document.cookie = SESSION_TOKEN_NAME + '=' + token + ';path=' + this.state.cookiePath + ';domain=' + this.state.cookieDomain + ';';
-        } else {
-          document.cookie = SESSION_TOKEN_NAME + '=' + token + ';path=' + this.state.cookiePath + ';';
-        }
-      }
-    }, {
-      key: 'getLanguage',
-      value: function getLanguage(state) {
-        return window.localStorage.getItem(state.languageStorageId) || state.availableLanguages[0];
-      }
-    }, {
-      key: 'setLanguage',
-      value: function setLanguage(lang) {
-        if (lang !== this.state.lang) {
-          this.setState({ lang: lang });
+      key: 'setValue',
+      value: function setValue(value) {
+        var _this2 = this;
 
-          window.localStorage.setItem(this.state.languageStorageId, lang);
-          if (this.props.setLang) {
-            this.props.setLang(lang);
+        this.setState({
+          text: this.getTextFromValue(value),
+          value: value
+        });
+
+        if (this.props.onChange) {
+          this.props.onChange(value);
+        }
+
+        setTimeout(function () {
+          _this2.element.dispatchEvent(new CustomEvent('change', { detail: value, bubbles: true }));
+        }, 100);
+      }
+    }, {
+      key: 'createState',
+      value: function createState(props) {
+        var state = {
+          text: this.getTextFromValue(props.value, props.text),
+          value: this.enrichItems(props.value),
+          items: this.enrichItems(props.items)
+        };
+
+        state.items.forEach(function (item) {
+          var isActive = !!state.value.find(function (val) {
+            return val.value === item.value;
+          });
+          item.selected = isActive;
+          item.stored = isActive;
+        });
+        return state;
+      }
+    }, {
+      key: 'enrichItems',
+      value: function enrichItems(items) {
+        var _this3 = this;
+
+        var itemsToWrap = items;
+
+        if (!Array.isArray(items)) {
+          if (this.props.inputOnly) {
+            return items;
           }
-        }
-      }
-    }, {
-      key: 'removeCookie',
-      value: function removeCookie() {
-        if (process.env.NODE_ENV !== 'dev') {
-          document.cookie = SESSION_TOKEN_NAME + '=;path=' + this.state.cookiePath + ';domain=' + this.state.cookieDomain + ';expires=Thu, 01 Jan 1970 00:00:01 GMT";';
-        } else {
-          document.cookie = SESSION_TOKEN_NAME + '=;path=' + this.state.cookiePath + ';expires=Thu, 01 Jan 1970 00:00:01 GMT";';
-        }
-      }
-    }, {
-      key: 'checkIsLoggedIn',
-      value: function checkIsLoggedIn() {
-        var that = this;
 
-        function failureListener() {
-          that.logout();
+          itemsToWrap = items ? [items] : [];
         }
-
-        function successListener() {
-          var that2 = this;
-
-          function userServiceSuccess() {
-            var user = JSON.parse(this.responseText);
-            that.setState({ userName: user.name });
-            that.setState({ userEmail: user.email });
+        return itemsToWrap.map(function (item) {
+          var enriched = (typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object' ? item : { label: item, value: item };
+          if (enriched.children) {
+            enriched.children = _this3.enrichItems(enriched.children);
           }
-          var data = JSON.parse(that2.responseText);
-          that.setState({ userUID: data.uid });
-          that.propagateLoginStatusChange(true, data.access_token);
-          if (data.uid) {
-            var requestUserServiceUrl = new XMLHttpRequest();
-            requestUserServiceUrl.onload = userServiceSuccess;
-            requestUserServiceUrl.onerror = failureListener;
-            if (process.env.NODE_ENV !== 'dev') {
-              requestUserServiceUrl.open('get', that.state.userServiceUrl + '/' + data.uid, true);
-            } else {
-              requestUserServiceUrl.open('get', '' + that.state.userServiceUrl, true);
+          return enriched;
+        });
+      }
+    }, {
+      key: 'open',
+      value: function open() {
+        if (this.opened || this.props.disabled) {
+          return;
+        }
+        this.opened = true;
+        this.dropdownContainer.style.height = 0;
+        this.dropdownContainer.classList.add('mod-open');
+        this.adjustSize(this.dropdownMenu.getHeight());
+      }
+    }, {
+      key: 'close',
+      value: function close() {
+        var _this4 = this;
+
+        if (!this.opened) {
+          return;
+        }
+        this.animateElement(this.dropdownContainer, 'animate-close', function (container) {
+          _this4.opened = false;
+          container.classList.remove('mod-open');
+
+          if (_this4.props.multiple) {
+            _this4.dropdownMenu.clearSelections();
+          }
+        });
+      }
+    }, {
+      key: 'adjustSize',
+      value: function adjustSize(newSize) {
+        this.dropdownContainer.style.height = newSize + 'px';
+      }
+    }, {
+      key: 'animateElement',
+      value: function animateElement(item, animationClass, callback) {
+        var getEventHandler = function getEventHandler(eventName) {
+          var eventHandler = function eventHandler() {
+            item.classList.remove(animationClass);
+            item.removeEventListener(eventName, eventHandler);
+            callback(item);
+          };
+          return eventHandler;
+        };
+
+        ANIMATION_END_EVENTS.forEach(function (eventName) {
+          item.addEventListener(eventName, getEventHandler(eventName));
+        });
+
+        item.classList.add(animationClass);
+      }
+    }, {
+      key: 'renderTrigger',
+      value: function renderTrigger() {
+        var _this5 = this;
+
+        var icon = void 0;
+        if (this.props.icon) {
+          icon = _imports.React.createElement('span', { className: 'icon ' + this.props.icon });
+        }
+        var disabledStyle = this.props.disabled ? ' is-disabled' : '';
+        switch (this.props.type) {
+          case 'anchor':
+            return _imports.React.createElement(
+              'a',
+              {
+                className: 'dropdown-trigger ' + disabledStyle,
+                onClick: function onClick() {
+                  return _this5.open();
+                }
+              },
+              icon,
+              ' ',
+              this.state.text
+            );
+          case 'button':
+            return _imports.React.createElement(
+              'button',
+              {
+                className: 'dropdown-trigger ' + disabledStyle,
+                onClick: function onClick() {
+                  return _this5.open();
+                }
+              },
+              icon,
+              ' ',
+              this.state.text
+            );
+          case 'select':
+            return _imports.React.createElement(
+              'div',
+              {
+                className: 'dropdown-trigger select-box ' + disabledStyle,
+                onClick: function onClick() {
+                  return _this5.open();
+                }
+              },
+              icon,
+              ' ',
+              this.state.text
+            );
+          case 'icon':
+          default:
+            return _imports.React.createElement(
+              'a',
+              {
+                className: 'dropdown-trigger ' + disabledStyle,
+                onClick: function onClick() {
+                  return _this5.open();
+                }
+              },
+              icon
+            );
+        }
+      }
+    }, {
+      key: 'renderContent',
+      value: function renderContent() {
+        var _this6 = this;
+
+        if (this.props.inputOnly) {
+          return _imports.React.createElement(_dropdownInput.DropdownInput, {
+            value: this.state.value,
+            placeholder: this.props.placeholder,
+            handle: this.handlePropagation,
+            ref: function ref(element) {
+              _this6.dropdownMenu = element;
             }
-            requestUserServiceUrl.setRequestHeader('Authorization', 'Bearer ' + data.access_token);
-            requestUserServiceUrl.send();
-            return true;
+          });
+        }
+        return _imports.React.createElement(_dropdownMenu.DropdownMenu, {
+          items: this.state.items,
+          value: this.state.value,
+          limit: this.props.limit,
+          filterable: this.props.filterable,
+          filter: this.props.filter,
+          placeholder: this.props.placeholder,
+          handle: this.handlePropagation,
+          ref: function ref(element) {
+            _this6.dropdownMenu = element;
           }
-          return false;
+        });
+      }
+    }, {
+      key: 'render',
+      value: function render() {
+        var _this7 = this;
+
+        var isWide = this.props.type === 'select' ? 'mod-wide' : '';
+        return _imports.React.createElement(
+          'div',
+          { className: 'dropdown', ref: function ref(element) {
+              if (element) {
+                _this7.element = element;
+              }
+            } },
+          this.renderTrigger(),
+          _imports.React.createElement(
+            'div',
+            {
+              className: 'dropdown-container ' + this.props.orientation + ' ' + isWide,
+              ref: function ref(element) {
+                if (element) {
+                  _this7.dropdownContainer = element;
+                }
+              }
+            },
+            this.renderContent()
+          ),
+          _imports.React.createElement('div', { className: 'dropdown-arrow' })
+        );
+      }
+    }]);
+
+    return WSDropdown;
+  }(_imports.Component);
+
+  Object.defineProperty(WSDropdown, 'defaultProps', {
+    enumerable: true,
+    writable: true,
+    value: {
+      type: 'anchor',
+      text: '',
+      icon: '',
+      items: [],
+      multiple: false,
+      inputOnly: false,
+      filterable: false,
+      filter: '',
+      limit: 10,
+      orientation: 'left',
+      placeholder: '',
+      value: null,
+      onChange: function onChange() {},
+      disabled: false
+    }
+  });
+  Object.defineProperty(WSDropdown, 'propTypes', {
+    enumerable: true,
+    writable: true,
+    value: {
+      type: _imports.PropTypes.oneOf(['anchor', 'button', 'select', 'icon']),
+      text: _imports.PropTypes.string,
+      icon: _imports.PropTypes.string,
+      items: _imports.PropTypes.array,
+      multiple: _imports.PropTypes.bool,
+      filterable: _imports.PropTypes.bool,
+      inputOnly: _imports.PropTypes.bool,
+      filter: _imports.PropTypes.string,
+      limit: _imports.PropTypes.number,
+      orientation: _imports.PropTypes.oneOf(['left', 'right']),
+      placeholder: _imports.PropTypes.string,
+      value: _imports.PropTypes.oneOfType([_imports.PropTypes.string, _imports.PropTypes.object, _imports.PropTypes.array]),
+      onChange: _imports.PropTypes.func,
+      disabled: _imports.PropTypes.bool
+    }
+  });
+  Object.defineProperty(WSDropdown, 'childContextTypes', {
+    enumerable: true,
+    writable: true,
+    value: {
+      multiple: _imports.PropTypes.bool
+    }
+  });
+});
+define('styleguide-web-components/ws-dropdown/dropdown-menu',['exports', '../imports', './dropdown-menu-item'], function (exports, _imports, _dropdownMenuItem) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.DropdownMenu = undefined;
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  var _createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
+  function _possibleConstructorReturn(self, call) {
+    if (!self) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return call && (typeof call === "object" || typeof call === "function") ? call : self;
+  }
+
+  function _inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+    }
+
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+      constructor: {
+        value: subClass,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+  }
+
+  var ANIMATION_START_EVENTS = ['oAnimationStart', 'MSAnimationStart', 'animationstart'];
+  var ANIMATION_END_EVENTS = ['oAnimationEnd', 'MSAnimationEnd', 'animationend'];
+
+  var DropdownMenu = exports.DropdownMenu = function (_Component) {
+    _inherits(DropdownMenu, _Component);
+
+    function DropdownMenu(props, context) {
+      _classCallCheck(this, DropdownMenu);
+
+      var _this = _possibleConstructorReturn(this, (DropdownMenu.__proto__ || Object.getPrototypeOf(DropdownMenu)).call(this, props, context));
+
+      Object.defineProperty(_this, 'handlePropagation', {
+        enumerable: true,
+        writable: true,
+        value: function value(type, data) {
+          switch (type) {
+            case 'go-back':
+              _this.props.handle('show-parent');
+              break;
+
+            case 'show-parent':
+              _this.showCurrent();
+              break;
+            case 'show-child':
+              _this.showChild(data);
+              break;
+            case 'change':
+              _this.clearSelections();
+
+              if (!_this.context.multiple) {
+                var previous = _this.state.items.find(function (item) {
+                  return item.stored && item !== data;
+                });
+                if (previous) {
+                  previous.stored = false;
+                  previous.selected = false;
+                }
+              }
+              _this.props.handle(type, data);
+              break;
+            case 'change-size':
+            default:
+              _this.props.handle(type, data);
+              break;
+          }
+        }
+      });
+
+      _this.openSubMenu = null;
+      _this.state = {
+        filter: props.filter,
+        items: props.items,
+        value: props.value
+      };
+      return _this;
+    }
+
+    _createClass(DropdownMenu, [{
+      key: 'componentDidMount',
+      value: function componentDidMount() {
+        if (this.input) {
+          this.input.addEventListener('change', function (event) {
+            return event.stopPropagation();
+          });
+        }
+      }
+    }, {
+      key: 'componentWillReceiveProps',
+      value: function componentWillReceiveProps(props) {
+        this.setState({
+          filter: props.filter,
+          items: props.items,
+          value: props.value
+        });
+      }
+    }, {
+      key: 'componentDidUpdate',
+      value: function componentDidUpdate() {
+        this.props.handle('change-size', this.getHeight());
+      }
+    }, {
+      key: 'componentWillUnmount',
+      value: function componentWillUnmount() {
+        if (this.input) {
+          this.input.removeEventListener('change', function (event) {
+            return event.stopPropagation();
+          });
+        }
+      }
+    }, {
+      key: 'getHeight',
+      value: function getHeight() {
+        return this.menuContainer.clientHeight;
+      }
+    }, {
+      key: 'getFilteredItems',
+      value: function getFilteredItems() {
+        var _this2 = this;
+
+        var regex = new RegExp(this.state.filter, 'i');
+        return this.state.items.filter(function (item) {
+          if (_this2.props.filterable && _this2.state.filter && !regex.test(item.label)) {
+            return false;
+          }
+
+          if (_this2.props.filterable || _this2.context.multiple) {
+            return !item.stored;
+          }
+          return true;
+        });
+      }
+    }, {
+      key: 'updateFilter',
+      value: function updateFilter(event) {
+        event.stopPropagation();
+        this.setState({ filter: event.target.value });
+      }
+    }, {
+      key: 'clearSelections',
+      value: function clearSelections() {
+        if (this.state.items) {
+          this.state.items.forEach(function (item) {
+            if (item.selected && !item.stored) {
+              item.selected = false;
+            }
+          });
+        }
+      }
+    }, {
+      key: 'submit',
+      value: function submit(event) {
+        event.stopPropagation();
+        var value = this.state.items.filter(function (item) {
+          item.stored = item.selected;
+          return item.selected;
+        });
+
+        this.props.handle('change', value);
+        this.setState({ value: value });
+      }
+    }, {
+      key: 'showChild',
+      value: function showChild(subMenu) {
+        this.openSubMenu = subMenu;
+        this.props.handle('change-size', subMenu.getHeight());
+        this.animateOut(false);
+        subMenu.animateIn(false);
+      }
+    }, {
+      key: 'showCurrent',
+      value: function showCurrent() {
+        if (this.openSubMenu) {
+          this.props.handle('change-size', this.getHeight());
+          this.openSubMenu.animateOut(true);
+          this.animateIn(true);
+          this.openSubMenu = null;
+        }
+      }
+    }, {
+      key: 'animateIn',
+      value: function animateIn(goBack) {
+        var inAnimation = goBack ? 'animate-in' : 'animate-sub-in';
+
+        this.animateElement(this.menuContainer, inAnimation, function (menu) {
+          menu.classList.remove('mod-sub-open');
+          menu.classList.add('mod-menu-open');
+        });
+      }
+    }, {
+      key: 'animateOut',
+      value: function animateOut(goBack) {
+        var outAnimation = !goBack ? 'animate-out' : 'animate-sub-out';
+
+        this.animateElement(this.menuContainer, outAnimation, function (menu) {
+          menu.classList.remove('mod-menu-open');
+          if (!goBack) {
+            menu.classList.add('mod-sub-open');
+          }
+        });
+      }
+    }, {
+      key: 'animateElement',
+      value: function animateElement(item, animationClass, callback) {
+        var eventCounter = 0;
+
+        var handler = function handler() {
+          eventCounter -= 1;
+          if (eventCounter) {
+            return;
+          }
+
+          ANIMATION_END_EVENTS.forEach(function (eventName) {
+            item.removeEventListener(eventName, handler);
+          });
+          item.classList.remove(animationClass);
+          callback(item);
+        };
+
+        ANIMATION_END_EVENTS.forEach(function (eventName) {
+          item.addEventListener(eventName, handler);
+        });
+
+        ANIMATION_START_EVENTS.forEach(function (eventName) {
+          item.addEventListener(eventName, function () {
+            eventCounter += 1;
+          });
+        });
+
+        item.classList.add(animationClass);
+      }
+    }, {
+      key: 'render',
+      value: function render() {
+        var _this3 = this;
+
+        var limit = this.props.filterable ? this.props.limit : this.state.items.length;
+        var items = this.getFilteredItems().slice(0, limit);
+        var hasValue = Array.isArray(this.state.value) ? this.state.value.length : this.state.value;
+
+        return _imports.React.createElement(
+          'ul',
+          {
+            className: 'dropdown-menu ' + (!this.props.parent ? 'dropdown-root-menu' : 'dropdown-child-menu'),
+            ref: function ref(element) {
+              _this3.menuContainer = element;
+            }
+          },
+          this.props.filterable && _imports.React.createElement(
+            'li',
+            { className: 'dropdown-input', key: 'filter' },
+            _imports.React.createElement('input', {
+              type: 'text',
+              defaultValue: this.state.filter,
+              placeholder: this.props.placeholder,
+              onKeyUp: function onKeyUp(event) {
+                return _this3.updateFilter(event);
+              },
+              ref: function ref(element) {
+                _this3.input = element;
+              }
+            })
+          ),
+          this.props.parent && [_imports.React.createElement(_dropdownMenuItem.DropdownMenuItem, {
+            item: this.props.parent,
+            icon: 'icon-left',
+            handle: this.handlePropagation,
+            key: 'parent',
+            isParent: true
+          }), _imports.React.createElement('li', { className: 'dropdown-item-separator', key: 'parent-separator' })],
+          hasValue && (this.context.multiple || this.props.filterable) ? [this.state.items.filter(function (item) {
+            return item.stored;
+          }).map(function (item, index) {
+            return _imports.React.createElement(_dropdownMenuItem.DropdownMenuItem, { item: item, handle: _this3.handlePropagation, key: 'value-' + index });
+          }), _imports.React.createElement('li', { className: 'dropdown-item-separator', key: 'value-separator' })] : null,
+          items.map(function (item, index) {
+            return _imports.React.createElement(_dropdownMenuItem.DropdownMenuItem, { item: item, handle: _this3.handlePropagation, key: 'item-' + index });
+          }),
+          (!items || !items.length) && _imports.React.createElement(_dropdownMenuItem.DropdownMenuItem, { item: { label: 'No results found', disabled: true }, key: 'disabled' }),
+          this.context.multiple && [_imports.React.createElement('li', { className: 'dropdown-item-separator', key: 'submit-separator' }), _imports.React.createElement(
+            'li',
+            { className: 'dropdown-submit', key: 'submit' },
+            _imports.React.createElement(
+              'button',
+              { className: 'mod-small', onClick: function onClick(event) {
+                  return _this3.submit(event);
+                } },
+              'OK'
+            )
+          )]
+        );
+      }
+    }]);
+
+    return DropdownMenu;
+  }(_imports.Component);
+
+  Object.defineProperty(DropdownMenu, 'defaultProps', {
+    enumerable: true,
+    writable: true,
+    value: {
+      parent: null,
+      items: [],
+      value: null,
+      filterable: false,
+      filter: null,
+      placeholder: '',
+      limit: 10,
+      handle: function handle() {}
+    }
+  });
+  Object.defineProperty(DropdownMenu, 'propTypes', {
+    enumerable: true,
+    writable: true,
+    value: {
+      parent: _imports.PropTypes.object,
+      items: _imports.PropTypes.array,
+      filterable: _imports.PropTypes.bool,
+      filter: _imports.PropTypes.string,
+      placeholder: _imports.PropTypes.string,
+      limit: _imports.PropTypes.number
+    }
+  });
+  Object.defineProperty(DropdownMenu, 'contextTypes', {
+    enumerable: true,
+    writable: true,
+    value: {
+      multiple: _imports.PropTypes.bool
+    }
+  });
+});
+define('styleguide-web-components/ws-dropdown/dropdown-menu-item',['exports', '../imports', './dropdown-menu'], function (exports, _imports, _dropdownMenu) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.DropdownMenuItem = undefined;
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  var _createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
+  function _possibleConstructorReturn(self, call) {
+    if (!self) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return call && (typeof call === "object" || typeof call === "function") ? call : self;
+  }
+
+  function _inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+    }
+
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+      constructor: {
+        value: subClass,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+  }
+
+  var DropdownMenuItem = exports.DropdownMenuItem = function (_Component) {
+    _inherits(DropdownMenuItem, _Component);
+
+    function DropdownMenuItem(props, context) {
+      _classCallCheck(this, DropdownMenuItem);
+
+      var _this = _possibleConstructorReturn(this, (DropdownMenuItem.__proto__ || Object.getPrototypeOf(DropdownMenuItem)).call(this, props, context));
+
+      Object.defineProperty(_this, 'handlePropagation', {
+        enumerable: true,
+        writable: true,
+        value: function value(type, data) {
+          _this.props.handle(type, data);
+        }
+      });
+
+      _this.state = props.item;
+      _this.menu = null;
+      return _this;
+    }
+
+    _createClass(DropdownMenuItem, [{
+      key: 'componentWillReceiveProps',
+      value: function componentWillReceiveProps(props) {
+        this.state = props.item;
+      }
+    }, {
+      key: 'onClick',
+      value: function onClick(event) {
+        event.stopPropagation();
+
+        if (this.state.disabled) {
+          return;
         }
 
-        var token = this.getToken(urlAtStart);
-        if (!token) {
-          return failureListener();
-        }
-        var request = new XMLHttpRequest();
-        request.onload = successListener;
-        request.onerror = failureListener;
-        request.open('get', that.state.tokenInfoUrl, true);
-        request.setRequestHeader('Authorization', 'Bearer ' + token.split('?')[0]);
-        request.send();
-        return true;
-      }
-    }, {
-      key: 'propagateLoginStatusChange',
-      value: function propagateLoginStatusChange(isLoggedIn, token) {
-        if (this.state.loggedIn !== isLoggedIn) {
-          this.setState({ loggedIn: isLoggedIn });
-
-          if (this.props.setLogin) {
-            this.props.setLogin({
-              loggedIn: isLoggedIn,
-              token: token || null
-            });
+        if (this.props.isParent) {
+          this.props.handle('go-back');
+        } else if (this.state.children && this.state.children.length) {
+          this.props.handle('show-child', this.menu);
+        } else {
+          if (!this.context.multiple) {
+            if (this.state.selected) {
+              this.props.handle('change', null);
+            } else {
+              this.state.selected = true;
+              this.state.stored = true;
+              this.props.handle('change', this.state);
+            }
+          } else {
+            this.state.selected = !this.state.selected;
           }
+
+          this.setState(this.state);
         }
-      }
-    }, {
-      key: 'checkSessionState',
-      value: function checkSessionState(state) {
-        var stateObj = JSON.parse(decodeURIComponent(state));
-        var valid = window.localStorage.getItem(SESSION_STATE_NAME) === stateObj.state;
-        window.location.hash = stateObj.hash;
-        window.localStorage.removeItem(SESSION_STATE_NAME);
-        return valid;
-      }
-    }, {
-      key: 'login',
-      value: function login() {
-        window.location.href = 'https://auth.zalando.com/z/oauth2/authorize?realm=/employees&response_type=token&scope=uid&client_id=' + this.props.clientId + '&redirect_uri=' + this.props.redirectUrl + '&state=' + setSessionState();
-      }
-    }, {
-      key: 'logout',
-      value: function logout() {
-        this.removeCookie();
-        this.propagateLoginStatusChange(false, null);
       }
     }, {
       key: 'render',
       value: function render() {
         var _this2 = this;
 
-        var that = this;
+        var anchorClass = 'text';
+        anchorClass += this.state.selected ? ' is-active' : '';
+        anchorClass += this.state.focused ? ' is-focused' : '';
+        anchorClass += this.state.disabled ? ' is-disabled' : '';
+        anchorClass += ' ' + (this.state.className || '');
+        var itemClass = 'dropdown-item';
+        itemClass += this.props.isParent ? ' dropdown-parent-item' : '';
+        itemClass += this.state.children && !this.props.isParent ? ' has-children' : '';
+
         return _imports.React.createElement(
-          'div',
-          { className: 'refills-patterns refills-components' },
+          'li',
+          {
+            className: itemClass,
+            onClick: function onClick(event) {
+              return _this2.onClick(event);
+            }
+          },
           _imports.React.createElement(
-            'header',
-            { className: 'navigation', role: 'banner' },
+            'a',
+            { className: anchorClass, href: this.state.href, title: this.state.title || this.state.label },
+            (this.props.icon || this.state.icon) && _imports.React.createElement('i', { className: 'icon ' + (this.props.icon || this.state.icon) }),
+            this.state.label
+          ),
+          !this.props.isParent && this.state.children && _imports.React.createElement(_dropdownMenu.DropdownMenu, {
+            items: this.state.children,
+            parent: this.state,
+            ref: function ref(element) {
+              _this2.menu = element;
+            },
+            handle: this.handlePropagation
+          })
+        );
+      }
+    }]);
+
+    return DropdownMenuItem;
+  }(_imports.Component);
+
+  Object.defineProperty(DropdownMenuItem, 'defaultProps', {
+    enumerable: true,
+    writable: true,
+    value: {
+      item: null,
+      icon: null,
+      isParent: false,
+      handle: function handle() {}
+    }
+  });
+  Object.defineProperty(DropdownMenuItem, 'propTypes', {
+    enumerable: true,
+    writable: true,
+    value: {
+      item: _imports.PropTypes.object,
+      icon: _imports.PropTypes.string,
+      isParent: _imports.PropTypes.bool,
+      handle: _imports.PropTypes.func
+    }
+  });
+  Object.defineProperty(DropdownMenuItem, 'contextTypes', {
+    enumerable: true,
+    writable: true,
+    value: {
+      multiple: _imports.PropTypes.bool
+    }
+  });
+});
+define('styleguide-web-components/ws-dropdown/dropdown-input',['exports', '../imports'], function (exports, _imports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.DropdownInput = undefined;
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  var _createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
+  function _possibleConstructorReturn(self, call) {
+    if (!self) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return call && (typeof call === "object" || typeof call === "function") ? call : self;
+  }
+
+  function _inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+    }
+
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+      constructor: {
+        value: subClass,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+  }
+
+  var KEY_ENTER = 13;
+
+  var DropdownInput = exports.DropdownInput = function (_Component) {
+    _inherits(DropdownInput, _Component);
+
+    function DropdownInput(props) {
+      _classCallCheck(this, DropdownInput);
+
+      var _this = _possibleConstructorReturn(this, (DropdownInput.__proto__ || Object.getPrototypeOf(DropdownInput)).call(this, props));
+
+      _this.state = {
+        value: props.value
+      };
+      return _this;
+    }
+
+    _createClass(DropdownInput, [{
+      key: 'componentDidMount',
+      value: function componentDidMount() {
+        this.input.addEventListener('change', function (event) {
+          return event.stopPropagation();
+        });
+      }
+    }, {
+      key: 'componentWillUnmount',
+      value: function componentWillUnmount() {
+        this.input.removeEventListener('change', function (event) {
+          return event.stopPropagation();
+        });
+      }
+    }, {
+      key: 'onKeyDown',
+      value: function onKeyDown(event) {
+        if (event.which === KEY_ENTER) {
+          this.onChange(event);
+          this.onSubmit();
+          event.preventDefault();
+          return false;
+        }
+        return true;
+      }
+    }, {
+      key: 'onChange',
+      value: function onChange(event) {
+        this.setState({ value: event.target.value });
+      }
+    }, {
+      key: 'onSubmit',
+      value: function onSubmit() {
+        this.props.handle('change', this.state.value);
+      }
+    }, {
+      key: 'getHeight',
+      value: function getHeight() {
+        return this.menuContainer.clientHeight;
+      }
+    }, {
+      key: 'render',
+      value: function render() {
+        var _this2 = this;
+
+        return _imports.React.createElement(
+          'ul',
+          { className: 'dropdown-menu dropdown-root-menu', ref: function ref(element) {
+              _this2.menuContainer = element;
+            } },
+          _imports.React.createElement(
+            'li',
+            { className: 'dropdown-input', key: 'filter' },
+            _imports.React.createElement('input', {
+              type: 'text',
+              defaultValue: this.state.value,
+              placeholder: this.props.placeholder,
+              onKeyDown: function onKeyDown(event) {
+                return _this2.onKeyDown(event);
+              },
+              onBlur: function onBlur(event) {
+                return _this2.onChange(event);
+              },
+              ref: function ref(element) {
+                _this2.input = element;
+              }
+            })
+          ),
+          _imports.React.createElement(
+            'li',
+            { className: 'dropdown-submit', key: 'submit' },
             _imports.React.createElement(
-              'div',
-              { className: 'navigation-wrapper' },
-              _imports.React.createElement(
-                'a',
-                { href: '/' },
-                this.props.logoUrl && _imports.React.createElement('img', { className: 'logo', alt: this.props.title + '_logo', src: this.props.logoUrl }),
-                _imports.React.createElement(
-                  'span',
-                  { className: 'nav-title' },
-                  this.props.title
-                )
-              ),
-              _imports.React.createElement(
-                'nav',
-                { role: 'navigation' },
-                _imports.React.createElement(
-                  'ul',
-                  { id: 'js-navigation-menu', className: 'navigation-menu show' },
-                  this.state.loggedIn && this.state.userName !== null && _imports.React.createElement(
-                    'ul',
-                    { id: 'nav-links' },
-                    this.props.links.length > 0 && this.props.links.map(function (link, index) {
-                      return _imports.React.createElement(_wsHeaderNavLink2.default, { link: link, key: index });
-                    })
-                  ),
-                  _imports.React.createElement(
-                    'li',
-                    { className: 'nav-link more dropdown-menu' },
-                    _imports.React.createElement(
-                      'a',
-                      { href: '#lang' + this.state.lang },
-                      _imports.React.createElement('span', { id: 'selectedLanguageFlag', className: 'flag flag-' + this.state.lang }),
-                      _imports.React.createElement(
-                        'span',
-                        { id: 'selectedLanguage' },
-                        this.state.lang
-                      )
-                    ),
-                    _imports.React.createElement(
-                      'ul',
-                      { className: 'submenu', id: 'languages' },
-                      this.state.availableLanguages.map(function (lang) {
-                        return _imports.React.createElement(
-                          'li',
-                          { key: 'lang-' + lang, onClick: function onClick() {
-                              return that.setLanguage(lang);
-                            } },
-                          _imports.React.createElement(
-                            'a',
-                            null,
-                            _imports.React.createElement('span', { className: 'flag flag-' + lang }),
-                            _imports.React.createElement(
-                              'span',
-                              null,
-                              lang
-                            )
-                          )
-                        );
-                      })
-                    )
-                  ),
-                  _imports.React.createElement(
-                    'li',
-                    { className: 'nav-link', id: 'loggedInInfo' },
-                    this.state.loggedIn && this.state.userName ? _imports.React.createElement(
-                      'span',
-                      { onClick: function onClick() {
-                          return _this2.logout();
-                        } },
-                      _imports.React.createElement(
-                        'span',
-                        { id: 'userName' },
-                        this.state.userName
-                      ),
-                      _imports.React.createElement(
-                        'a',
-                        { className: 'auto-size', id: 'logOutButton', type: 'button' },
-                        _imports.React.createElement('span', { className: 'icon icon-close' })
-                      )
-                    ) : _imports.React.createElement(
-                      'a',
-                      { className: 'auto-size', onClick: function onClick() {
-                          return _this2.login();
-                        } },
-                      _imports.React.createElement(
-                        'span',
-                        null,
-                        'Login'
-                      )
-                    )
-                  )
-                )
-              )
+              'button',
+              { className: 'mod-small', onClick: function onClick() {
+                  return _this2.onSubmit();
+                } },
+              'OK'
             )
           )
         );
       }
     }]);
 
-    return WSHeader;
+    return DropdownInput;
   }(_imports.Component);
 
-  Object.defineProperty(WSHeader, 'defaultProps', {
+  Object.defineProperty(DropdownInput, 'defaultProps', {
     enumerable: true,
     writable: true,
     value: {
-      setLang: function setLang() {},
-      setLogin: function setLogin() {},
-      clientId: null,
-      redirectUrl: '',
-      logoUrl: null,
-      title: '',
-      links: []
+      value: null,
+      placeholder: '',
+      handle: function handle() {}
     }
   });
-  Object.defineProperty(WSHeader, 'propTypes', {
+  Object.defineProperty(DropdownInput, 'propTypes', {
     enumerable: true,
     writable: true,
     value: {
-      setLang: _imports.PropTypes.func,
-      setLogin: _imports.PropTypes.func,
-      clientId: _imports.PropTypes.number,
-      redirectUrl: _imports.PropTypes.string,
-      logoUrl: _imports.PropTypes.string,
-      title: _imports.PropTypes.string,
-      links: _imports.PropTypes.array
+      value: _imports.PropTypes.string,
+      placeholder: _imports.PropTypes.string,
+      handle: _imports.PropTypes.func
     }
   });
-
-  function getTokenFromUrl(url) {
-    var urlQueryTokenPart = /access_token=([^&]+)/.exec(url);
-    return urlQueryTokenPart !== null ? urlQueryTokenPart[1] : null;
-  }
-
-  function getCookieValue(a) {
-    var b = document.cookie.match('(^|;)\\s*' + a + '\\s*=\\s*([^;]+)');
-    return b ? b.pop() : '';
-  }
-
-  function guid() {
-    function s4() {
-      return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-    }
-
-    return '' + s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
-  }
-
-  function setSessionState() {
-    var state = guid();
-    var obj = {
-      state: state,
-      hash: window.location.hash
-    };
-
-    window.localStorage.setItem(SESSION_STATE_NAME, state);
-    return encodeURIComponent(JSON.stringify(obj));
-  }
-});
-define('styleguide-web-components/ws-header/ws-header-nav-link',["exports", "../imports"], function (exports, _imports) {
-  "use strict";
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = WSHeaderNavLink;
-  function WSHeaderNavLink(props) {
-    return _imports.React.createElement(
-      "li",
-      { className: "nav-link", onClick: function onClick() {
-          return props.link.onclick && props.link.onclick(props.link.value);
-        } },
-      _imports.React.createElement(
-        "a",
-        null,
-        props.link.label
-      )
-    );
-  }
 });
 define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '../imports', './flatpickr'], function (exports, _imports, _flatpickr) {
   'use strict';
@@ -21932,6 +23550,14 @@ define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '..
     }
   }
 
+  function _possibleConstructorReturn(self, call) {
+    if (!self) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return call && (typeof call === "object" || typeof call === "function") ? call : self;
+  }
+
   var _createClass = function () {
     function defineProperties(target, props) {
       for (var i = 0; i < props.length; i++) {
@@ -21949,14 +23575,6 @@ define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '..
       return Constructor;
     };
   }();
-
-  function _possibleConstructorReturn(self, call) {
-    if (!self) {
-      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-    }
-
-    return call && (typeof call === "object" || typeof call === "function") ? call : self;
-  }
 
   function _inherits(subClass, superClass) {
     if (typeof superClass !== "function" && superClass !== null) {
@@ -21976,6 +23594,13 @@ define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '..
 
   var WSDatePicker = exports.WSDatePicker = function (_Component) {
     _inherits(WSDatePicker, _Component);
+
+    _createClass(WSDatePicker, null, [{
+      key: 'setFormat',
+      value: function setFormat(format) {
+        this.format = format;
+      }
+    }]);
 
     function WSDatePicker(props) {
       _classCallCheck(this, WSDatePicker);
@@ -21997,7 +23622,7 @@ define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '..
         this.flatpickr = new _flatpickr2.default(this.input, _extends({
           weekNumbers: true,
           defaultDate: this.state.value,
-          dateFormat: this.props.format
+          dateFormat: this.constructor.format
         }, this.props.options, {
           onChange: this.onChange.bind(this)
         }));
@@ -22082,7 +23707,6 @@ define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '..
     writable: true,
     value: {
       value: null,
-      format: 'd.m.Y',
       placeholder: '',
       iconOnly: false,
       options: {},
@@ -22094,12 +23718,16 @@ define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '..
     writable: true,
     value: {
       value: _imports.PropTypes.oneOfType([_imports.PropTypes.string, _imports.PropTypes.number]),
-      format: _imports.PropTypes.string,
       placeholder: _imports.PropTypes.string,
       iconOnly: _imports.PropTypes.bool,
       options: _imports.PropTypes.object,
       onChange: _imports.PropTypes.func
     }
+  });
+  Object.defineProperty(WSDatePicker, 'format', {
+    enumerable: true,
+    writable: true,
+    value: 'd.m.Y'
   });
 });
 define('styleguide-web-components/ws-date-picker/flatpickr',['module'], function (module) {
@@ -24292,1153 +25920,6 @@ define('styleguide-web-components/ws-date-picker/flatpickr',['module'], function
     module.exports = Flatpickr;
   }
 });
-define('styleguide-web-components/ws-dropdown/ws-dropdown',['exports', '../imports', './dropdown-menu', './dropdown-input'], function (exports, _imports, _dropdownMenu, _dropdownInput) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.WSDropdown = undefined;
-
-  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-    return typeof obj;
-  } : function (obj) {
-    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-  };
-
-  function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  }
-
-  var _createClass = function () {
-    function defineProperties(target, props) {
-      for (var i = 0; i < props.length; i++) {
-        var descriptor = props[i];
-        descriptor.enumerable = descriptor.enumerable || false;
-        descriptor.configurable = true;
-        if ("value" in descriptor) descriptor.writable = true;
-        Object.defineProperty(target, descriptor.key, descriptor);
-      }
-    }
-
-    return function (Constructor, protoProps, staticProps) {
-      if (protoProps) defineProperties(Constructor.prototype, protoProps);
-      if (staticProps) defineProperties(Constructor, staticProps);
-      return Constructor;
-    };
-  }();
-
-  function _possibleConstructorReturn(self, call) {
-    if (!self) {
-      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-    }
-
-    return call && (typeof call === "object" || typeof call === "function") ? call : self;
-  }
-
-  function _inherits(subClass, superClass) {
-    if (typeof superClass !== "function" && superClass !== null) {
-      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
-    }
-
-    subClass.prototype = Object.create(superClass && superClass.prototype, {
-      constructor: {
-        value: subClass,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
-  }
-
-  var ANIMATION_END_EVENTS = ['oAnimationEnd', 'MSAnimationEnd', 'animationend'];
-
-  var WSDropdown = exports.WSDropdown = function (_Component) {
-    _inherits(WSDropdown, _Component);
-
-    function WSDropdown(props) {
-      _classCallCheck(this, WSDropdown);
-
-      var _this = _possibleConstructorReturn(this, (WSDropdown.__proto__ || Object.getPrototypeOf(WSDropdown)).call(this, props));
-
-      Object.defineProperty(_this, 'handlePropagation', {
-        enumerable: true,
-        writable: true,
-        value: function value(type, data) {
-          if (type === 'change') {
-            _this.close();
-            _this.setValue(data);
-          } else if (type === 'change-size') {
-            _this.adjustSize(data);
-          }
-        }
-      });
-
-      _this.opened = false;
-      _this.state = _this.createState(props);
-      return _this;
-    }
-
-    _createClass(WSDropdown, [{
-      key: 'getChildContext',
-      value: function getChildContext() {
-        return {
-          multiple: this.props.multiple
-        };
-      }
-    }, {
-      key: 'componentDidMount',
-      value: function componentDidMount() {
-        window.addEventListener('click', this.onDocumentClick.bind(this));
-      }
-    }, {
-      key: 'componentWillReceiveProps',
-      value: function componentWillReceiveProps(props) {
-        this.setState(this.createState(props));
-      }
-    }, {
-      key: 'componentWillUnmount',
-      value: function componentWillUnmount() {
-        window.removeEventListener('click', this.onDocumentClick.bind(this));
-      }
-    }, {
-      key: 'onDocumentClick',
-      value: function onDocumentClick(event) {
-        var element = event.target;
-        while (element && this.element !== element) {
-          element = element.parentNode;
-        }
-
-        if (!element) {
-          this.close();
-        }
-      }
-    }, {
-      key: 'getTextFromValue',
-      value: function getTextFromValue(value) {
-        var text = this.state.text;
-
-        if (this.props.type === 'select') {
-          if (Array.isArray(value)) {
-            text = value.map(function (item) {
-              return item.label;
-            }).join(', ');
-          } else {
-            text = value.label || value;
-          }
-        }
-        return text;
-      }
-    }, {
-      key: 'setValue',
-      value: function setValue(value) {
-        var _this2 = this;
-
-        this.setState({
-          text: this.getTextFromValue(value),
-          value: value
-        });
-
-        if (this.props.onChange) {
-          this.props.onChange(value);
-        }
-
-        setTimeout(function () {
-          _this2.element.dispatchEvent(new CustomEvent('change', { detail: value, bubbles: true }));
-        }, 100);
-      }
-    }, {
-      key: 'createState',
-      value: function createState(props) {
-        var state = {
-          text: props.text || this.getTextFromValue(props.value),
-          value: this.enrichItems(props.value),
-          items: this.enrichItems(props.items)
-        };
-
-        state.items.forEach(function (item) {
-          var isActive = !!state.value.find(function (val) {
-            return val.value === item.value;
-          });
-          item.selected = isActive;
-          item.stored = isActive;
-        });
-        return state;
-      }
-    }, {
-      key: 'enrichItems',
-      value: function enrichItems(items) {
-        var _this3 = this;
-
-        var itemsToWrap = items;
-
-        if (!Array.isArray(items)) {
-          if (this.props.inputOnly) {
-            return items;
-          }
-
-          itemsToWrap = items ? [items] : [];
-        }
-        return itemsToWrap.map(function (item) {
-          var enriched = (typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object' ? item : { label: item };
-          if (enriched.children) {
-            enriched.children = _this3.enrichItems(enriched.children);
-          }
-          return enriched;
-        });
-      }
-    }, {
-      key: 'open',
-      value: function open() {
-        if (this.opened || this.props.disabled) {
-          return;
-        }
-        this.opened = true;
-        this.dropdownContainer.style.height = 0;
-        this.dropdownContainer.classList.add('mod-open');
-        this.adjustSize(this.dropdownMenu.getHeight());
-      }
-    }, {
-      key: 'close',
-      value: function close() {
-        var _this4 = this;
-
-        if (!this.opened) {
-          return;
-        }
-        this.animateElement(this.dropdownContainer, 'animate-close', function (container) {
-          _this4.opened = false;
-          container.classList.remove('mod-open');
-
-          if (_this4.props.multiple) {
-            _this4.dropdownMenu.clearSelections();
-          }
-        });
-      }
-    }, {
-      key: 'adjustSize',
-      value: function adjustSize(newSize) {
-        this.dropdownContainer.style.height = newSize + 'px';
-      }
-    }, {
-      key: 'animateElement',
-      value: function animateElement(item, animationClass, callback) {
-        var getEventHandler = function getEventHandler(eventName) {
-          var eventHandler = function eventHandler() {
-            item.classList.remove(animationClass);
-            item.removeEventListener(eventName, eventHandler);
-            callback(item);
-          };
-          return eventHandler;
-        };
-
-        ANIMATION_END_EVENTS.forEach(function (eventName) {
-          item.addEventListener(eventName, getEventHandler(eventName));
-        });
-
-        item.classList.add(animationClass);
-      }
-    }, {
-      key: 'renderTrigger',
-      value: function renderTrigger() {
-        var _this5 = this;
-
-        var icon = void 0;
-        if (this.props.icon) {
-          icon = _imports.React.createElement('span', { className: 'icon ' + this.props.icon });
-        }
-        var disabledStyle = this.props.disabled ? ' is-disabled' : '';
-        switch (this.props.type) {
-          case 'anchor':
-            return _imports.React.createElement(
-              'a',
-              {
-                className: 'dropdown-trigger ' + disabledStyle,
-                onClick: function onClick() {
-                  return _this5.open();
-                }
-              },
-              icon,
-              ' ',
-              this.state.text
-            );
-          case 'button':
-            return _imports.React.createElement(
-              'button',
-              {
-                className: 'dropdown-trigger ' + disabledStyle,
-                onClick: function onClick() {
-                  return _this5.open();
-                }
-              },
-              icon,
-              ' ',
-              this.state.text
-            );
-          case 'select':
-            return _imports.React.createElement(
-              'div',
-              {
-                className: 'dropdown-trigger select-box ' + disabledStyle,
-                onClick: function onClick() {
-                  return _this5.open();
-                }
-              },
-              icon,
-              ' ',
-              this.state.text
-            );
-          case 'icon':
-          default:
-            return _imports.React.createElement(
-              'a',
-              {
-                className: 'dropdown-trigger ' + disabledStyle,
-                onClick: function onClick() {
-                  return _this5.open();
-                }
-              },
-              icon
-            );
-        }
-      }
-    }, {
-      key: 'renderContent',
-      value: function renderContent() {
-        var _this6 = this;
-
-        if (this.props.inputOnly) {
-          return _imports.React.createElement(_dropdownInput.DropdownInput, {
-            value: this.state.value,
-            placeholder: this.props.placeholder,
-            handle: this.handlePropagation,
-            ref: function ref(element) {
-              _this6.dropdownMenu = element;
-            }
-          });
-        }
-        return _imports.React.createElement(_dropdownMenu.DropdownMenu, {
-          items: this.state.items,
-          value: this.state.value,
-          limit: this.props.limit,
-          filterable: this.props.filterable,
-          filter: this.props.filter,
-          placeholder: this.props.placeholder,
-          handle: this.handlePropagation,
-          ref: function ref(element) {
-            _this6.dropdownMenu = element;
-          }
-        });
-      }
-    }, {
-      key: 'render',
-      value: function render() {
-        var _this7 = this;
-
-        return _imports.React.createElement(
-          'div',
-          { className: 'dropdown', ref: function ref(element) {
-              if (element) {
-                _this7.element = element;
-              }
-            } },
-          this.renderTrigger(),
-          _imports.React.createElement(
-            'div',
-            {
-              className: 'dropdown-container ' + this.props.orientation,
-              ref: function ref(element) {
-                if (element) {
-                  _this7.dropdownContainer = element;
-                }
-              }
-            },
-            this.renderContent()
-          ),
-          _imports.React.createElement('div', { className: 'dropdown-arrow' })
-        );
-      }
-    }]);
-
-    return WSDropdown;
-  }(_imports.Component);
-
-  Object.defineProperty(WSDropdown, 'defaultProps', {
-    enumerable: true,
-    writable: true,
-    value: {
-      type: 'anchor',
-      text: '',
-      icon: '',
-      items: [],
-      multiple: false,
-      inputOnly: false,
-      filterable: false,
-      filter: '',
-      limit: 10,
-      orientation: 'left',
-      placeholder: '',
-      value: null,
-      onChange: function onChange() {},
-      disabled: false
-    }
-  });
-  Object.defineProperty(WSDropdown, 'propTypes', {
-    enumerable: true,
-    writable: true,
-    value: {
-      type: _imports.PropTypes.oneOf(['anchor', 'button', 'select', 'icon']),
-      text: _imports.PropTypes.string,
-      icon: _imports.PropTypes.string,
-      items: _imports.PropTypes.array,
-      multiple: _imports.PropTypes.bool,
-      filterable: _imports.PropTypes.bool,
-      inputOnly: _imports.PropTypes.bool,
-      filter: _imports.PropTypes.string,
-      limit: _imports.PropTypes.number,
-      orientation: _imports.PropTypes.oneOf(['left', 'right']),
-      placeholder: _imports.PropTypes.string,
-      value: _imports.PropTypes.oneOfType([_imports.PropTypes.string, _imports.PropTypes.object, _imports.PropTypes.array]),
-      onChange: _imports.PropTypes.func,
-      disabled: _imports.PropTypes.bool
-    }
-  });
-  Object.defineProperty(WSDropdown, 'childContextTypes', {
-    enumerable: true,
-    writable: true,
-    value: {
-      multiple: _imports.PropTypes.bool
-    }
-  });
-});
-define('styleguide-web-components/ws-dropdown/dropdown-menu',['exports', '../imports', './dropdown-menu-item'], function (exports, _imports, _dropdownMenuItem) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.DropdownMenu = undefined;
-
-  function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  }
-
-  var _createClass = function () {
-    function defineProperties(target, props) {
-      for (var i = 0; i < props.length; i++) {
-        var descriptor = props[i];
-        descriptor.enumerable = descriptor.enumerable || false;
-        descriptor.configurable = true;
-        if ("value" in descriptor) descriptor.writable = true;
-        Object.defineProperty(target, descriptor.key, descriptor);
-      }
-    }
-
-    return function (Constructor, protoProps, staticProps) {
-      if (protoProps) defineProperties(Constructor.prototype, protoProps);
-      if (staticProps) defineProperties(Constructor, staticProps);
-      return Constructor;
-    };
-  }();
-
-  function _possibleConstructorReturn(self, call) {
-    if (!self) {
-      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-    }
-
-    return call && (typeof call === "object" || typeof call === "function") ? call : self;
-  }
-
-  function _inherits(subClass, superClass) {
-    if (typeof superClass !== "function" && superClass !== null) {
-      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
-    }
-
-    subClass.prototype = Object.create(superClass && superClass.prototype, {
-      constructor: {
-        value: subClass,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
-  }
-
-  var ANIMATION_START_EVENTS = ['oAnimationStart', 'MSAnimationStart', 'animationstart'];
-  var ANIMATION_END_EVENTS = ['oAnimationEnd', 'MSAnimationEnd', 'animationend'];
-
-  var DropdownMenu = exports.DropdownMenu = function (_Component) {
-    _inherits(DropdownMenu, _Component);
-
-    function DropdownMenu(props, context) {
-      _classCallCheck(this, DropdownMenu);
-
-      var _this = _possibleConstructorReturn(this, (DropdownMenu.__proto__ || Object.getPrototypeOf(DropdownMenu)).call(this, props, context));
-
-      Object.defineProperty(_this, 'handlePropagation', {
-        enumerable: true,
-        writable: true,
-        value: function value(type, data) {
-          switch (type) {
-            case 'go-back':
-              _this.props.handle('show-parent');
-              break;
-
-            case 'show-parent':
-              _this.showCurrent();
-              break;
-            case 'show-child':
-              _this.showChild(data);
-              break;
-            case 'change':
-              _this.clearSelections();
-
-              if (!_this.context.multiple) {
-                var previous = _this.state.items.find(function (item) {
-                  return item.stored && item !== data;
-                });
-                if (previous) {
-                  previous.stored = false;
-                  previous.selected = false;
-                }
-              }
-              _this.props.handle(type, data);
-              break;
-            case 'change-size':
-            default:
-              _this.props.handle(type, data);
-              break;
-          }
-        }
-      });
-
-      _this.openSubMenu = null;
-      _this.state = {
-        filter: props.filter,
-        items: props.items,
-        value: props.value
-      };
-      return _this;
-    }
-
-    _createClass(DropdownMenu, [{
-      key: 'componentDidMount',
-      value: function componentDidMount() {
-        if (this.input) {
-          this.input.addEventListener('change', function (event) {
-            return event.stopPropagation();
-          });
-        }
-      }
-    }, {
-      key: 'componentWillReceiveProps',
-      value: function componentWillReceiveProps(props) {
-        this.setState({
-          filter: props.filter,
-          items: props.items,
-          value: props.value
-        });
-      }
-    }, {
-      key: 'componentDidUpdate',
-      value: function componentDidUpdate() {
-        this.props.handle('change-size', this.getHeight());
-      }
-    }, {
-      key: 'componentWillUnmount',
-      value: function componentWillUnmount() {
-        if (this.input) {
-          this.input.removeEventListener('change', function (event) {
-            return event.stopPropagation();
-          });
-        }
-      }
-    }, {
-      key: 'getHeight',
-      value: function getHeight() {
-        return this.menuContainer.clientHeight;
-      }
-    }, {
-      key: 'getFilteredItems',
-      value: function getFilteredItems() {
-        var _this2 = this;
-
-        var regex = new RegExp(this.state.filter, 'i');
-        return this.state.items.filter(function (item) {
-          if (_this2.props.filterable && _this2.state.filter && !regex.test(item.label)) {
-            return false;
-          }
-
-          if (_this2.props.filterable || _this2.context.multiple) {
-            return !item.stored && !item.selected;
-          }
-          return true;
-        });
-      }
-    }, {
-      key: 'updateFilter',
-      value: function updateFilter(event) {
-        event.stopPropagation();
-        this.setState({ filter: event.target.value });
-      }
-    }, {
-      key: 'clearSelections',
-      value: function clearSelections() {
-        if (this.state.items) {
-          this.state.items.forEach(function (item) {
-            if (item.selected && !item.stored) {
-              item.selected = false;
-            }
-          });
-        }
-      }
-    }, {
-      key: 'submit',
-      value: function submit(event) {
-        event.stopPropagation();
-        var value = this.state.items.filter(function (item) {
-          item.stored = item.selected;
-          return item.selected;
-        });
-
-        this.props.handle('change', value);
-        this.setState({ value: value });
-      }
-    }, {
-      key: 'showChild',
-      value: function showChild(subMenu) {
-        this.openSubMenu = subMenu;
-        this.props.handle('change-size', subMenu.getHeight());
-        this.animateOut(false);
-        subMenu.animateIn(false);
-      }
-    }, {
-      key: 'showCurrent',
-      value: function showCurrent() {
-        if (this.openSubMenu) {
-          this.props.handle('change-size', this.getHeight());
-          this.openSubMenu.animateOut(true);
-          this.animateIn(true);
-          this.openSubMenu = null;
-        }
-      }
-    }, {
-      key: 'animateIn',
-      value: function animateIn(goBack) {
-        var inAnimation = goBack ? 'animate-in' : 'animate-sub-in';
-
-        this.animateElement(this.menuContainer, inAnimation, function (menu) {
-          menu.classList.remove('mod-sub-open');
-          menu.classList.add('mod-menu-open');
-        });
-      }
-    }, {
-      key: 'animateOut',
-      value: function animateOut(goBack) {
-        var outAnimation = !goBack ? 'animate-out' : 'animate-sub-out';
-
-        this.animateElement(this.menuContainer, outAnimation, function (menu) {
-          menu.classList.remove('mod-menu-open');
-          if (!goBack) {
-            menu.classList.add('mod-sub-open');
-          }
-        });
-      }
-    }, {
-      key: 'animateElement',
-      value: function animateElement(item, animationClass, callback) {
-        var eventCounter = 0;
-
-        var handler = function handler() {
-          eventCounter -= 1;
-          if (eventCounter) {
-            return;
-          }
-
-          ANIMATION_END_EVENTS.forEach(function (eventName) {
-            item.removeEventListener(eventName, handler);
-          });
-          item.classList.remove(animationClass);
-          callback(item);
-        };
-
-        ANIMATION_END_EVENTS.forEach(function (eventName) {
-          item.addEventListener(eventName, handler);
-        });
-
-        ANIMATION_START_EVENTS.forEach(function (eventName) {
-          item.addEventListener(eventName, function () {
-            eventCounter += 1;
-          });
-        });
-
-        item.classList.add(animationClass);
-      }
-    }, {
-      key: 'render',
-      value: function render() {
-        var _this3 = this;
-
-        var limit = this.props.filterable ? this.props.limit : this.state.items.length;
-        var items = this.getFilteredItems().slice(0, limit);
-        var hasValue = Array.isArray(this.state.value) ? this.state.value.length : this.state.value;
-
-        return _imports.React.createElement(
-          'ul',
-          {
-            className: 'dropdown-menu ' + (!this.props.parent ? 'dropdown-root-menu' : 'dropdown-child-menu'),
-            ref: function ref(element) {
-              _this3.menuContainer = element;
-            }
-          },
-          this.props.filterable && _imports.React.createElement(
-            'li',
-            { className: 'dropdown-input', key: 'filter' },
-            _imports.React.createElement('input', {
-              type: 'text',
-              defaultValue: this.state.filter,
-              placeholder: this.props.placeholder,
-              onKeyUp: function onKeyUp(event) {
-                return _this3.updateFilter(event);
-              },
-              ref: function ref(element) {
-                _this3.input = element;
-              }
-            })
-          ),
-          this.props.parent && [_imports.React.createElement(_dropdownMenuItem.DropdownMenuItem, {
-            item: this.props.parent,
-            icon: 'icon-left',
-            handle: this.handlePropagation,
-            key: 'parent',
-            isParent: true
-          }), _imports.React.createElement('li', { className: 'dropdown-item-separator', key: 'parent-separator' })],
-          hasValue && (this.context.multiple || this.props.filterable) ? [this.state.items.filter(function (item) {
-            return item.stored;
-          }).map(function (item, index) {
-            return _imports.React.createElement(_dropdownMenuItem.DropdownMenuItem, { item: item, handle: _this3.handlePropagation, key: 'value-' + index });
-          }), _imports.React.createElement('li', { className: 'dropdown-item-separator', key: 'value-separator' })] : null,
-          items.map(function (item, index) {
-            return _imports.React.createElement(_dropdownMenuItem.DropdownMenuItem, { item: item, handle: _this3.handlePropagation, key: 'item-' + index });
-          }),
-          (!items || !items.length) && _imports.React.createElement(_dropdownMenuItem.DropdownMenuItem, { item: { label: 'No results found', disabled: true }, key: 'disabled' }),
-          this.context.multiple && [_imports.React.createElement('li', { className: 'dropdown-item-separator', key: 'submit-separator' }), _imports.React.createElement(
-            'li',
-            { className: 'dropdown-submit', key: 'submit' },
-            _imports.React.createElement(
-              'button',
-              { className: 'mod-small', onClick: function onClick(event) {
-                  return _this3.submit(event);
-                } },
-              'OK'
-            )
-          )]
-        );
-      }
-    }]);
-
-    return DropdownMenu;
-  }(_imports.Component);
-
-  Object.defineProperty(DropdownMenu, 'defaultProps', {
-    enumerable: true,
-    writable: true,
-    value: {
-      parent: null,
-      items: [],
-      value: null,
-      filterable: false,
-      filter: null,
-      placeholder: '',
-      limit: 10,
-      handle: function handle() {}
-    }
-  });
-  Object.defineProperty(DropdownMenu, 'propTypes', {
-    enumerable: true,
-    writable: true,
-    value: {
-      parent: _imports.PropTypes.object,
-      items: _imports.PropTypes.array,
-      filterable: _imports.PropTypes.bool,
-      filter: _imports.PropTypes.string,
-      placeholder: _imports.PropTypes.string,
-      limit: _imports.PropTypes.number
-    }
-  });
-  Object.defineProperty(DropdownMenu, 'contextTypes', {
-    enumerable: true,
-    writable: true,
-    value: {
-      multiple: _imports.PropTypes.bool
-    }
-  });
-});
-define('styleguide-web-components/ws-dropdown/dropdown-menu-item',['exports', '../imports', './dropdown-menu'], function (exports, _imports, _dropdownMenu) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.DropdownMenuItem = undefined;
-
-  function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  }
-
-  var _createClass = function () {
-    function defineProperties(target, props) {
-      for (var i = 0; i < props.length; i++) {
-        var descriptor = props[i];
-        descriptor.enumerable = descriptor.enumerable || false;
-        descriptor.configurable = true;
-        if ("value" in descriptor) descriptor.writable = true;
-        Object.defineProperty(target, descriptor.key, descriptor);
-      }
-    }
-
-    return function (Constructor, protoProps, staticProps) {
-      if (protoProps) defineProperties(Constructor.prototype, protoProps);
-      if (staticProps) defineProperties(Constructor, staticProps);
-      return Constructor;
-    };
-  }();
-
-  function _possibleConstructorReturn(self, call) {
-    if (!self) {
-      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-    }
-
-    return call && (typeof call === "object" || typeof call === "function") ? call : self;
-  }
-
-  function _inherits(subClass, superClass) {
-    if (typeof superClass !== "function" && superClass !== null) {
-      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
-    }
-
-    subClass.prototype = Object.create(superClass && superClass.prototype, {
-      constructor: {
-        value: subClass,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
-  }
-
-  var DropdownMenuItem = exports.DropdownMenuItem = function (_Component) {
-    _inherits(DropdownMenuItem, _Component);
-
-    function DropdownMenuItem(props, context) {
-      _classCallCheck(this, DropdownMenuItem);
-
-      var _this = _possibleConstructorReturn(this, (DropdownMenuItem.__proto__ || Object.getPrototypeOf(DropdownMenuItem)).call(this, props, context));
-
-      Object.defineProperty(_this, 'handlePropagation', {
-        enumerable: true,
-        writable: true,
-        value: function value(type, data) {
-          _this.props.handle(type, data);
-        }
-      });
-
-      _this.state = props.item;
-      _this.menu = null;
-      return _this;
-    }
-
-    _createClass(DropdownMenuItem, [{
-      key: 'componentWillReceiveProps',
-      value: function componentWillReceiveProps(props) {
-        this.state = props.item;
-      }
-    }, {
-      key: 'onClick',
-      value: function onClick(event) {
-        event.stopPropagation();
-
-        if (this.state.disabled) {
-          return;
-        }
-
-        if (this.props.isParent) {
-          this.props.handle('go-back');
-        } else if (this.state.children && this.state.children.length) {
-          this.props.handle('show-child', this.menu);
-        } else {
-          if (!this.context.multiple) {
-            if (this.state.selected) {
-              this.props.handle('change', null);
-            } else {
-              this.state.selected = true;
-              this.state.stored = true;
-              this.props.handle('change', this.state);
-            }
-          } else {
-            this.state.selected = !this.state.selected;
-          }
-
-          this.setState(this.state);
-        }
-      }
-    }, {
-      key: 'render',
-      value: function render() {
-        var _this2 = this;
-
-        var anchorClass = 'text';
-        anchorClass += this.state.selected ? ' is-active' : '';
-        anchorClass += this.state.focused ? ' is-focused' : '';
-        anchorClass += this.state.disabled ? ' is-disabled' : '';
-        anchorClass += ' ' + (this.state.className || '');
-        var itemClass = 'dropdown-item';
-        itemClass += this.props.isParent ? ' dropdown-parent-item' : '';
-        itemClass += this.state.children && !this.props.isParent ? ' has-children' : '';
-
-        return _imports.React.createElement(
-          'li',
-          {
-            className: itemClass,
-            onClick: function onClick(event) {
-              return _this2.onClick(event);
-            }
-          },
-          _imports.React.createElement(
-            'a',
-            { className: anchorClass, href: this.state.href, title: this.state.title || this.state.label },
-            (this.props.icon || this.state.icon) && _imports.React.createElement('i', { className: 'icon ' + (this.props.icon || this.state.icon) }),
-            this.state.label
-          ),
-          !this.props.isParent && this.state.children && _imports.React.createElement(_dropdownMenu.DropdownMenu, {
-            items: this.state.children,
-            parent: this.state,
-            ref: function ref(element) {
-              _this2.menu = element;
-            },
-            handle: this.handlePropagation
-          })
-        );
-      }
-    }]);
-
-    return DropdownMenuItem;
-  }(_imports.Component);
-
-  Object.defineProperty(DropdownMenuItem, 'defaultProps', {
-    enumerable: true,
-    writable: true,
-    value: {
-      item: null,
-      icon: null,
-      isParent: false,
-      handle: function handle() {}
-    }
-  });
-  Object.defineProperty(DropdownMenuItem, 'propTypes', {
-    enumerable: true,
-    writable: true,
-    value: {
-      item: _imports.PropTypes.object,
-      icon: _imports.PropTypes.string,
-      isParent: _imports.PropTypes.bool,
-      handle: _imports.PropTypes.func
-    }
-  });
-  Object.defineProperty(DropdownMenuItem, 'contextTypes', {
-    enumerable: true,
-    writable: true,
-    value: {
-      multiple: _imports.PropTypes.bool
-    }
-  });
-});
-define('styleguide-web-components/ws-dropdown/dropdown-input',['exports', '../imports'], function (exports, _imports) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.DropdownInput = undefined;
-
-  function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  }
-
-  var _createClass = function () {
-    function defineProperties(target, props) {
-      for (var i = 0; i < props.length; i++) {
-        var descriptor = props[i];
-        descriptor.enumerable = descriptor.enumerable || false;
-        descriptor.configurable = true;
-        if ("value" in descriptor) descriptor.writable = true;
-        Object.defineProperty(target, descriptor.key, descriptor);
-      }
-    }
-
-    return function (Constructor, protoProps, staticProps) {
-      if (protoProps) defineProperties(Constructor.prototype, protoProps);
-      if (staticProps) defineProperties(Constructor, staticProps);
-      return Constructor;
-    };
-  }();
-
-  function _possibleConstructorReturn(self, call) {
-    if (!self) {
-      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-    }
-
-    return call && (typeof call === "object" || typeof call === "function") ? call : self;
-  }
-
-  function _inherits(subClass, superClass) {
-    if (typeof superClass !== "function" && superClass !== null) {
-      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
-    }
-
-    subClass.prototype = Object.create(superClass && superClass.prototype, {
-      constructor: {
-        value: subClass,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
-  }
-
-  var KEY_ENTER = 13;
-
-  var DropdownInput = exports.DropdownInput = function (_Component) {
-    _inherits(DropdownInput, _Component);
-
-    function DropdownInput(props) {
-      _classCallCheck(this, DropdownInput);
-
-      var _this = _possibleConstructorReturn(this, (DropdownInput.__proto__ || Object.getPrototypeOf(DropdownInput)).call(this, props));
-
-      _this.state = {
-        value: props.value
-      };
-      return _this;
-    }
-
-    _createClass(DropdownInput, [{
-      key: 'componentDidMount',
-      value: function componentDidMount() {
-        this.input.addEventListener('change', function (event) {
-          return event.stopPropagation();
-        });
-      }
-    }, {
-      key: 'componentWillUnmount',
-      value: function componentWillUnmount() {
-        this.input.removeEventListener('change', function (event) {
-          return event.stopPropagation();
-        });
-      }
-    }, {
-      key: 'onKeyDown',
-      value: function onKeyDown(event) {
-        if (event.which === KEY_ENTER) {
-          this.onChange(event);
-          this.onSubmit();
-          event.preventDefault();
-          return false;
-        }
-        return true;
-      }
-    }, {
-      key: 'onChange',
-      value: function onChange(event) {
-        this.setState({ value: event.target.value });
-      }
-    }, {
-      key: 'onSubmit',
-      value: function onSubmit() {
-        this.props.handle('change', this.state.value);
-      }
-    }, {
-      key: 'getHeight',
-      value: function getHeight() {
-        return this.menuContainer.clientHeight;
-      }
-    }, {
-      key: 'render',
-      value: function render() {
-        var _this2 = this;
-
-        return _imports.React.createElement(
-          'ul',
-          { className: 'dropdown-menu dropdown-root-menu', ref: function ref(element) {
-              _this2.menuContainer = element;
-            } },
-          _imports.React.createElement(
-            'li',
-            { className: 'dropdown-input', key: 'filter' },
-            _imports.React.createElement('input', {
-              type: 'text',
-              defaultValue: this.state.value,
-              placeholder: this.props.placeholder,
-              onKeyDown: function onKeyDown(event) {
-                return _this2.onKeyDown(event);
-              },
-              onBlur: function onBlur(event) {
-                return _this2.onChange(event);
-              },
-              ref: function ref(element) {
-                _this2.input = element;
-              }
-            })
-          ),
-          _imports.React.createElement(
-            'li',
-            { className: 'dropdown-submit', key: 'submit' },
-            _imports.React.createElement(
-              'button',
-              { className: 'mod-small', onClick: function onClick() {
-                  return _this2.onSubmit();
-                } },
-              'OK'
-            )
-          )
-        );
-      }
-    }]);
-
-    return DropdownInput;
-  }(_imports.Component);
-
-  Object.defineProperty(DropdownInput, 'defaultProps', {
-    enumerable: true,
-    writable: true,
-    value: {
-      value: null,
-      placeholder: '',
-      handle: function handle() {}
-    }
-  });
-  Object.defineProperty(DropdownInput, 'propTypes', {
-    enumerable: true,
-    writable: true,
-    value: {
-      value: _imports.PropTypes.string,
-      placeholder: _imports.PropTypes.string,
-      handle: _imports.PropTypes.func
-    }
-  });
-});
 define('styleguide-web-components/ws-inline-edit/ws-inline-edit',['exports', '../imports'], function (exports, _imports) {
   'use strict';
 
@@ -25691,8 +26172,8 @@ define('styleguide-web-components/ws-notification/ws-notification',['exports', '
     }, {
       key: 'componentWillUnmount',
       value: function componentWillUnmount() {
-        window.removeEventListener('ws-notification-open');
-        window.removeEventListener('ws-notification-close');
+        window.removeEventListener('ws-notification-open', this.addNotify);
+        window.removeEventListener('ws-notification-close', this.closeAllEvents);
       }
     }, {
       key: 'addNotify',
@@ -25874,6 +26355,7 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker',['exports', '..
 
       var _this = _possibleConstructorReturn(this, (WSWeekPicker.__proto__ || Object.getPrototypeOf(WSWeekPicker)).call(this, props));
 
+      _this.element = null;
       _this.state = {
         show: false,
         selectedYear: props.selectedYear,
@@ -25888,7 +26370,7 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker',['exports', '..
         var _this2 = this;
 
         this.outsideClickListener = document.body.addEventListener('click', function (e) {
-          if (_this2.state.show && !isDescendant(_this2.elem, e.target)) {
+          if (_this2.state.show && !isDescendant(_this2.element, e.target)) {
             _this2.setState({ show: false });
           }
         });
@@ -25920,6 +26402,8 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker',['exports', '..
           });
           if (this.props.onChange) {
             this.props.onChange({ week: week, year: year });
+          } else {
+            this.element.dispatchEvent(new CustomEvent('change', { week: week, year: year }, { bubbles: true }));
           }
         }
       }
@@ -25935,8 +26419,8 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker',['exports', '..
 
         return _imports.React.createElement(
           'div',
-          { className: 'ws-week-picker', ref: function ref(elem) {
-              _this3.elem = elem;
+          { className: 'ws-week-picker', ref: function ref(element) {
+              _this3.element = element;
             } },
           _imports.React.createElement('input', {
             value: this.state.selectedWeek !== null ? 'Week ' + this.state.selectedWeek + ', ' + this.state.selectedYear : '',
@@ -25947,7 +26431,7 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker',['exports', '..
             readOnly: true
           }),
           _imports.React.createElement('span', {
-            className: 'icon icon-' + (this.state.show ? 'cross' : 'calendar'),
+            className: 'icon icon16 ' + (this.state.show ? '' : 'icon-calendar'),
             onClick: function onClick() {
               return _this3.toggleCalendar();
             }
@@ -26115,7 +26599,7 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker-calendar',['expo
             { key: weekIndex },
             allMonths.map(function (month, monthIndex) {
               var weekInMonth = weeksPerMonth[monthIndex][weekIndex];
-              if (weekInMonth === null) {
+              if (weekInMonth === null || weekInMonth === undefined) {
                 return _imports.React.createElement('td', { key: monthIndex + '_' + weekIndex });
               }
               var week = weekInMonth.week,
@@ -26159,12 +26643,12 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker-calendar',['expo
                 { className: 'prev', onClick: function onClick() {
                     return _this3.prevYear();
                   } },
-                _imports.React.createElement('span', { className: 'icon icon-left' }),
+                _imports.React.createElement('span', { className: 'icon icon32 icon-left' }),
                 this.state.showingYear - 1
               ),
               _imports.React.createElement(
                 'span',
-                null,
+                { className: 'current_year' },
                 this.state.showingYear
               ),
               _imports.React.createElement(
@@ -26173,7 +26657,7 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker-calendar',['expo
                     return _this3.nextYear();
                   } },
                 this.state.showingYear + 1,
-                _imports.React.createElement('span', { className: 'icon icon-right' })
+                _imports.React.createElement('span', { className: 'icon icon32 icon-right' })
               )
             ),
             _imports.React.createElement(
@@ -26278,7 +26762,7 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker-calendar',['expo
     for (var i = startWeek; i <= endWeek; i++) {
       weeks.push({
         week: i,
-        actualYear: actualYear
+        year: actualYear
       });
     }
     return weeks;
@@ -26366,17 +26850,21 @@ define('styleguide-web-components/ws-tiles-chart/ws-tiles-chart',['exports', 're
     _createClass(WSTilesChart, [{
       key: 'componentWillMount',
       value: function componentWillMount() {
-        this.setState({ tileSize: this.getTileSize() });
+        this.setState({ tileSize: this.getTileSize(this.props) });
+      }
+    }, {
+      key: 'componentWillReceiveProps',
+      value: function componentWillReceiveProps(nextProps) {
+        this.setState({ tileSize: this.getTileSize(nextProps) });
       }
     }, {
       key: 'getTileSize',
-      value: function getTileSize() {
-        var _props = this.props,
-            height = _props.height,
-            width = _props.width,
-            maxTileSize = _props.maxTileSize,
-            minTileSize = _props.minTileSize,
-            data = _props.data;
+      value: function getTileSize(props) {
+        var height = props.height,
+            width = props.width,
+            maxTileSize = props.maxTileSize,
+            minTileSize = props.minTileSize,
+            data = props.data;
 
         var groups = data.groups || {};
 
@@ -26411,12 +26899,12 @@ define('styleguide-web-components/ws-tiles-chart/ws-tiles-chart',['exports', 're
       value: function render() {
         var _this2 = this;
 
-        var _props2 = this.props,
-            data = _props2.data,
-            config = _props2.config,
-            title = _props2.title,
-            width = _props2.width,
-            height = _props2.height;
+        var _props = this.props,
+            data = _props.data,
+            config = _props.config,
+            title = _props.title,
+            width = _props.width,
+            height = _props.height;
 
         var groups = data.groups || {};
         return _react2.default.createElement(
@@ -29839,4 +30327,4 @@ define('aurelia-testing/wait',['exports'], function (exports) {
     }, options);
   }
 });
-function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"styleguide-web-components","location":"../node_modules/styleguide-web-components/dist/amd","main":"index"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","styleguide-web-components/imports","app/view/app-header","style/index"]}})}
+function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"styleguide-web-components","location":"../node_modules/styleguide-web-components/dist/amd","main":"index"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","styleguide-web-components/imports","app/view/app-header"]}})}
