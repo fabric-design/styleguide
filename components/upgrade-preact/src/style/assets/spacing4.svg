@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="799px" height="234px" viewBox="0 0 799 234" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 45.1 (43504) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 8</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="358.402662" height="193.701079"></rect>
+        <rect id="path-2" x="2.70263488" y="37.4465116" width="234.228356" height="149.786047"></rect>
+        <filter x="-1.1%" y="-1.7%" width="102.1%" height="103.3%" filterUnits="objectBoundingBox" id="filter-3">
+            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="0.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.24 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter2"></feOffset>
+            <feGaussianBlur stdDeviation="0.5" in="shadowOffsetOuter2" result="shadowBlurOuter2"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter2" in2="SourceAlpha" operator="out" result="shadowBlurOuter2"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.12 0" type="matrix" in="shadowBlurOuter2" result="shadowMatrixOuter2"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="shadowMatrixOuter2"></feMergeNode>
+            </feMerge>
+        </filter>
+        <rect id="path-4" x="0.450439147" y="0.451162791" width="357.648683" height="27.5209302"></rect>
+        <filter x="-0.7%" y="-9.1%" width="101.4%" height="118.2%" filterUnits="objectBoundingBox" id="filter-5">
+            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="0.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.24 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter2"></feOffset>
+            <feGaussianBlur stdDeviation="0.5" in="shadowOffsetOuter2" result="shadowBlurOuter2"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter2" in2="SourceAlpha" operator="out" result="shadowBlurOuter2"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.12 0" type="matrix" in="shadowBlurOuter2" result="shadowMatrixOuter2"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="shadowMatrixOuter2"></feMergeNode>
+            </feMerge>
+        </filter>
+        <rect id="path-6" x="241.885822" y="37.4465116" width="114.861982" height="149.786047"></rect>
+        <filter x="-2.2%" y="-1.7%" width="104.4%" height="103.3%" filterUnits="objectBoundingBox" id="filter-7">
+            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="0.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.24 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter2"></feOffset>
+            <feGaussianBlur stdDeviation="0.5" in="shadowOffsetOuter2" result="shadowBlurOuter2"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter2" in2="SourceAlpha" operator="out" result="shadowBlurOuter2"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.12 0" type="matrix" in="shadowBlurOuter2" result="shadowMatrixOuter2"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="shadowMatrixOuter2"></feMergeNode>
+            </feMerge>
+        </filter>
+        <rect id="path-8" x="0" y="0" width="358.402662" height="193.701079"></rect>
+        <rect id="path-9" x="2.70263488" y="35.4465116" width="352.297365" height="115.553488"></rect>
+        <filter x="-0.7%" y="-2.2%" width="101.4%" height="104.3%" filterUnits="objectBoundingBox" id="filter-10">
+            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="0.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.24 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter2"></feOffset>
+            <feGaussianBlur stdDeviation="0.5" in="shadowOffsetOuter2" result="shadowBlurOuter2"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter2" in2="SourceAlpha" operator="out" result="shadowBlurOuter2"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.12 0" type="matrix" in="shadowBlurOuter2" result="shadowMatrixOuter2"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="shadowMatrixOuter2"></feMergeNode>
+            </feMerge>
+        </filter>
+        <rect id="path-11" x="0.450439147" y="0.451162791" width="357.648683" height="27.5209302"></rect>
+        <filter x="-0.7%" y="-9.1%" width="101.4%" height="118.2%" filterUnits="objectBoundingBox" id="filter-12">
+            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="0.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.24 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter2"></feOffset>
+            <feGaussianBlur stdDeviation="0.5" in="shadowOffsetOuter2" result="shadowBlurOuter2"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter2" in2="SourceAlpha" operator="out" result="shadowBlurOuter2"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.12 0" type="matrix" in="shadowBlurOuter2" result="shadowMatrixOuter2"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="shadowMatrixOuter2"></feMergeNode>
+            </feMerge>
+        </filter>
+        <rect id="path-13" x="3" y="157" width="352.297365" height="34"></rect>
+        <filter x="-0.7%" y="-7.4%" width="101.4%" height="114.7%" filterUnits="objectBoundingBox" id="filter-14">
+            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="0.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.24 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter2"></feOffset>
+            <feGaussianBlur stdDeviation="0.5" in="shadowOffsetOuter2" result="shadowBlurOuter2"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter2" in2="SourceAlpha" operator="out" result="shadowBlurOuter2"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.12 0" type="matrix" in="shadowBlurOuter2" result="shadowMatrixOuter2"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="shadowMatrixOuter2"></feMergeNode>
+            </feMerge>
+        </filter>
+    </defs>
+    <g id="Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Grid" transform="translate(-377.000000, -1875.000000)">
+            <g id="Group-8" transform="translate(378.000000, 1876.000000)">
+                <text id="ensure-that-content" font-family="ArialMT, Arial" font-size="16" font-weight="normal" line-spacing="24" fill="#454547">
+                    <tspan x="30" y="225">ensure that content fits narrow columns </tspan>
+                </text>
+                <text id="prepare-breakpoints" font-family="ArialMT, Arial" font-size="16" font-weight="normal" line-spacing="24" fill="#454547">
+                    <tspan x="546.121094" y="225"> prepare breakpoints</tspan>
+                </text>
+                <text id="or" font-family="ArialMT, Arial" font-size="16" font-weight="normal" line-spacing="24" fill="#454547">
+                    <tspan x="391.386719" y="105">or</tspan>
+                </text>
+                <g id="Group-7">
+                    <g id="Group">
+                        <g id="Rectangle-6">
+                            <use fill="#FAFBFC" fill-rule="evenodd" xlink:href="#path-1"></use>
+                            <rect stroke="#979797" stroke-width="0.5" x="0.25" y="0.25" width="357.902662" height="193.201079"></rect>
+                        </g>
+                        <g id="Group-5" opacity="0.390974813">
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="0.358788214" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="12.9028814" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="15.2922325" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="30.2256767" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="45.159121" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="60.0925653" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="75.0260095" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="89.9594538" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="104.892898" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="119.826342" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="134.759787" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="149.693231" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="164.626675" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="179.560119" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="194.493564" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="209.427008" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="224.360452" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="239.293896" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="254.227341" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="269.160785" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="284.094229" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="299.027673" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="313.961118" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="328.894562" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="343.828006" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="0.358788214" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="15.2922325" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="27.8363257" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="42.7697699" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="30.2256767" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="45.159121" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="57.7032142" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="72.6366584" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="60.0925653" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="75.0260095" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="87.5701027" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="102.503547" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="89.9594538" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="104.892898" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="117.436991" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="132.370435" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="119.826342" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="134.759787" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="147.30388" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="162.237324" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="149.693231" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="164.626675" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="177.170768" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="192.104213" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="179.560119" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="194.493564" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="207.037657" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="221.971101" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="209.427008" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="224.360452" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="236.904545" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="251.83799" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="239.293896" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="254.227341" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="266.771434" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="281.704878" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="269.160785" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="284.094229" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="296.638322" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="311.571767" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="299.027673" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="313.961118" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="326.505211" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="341.438655" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="328.894562" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="343.828006" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="355.471221" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                        </g>
+                    </g>
+                    <g id="paper-shadow-1-copy">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-3)" xlink:href="#path-2"></use>
+                        <use fill-opacity="0.700000048" fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-2"></use>
+                    </g>
+                    <g id="paper-shadow-1-copy">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-5)" xlink:href="#path-4"></use>
+                        <use fill-opacity="0.700000048" fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-4"></use>
+                    </g>
+                    <g id="paper-shadow-1-copy">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-7)" xlink:href="#path-6"></use>
+                        <use fill-opacity="0.700000048" fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-6"></use>
+                    </g>
+                </g>
+                <g id="Group-7" transform="translate(438.000000, 0.000000)">
+                    <g id="Group">
+                        <g id="Rectangle-6">
+                            <use fill="#FAFBFC" fill-rule="evenodd" xlink:href="#path-8"></use>
+                            <rect stroke="#979797" stroke-width="0.5" x="0.25" y="0.25" width="357.902662" height="193.201079"></rect>
+                        </g>
+                        <g id="Group-5" opacity="0.390974813">
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="0.358788214" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="12.9028814" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="15.2922325" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="30.2256767" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="45.159121" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="60.0925653" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="75.0260095" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="89.9594538" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="104.892898" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="119.826342" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="134.759787" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="149.693231" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="164.626675" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="179.560119" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="194.493564" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="209.427008" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="224.360452" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="239.293896" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="254.227341" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="269.160785" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="284.094229" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="299.027673" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="313.961118" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="328.894562" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.256567029" fill="#00ABF2" x="343.828006" y="0.298921418" width="14.9334443" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="0.358788214" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="15.2922325" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="27.8363257" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="42.7697699" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="30.2256767" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="45.159121" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="57.7032142" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="72.6366584" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="60.0925653" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="75.0260095" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="87.5701027" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="102.503547" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="89.9594538" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="104.892898" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="117.436991" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="132.370435" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="119.826342" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="134.759787" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="147.30388" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="162.237324" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="149.693231" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="164.626675" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="177.170768" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="192.104213" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="179.560119" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="194.493564" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="207.037657" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="221.971101" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="209.427008" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="224.360452" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="236.904545" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="251.83799" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="239.293896" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="254.227341" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="266.771434" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="281.704878" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="269.160785" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="284.094229" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="296.638322" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="311.571767" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="299.027673" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="313.961118" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="326.505211" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="341.438655" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="328.894562" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="343.828006" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                            <rect id="Rectangle-5" fill-opacity="0.659448596" fill="#FFC4D9" x="355.471221" y="0.298921418" width="2.38935108" height="193.701079"></rect>
+                        </g>
+                    </g>
+                    <g id="paper-shadow-1-copy">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-10)" xlink:href="#path-9"></use>
+                        <use fill-opacity="0.700000048" fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-9"></use>
+                    </g>
+                    <g id="paper-shadow-1-copy">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-12)" xlink:href="#path-11"></use>
+                        <use fill-opacity="0.700000048" fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-11"></use>
+                    </g>
+                    <g id="paper-shadow-1-copy">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-14)" xlink:href="#path-13"></use>
+                        <use fill-opacity="0.700000048" fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-13"></use>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
