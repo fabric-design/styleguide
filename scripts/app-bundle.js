@@ -255,7 +255,7 @@ define('app/main',['exports', './environment'], function (exports, _environment)
     }
 
     function configure(aurelia) {
-        aurelia.use.standardConfiguration().feature('app/feature/components').globalResources(['components!styleguide-web-components/index', 'app/view/iterable-converter']);
+        aurelia.use.standardConfiguration().feature('app/feature/components').globalResources(['components!fabric-components/index', 'app/view/iterable-converter']);
 
         if (_environment2.default.debug) {
             aurelia.use.developmentLogging();
@@ -600,7 +600,7 @@ define('app/view/navigation',['exports', 'aurelia-router', 'aurelia-event-aggreg
         return NavigationCustomElement;
     }(), _class.inject = [_aureliaRouter.Router, _aureliaEventAggregator.EventAggregator], _temp);
 });
-define('app/feature/components/index',['exports', 'aurelia-templating', 'aurelia-metadata', 'styleguide-web-components/imports'], function (exports, _aureliaTemplating, _aureliaMetadata, _imports) {
+define('app/feature/components/index',['exports', 'aurelia-templating', 'aurelia-metadata', 'fabric-components/imports'], function (exports, _aureliaTemplating, _aureliaMetadata, _imports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -684,7 +684,7 @@ define('app/feature/components/index',['exports', 'aurelia-templating', 'aurelia
     }(), _class.inject = [Element], _temp;
   }
 });
-define('styleguide-web-components/imports',['exports', 'react', 'react-dom', 'prop-types'], function (exports, _react, _reactDom, _propTypes) {
+define('fabric-components/imports',['exports', 'react', 'react-dom', 'prop-types'], function (exports, _react, _reactDom, _propTypes) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -795,7 +795,7 @@ define('styleguide-web-components/imports',['exports', 'react', 'react-dom', 'pr
     return Component;
   }(_React_.Component);
 });
-define('text!app/view/app-header.html', ['module'], function(module) { module.exports = "<template>\n    <header class=\"site-header\">\n        <figure class=\"site-logo\">\n            <img src=\"src/style/assets/logo.png\">\n        </figure>\n        <a class=\"github\" href=\"https://github.com/wholesale-design-system\" target=\"_blank\">\n            <figure class=\"logo\">\n                <svg><use xlink:href=\"src/style/assets/github.svg#logo\"></use></svg>\n            </figure>\n            <span>View on GitHub</span>\n        </a>\n    </header>\n</template>\n"; });
+define('text!app/view/app-header.html', ['module'], function(module) { module.exports = "<template>\n    <header class=\"site-header\">\n        <figure class=\"site-logo\">\n            <img src=\"src/style/assets/logo.png\">\n        </figure>\n        <a class=\"github\" href=\"https://github.com/fabric-design\" target=\"_blank\">\n            <figure class=\"logo\">\n                <svg><use xlink:href=\"src/style/assets/github.svg#logo\"></use></svg>\n            </figure>\n            <span>View on GitHub</span>\n        </a>\n    </header>\n</template>\n"; });
 define('text!app/view/app.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"../../style/index.css\"></require>\n    <div class=\"site-wrapper\">\n        <require from=\"app/view/app-header.html\"></require>\n        <app-header></app-header>\n        <div class=\"row collapse\">\n            <aside class=\"column small-4\">\n                <require from=\"app/view/navigation\"></require>\n                <navigation></navigation>\n            </aside>\n            <section class=\"column small-19 end site-content\">\n                <router-view></router-view>\n            </section>\n        </div>\n        <ws-notification></ws-notification>\n    </div>\n</template>\n"; });
 define('text!app/view/article-page.html', ['module'], function(module) { module.exports = "<template>\n    <div class=\"column small-20 small-centered\">\n        <header class=\"page-header\">\n            <h1>${title}</h1>\n            <nav if.bind=\"headings.length\">\n                <ul>\n                    <li repeat.for=\"heading of headings\">\n                        <a click.delegate=\"scrollToPart($index)\">${heading}</a>\n                    </li>\n                </ul>\n            </nav>\n        </header>\n        <div class=\"row\">\n            <require from=\"app/view/dynamic-html\"></require>\n            <article class=\"content\">\n                <dynamic-html value.bind=\"articleHtml\"></dynamic-html>\n            </article>\n        </div>\n    </div>\n</template>\n"; });
 define('text!app/view/navigation.html', ['module'], function(module) { module.exports = "<template>\n    <nav class=\"site-nav\">\n        <ul>\n            <li class=\"nav-item ${key === $parent.currentCategory ? 'is-active' : ''}\"\n                repeat.for=\"key of categoryOrder\"\n                mouseenter.trigger=\"$parent.showSubMenu($event.currentTarget)\"\n                mouseleave.trigger=\"$parent.hideSubMenu($event.currentTarget)\">\n                <a href=\"#${key}\">${key}</a>\n                <ul class=\"sub-nav\" if.bind=\"categories[key]\">\n                    <li class=\"subnav-item ${article.name === $parent.$parent.currentPage ? 'is-active' : ''}\"\n                        repeat.for=\"article of categories[key]\">\n                        <a route-href=\"route: article-page; params.bind: {category: $parent.key, page: article.name}\">\n                            ${article.title}\n                        </a>\n                    </li>\n                </ul>\n            </li>\n        </ul>\n    </nav>\n</template>\n"; });

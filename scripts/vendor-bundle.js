@@ -21411,7 +21411,7 @@ return index;
 //# sourceMappingURL=preact-compat.js.map
 ;define('preact-compat', ['preact-compat/preact-compat'], function (main) { return main; });
 
-define('styleguide-web-components/index',['exports', './ws-header/ws-header', './ws-date-picker/ws-date-picker', './ws-dropdown/ws-dropdown', './ws-inline-edit/ws-inline-edit', './ws-notification/ws-notification', './ws-week-picker/ws-week-picker', './ws-tiles-chart/ws-tiles-chart', './ws-spinner/ws-spinner'], function (exports, _wsHeader, _wsDatePicker, _wsDropdown, _wsInlineEdit, _wsNotification, _wsWeekPicker, _wsTilesChart, _wsSpinner) {
+define('fabric-components/index',['exports', './ws-header/ws-header', './ws-date-picker/ws-date-picker', './ws-dropdown/ws-dropdown', './ws-inline-edit/ws-inline-edit', './ws-notification/ws-notification', './ws-week-picker/ws-week-picker', './ws-tiles-chart/ws-tiles-chart', './ws-spinner/ws-spinner'], function (exports, _wsHeader, _wsDatePicker, _wsDropdown, _wsInlineEdit, _wsNotification, _wsWeekPicker, _wsTilesChart, _wsSpinner) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -21465,9 +21465,9 @@ define('styleguide-web-components/index',['exports', './ws-header/ws-header', '.
       return _wsSpinner.WSSpinner;
     }
   });
-});;define('styleguide-web-components', ['styleguide-web-components/index'], function (main) { return main; });
+});;define('fabric-components', ['fabric-components/index'], function (main) { return main; });
 
-define('styleguide-web-components/ws-header/ws-header',['exports', '../imports', './storage/cookie-storage', './storage/local-storage', './authorization', '../ws-dropdown/ws-dropdown'], function (exports, _imports, _cookieStorage, _localStorage, _authorization, _wsDropdown) {
+define('fabric-components/ws-header/ws-header',['exports', '../imports', './storage/cookie-storage', './storage/local-storage', './authorization', '../ws-dropdown/ws-dropdown'], function (exports, _imports, _cookieStorage, _localStorage, _authorization, _wsDropdown) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -21862,7 +21862,7 @@ define('styleguide-web-components/ws-header/ws-header',['exports', '../imports',
     }
   });
 });
-define('styleguide-web-components/ws-header/storage/cookie-storage',['exports', './abstract-storage'], function (exports, _abstractStorage) {
+define('fabric-components/ws-header/storage/cookie-storage',['exports', './abstract-storage'], function (exports, _abstractStorage) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -21971,7 +21971,7 @@ define('styleguide-web-components/ws-header/storage/cookie-storage',['exports', 
     return CookieStorage;
   }(_abstractStorage.AbstractStorage);
 });
-define('styleguide-web-components/ws-header/storage/abstract-storage',['exports'], function (exports) {
+define('fabric-components/ws-header/storage/abstract-storage',['exports'], function (exports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -22029,7 +22029,7 @@ define('styleguide-web-components/ws-header/storage/abstract-storage',['exports'
     return AbstractStorage;
   }();
 });
-define('styleguide-web-components/ws-header/storage/local-storage',['exports', './abstract-storage'], function (exports, _abstractStorage) {
+define('fabric-components/ws-header/storage/local-storage',['exports', './abstract-storage'], function (exports, _abstractStorage) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -22124,7 +22124,7 @@ define('styleguide-web-components/ws-header/storage/local-storage',['exports', '
     return LocalStorage;
   }(_abstractStorage.AbstractStorage);
 });
-define('styleguide-web-components/ws-header/authorization',['exports'], function (exports) {
+define('fabric-components/ws-header/authorization',['exports'], function (exports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -22337,7 +22337,7 @@ define('styleguide-web-components/ws-header/authorization',['exports'], function
     return Authorization;
   }();
 });
-define('styleguide-web-components/ws-dropdown/ws-dropdown',['exports', '../imports', './dropdown-menu', './dropdown-input'], function (exports, _imports, _dropdownMenu, _dropdownInput) {
+define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './dropdown-menu', './dropdown-input'], function (exports, _imports, _dropdownMenu, _dropdownInput) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -22761,7 +22761,7 @@ define('styleguide-web-components/ws-dropdown/ws-dropdown',['exports', '../impor
     }
   });
 });
-define('styleguide-web-components/ws-dropdown/dropdown-menu',['exports', '../imports', './dropdown-menu-item'], function (exports, _imports, _dropdownMenuItem) {
+define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', './dropdown-menu-item'], function (exports, _imports, _dropdownMenuItem) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -23127,7 +23127,7 @@ define('styleguide-web-components/ws-dropdown/dropdown-menu',['exports', '../imp
     }
   });
 });
-define('styleguide-web-components/ws-dropdown/dropdown-menu-item',['exports', '../imports', './dropdown-menu'], function (exports, _imports, _dropdownMenu) {
+define('fabric-components/ws-dropdown/dropdown-menu-item',['exports', '../imports', './dropdown-menu'], function (exports, _imports, _dropdownMenu) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -23309,7 +23309,7 @@ define('styleguide-web-components/ws-dropdown/dropdown-menu-item',['exports', '.
     }
   });
 });
-define('styleguide-web-components/ws-dropdown/dropdown-input',['exports', '../imports'], function (exports, _imports) {
+define('fabric-components/ws-dropdown/dropdown-input',['exports', '../imports'], function (exports, _imports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -23486,7 +23486,7 @@ define('styleguide-web-components/ws-dropdown/dropdown-input',['exports', '../im
     }
   });
 });
-define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '../imports', './flatpickr'], function (exports, _imports, _flatpickr) {
+define('fabric-components/ws-date-picker/ws-date-picker',['exports', '../imports', './flatpickr'], function (exports, _imports, _flatpickr) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -23740,7 +23740,7 @@ define('styleguide-web-components/ws-date-picker/ws-date-picker',['exports', '..
     value: 'd.m.Y'
   });
 });
-define('styleguide-web-components/ws-date-picker/flatpickr',['module'], function (module) {
+define('fabric-components/ws-date-picker/flatpickr',['module'], function (module) {
   'use strict';
 
   var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
@@ -25930,7 +25930,7 @@ define('styleguide-web-components/ws-date-picker/flatpickr',['module'], function
     module.exports = Flatpickr;
   }
 });
-define('styleguide-web-components/ws-inline-edit/ws-inline-edit',['exports', '../imports'], function (exports, _imports) {
+define('fabric-components/ws-inline-edit/ws-inline-edit',['exports', '../imports'], function (exports, _imports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -26089,7 +26089,7 @@ define('styleguide-web-components/ws-inline-edit/ws-inline-edit',['exports', '..
     }
   });
 });
-define('styleguide-web-components/ws-notification/ws-notification',['exports', '../imports'], function (exports, _imports) {
+define('fabric-components/ws-notification/ws-notification',['exports', '../imports'], function (exports, _imports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -26301,7 +26301,7 @@ define('styleguide-web-components/ws-notification/ws-notification',['exports', '
     return WSNotification;
   }(_imports.Component);
 });
-define('styleguide-web-components/ws-week-picker/ws-week-picker',['exports', '../imports', './ws-week-picker-calendar'], function (exports, _imports, _wsWeekPickerCalendar) {
+define('fabric-components/ws-week-picker/ws-week-picker',['exports', '../imports', './ws-week-picker-calendar'], function (exports, _imports, _wsWeekPickerCalendar) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -26490,7 +26490,7 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker',['exports', '..
     return false;
   }
 });
-define('styleguide-web-components/ws-week-picker/ws-week-picker-calendar',['exports', '../imports'], function (exports, _imports) {
+define('fabric-components/ws-week-picker/ws-week-picker-calendar',['exports', '../imports'], function (exports, _imports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -26778,7 +26778,7 @@ define('styleguide-web-components/ws-week-picker/ws-week-picker-calendar',['expo
     return weeks;
   }
 });
-define('styleguide-web-components/ws-tiles-chart/ws-tiles-chart',['exports', 'react', '../imports', './tile'], function (exports, _react, _imports, _tile) {
+define('fabric-components/ws-tiles-chart/ws-tiles-chart',['exports', 'react', '../imports', './tile'], function (exports, _react, _imports, _tile) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -26991,7 +26991,7 @@ define('styleguide-web-components/ws-tiles-chart/ws-tiles-chart',['exports', 're
     }
   });
 });
-define('styleguide-web-components/ws-tiles-chart/tile',['exports', 'react', '../imports'], function (exports, _react, _imports) {
+define('fabric-components/ws-tiles-chart/tile',['exports', 'react', '../imports'], function (exports, _react, _imports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -27122,7 +27122,7 @@ define('styleguide-web-components/ws-tiles-chart/tile',['exports', 'react', '../
     }
   });
 });
-define('styleguide-web-components/ws-spinner/ws-spinner',['exports', '../imports'], function (exports, _imports) {
+define('fabric-components/ws-spinner/ws-spinner',['exports', '../imports'], function (exports, _imports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -30446,4 +30446,4 @@ define('aurelia-testing/wait',['exports'], function (exports) {
     }, options);
   }
 });
-function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"styleguide-web-components","location":"../node_modules/styleguide-web-components/dist/amd","main":"index"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","styleguide-web-components/imports","app/view/app-header","style/index"]}})}
+function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"fabric-components","location":"../node_modules/fabric-components/dist/amd","main":"index"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","fabric-components/imports","app/view/app-header","style/index"]}})}
