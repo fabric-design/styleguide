@@ -41,11 +41,11 @@
     "preact-compat": "^3.16.0",
     "requirejs": "^2.3.2",
     "showdown": "^1.6.4",
-    "fabric-components": "git+ssh://git@github.com/wholesale-design-system/components.git#master",
     "text": "github:requirejs/text#latest",
     "through2": "^2.0.3",
     "uglify-js": "^2.6.3",
     "vinyl-fs": "^2.4.3",
-    "fabric-scss": "git+ssh://git@github.com/wholesale-design-system/scss.git"
+    "fabric-components": "git+https://github.com/fabric-design/components.git#master",
+    "fabric-scss": "git+https://github.com/fabric-design/scss.git#master",
   }
 }
