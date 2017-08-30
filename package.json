@@ -46,6 +46,6 @@
     "uglify-js": "^2.6.3",
     "vinyl-fs": "^2.4.3",
     "fabric-components": "git+https://github.com/fabric-design/components.git#master",
-    "fabric-scss": "git+https://github.com/fabric-design/scss.git#master",
+    "fabric-scss": "git+https://github.com/fabric-design/scss.git#master"
   }
 }
