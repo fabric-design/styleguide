@@ -1,10 +1,10 @@
 {
-  "name": "Styleguide",
+  "name": "fabric-styleguide",
   "description": "Styleguide representation page",
   "version": "0.1.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/wholesale-design-system/styleguide"
+    "url": "https://github.com/fabric-design/styleguide"
   },
   "license": "MIT",
   "dependencies": {},
@@ -41,11 +41,11 @@
     "preact-compat": "^3.16.0",
     "requirejs": "^2.3.2",
     "showdown": "^1.6.4",
-    "styleguide-web-components": "git+ssh://git@github.com/wholesale-design-system/components.git#master",
     "text": "github:requirejs/text#latest",
     "through2": "^2.0.3",
     "uglify-js": "^2.6.3",
     "vinyl-fs": "^2.4.3",
-    "wholesale-styleguide-scss": "git+ssh://git@github.com/wholesale-design-system/scss.git"
+    "fabric-components": "git+https://github.com/fabric-design/components.git#master",
+    "fabric-scss": "git+https://github.com/fabric-design/scss.git#master"
   }
 }

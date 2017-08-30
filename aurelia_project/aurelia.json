@@ -44,8 +44,8 @@
   },
   "documentation": {
     "source": [
-      "node_modules/wholesale-styleguide-scss/doc/*/*.md",
-      "node_modules/styleguide-web-components/doc/*/*.md"
+      "node_modules/fabric-scss/doc/*/*.md",
+      "node_modules/fabric-components/doc/*/*.md"
     ]
   },
   "publish": {
@@ -144,8 +144,8 @@
             "main": "preact-compat"
           },
           {
-            "name": "styleguide-web-components",
-            "path": "../node_modules/styleguide-web-components/dist/amd",
+            "name": "fabric-components",
+            "path": "../node_modules/fabric-components/dist/amd",
             "main": "index"
           },
           {

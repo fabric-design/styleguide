@@ -1,6 +1,6 @@
 $use-embedded-font: true;
-@import "../../node_modules/wholesale-styleguide-scss/index";
-@import "../../node_modules/styleguide-web-components/dist/amd/index";
+@import "../../node_modules/fabric-scss/index";
+@import "../../node_modules/fabric-components/dist/amd/index";
 
 @import "base";
 @import "layout";
