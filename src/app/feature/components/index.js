@@ -1,6 +1,6 @@
 import {noView, customElement, bindable} from 'aurelia-templating';
 import {decorators} from 'aurelia-metadata';
-import {React, render} from 'styleguide-web-components/imports';
+import {React, render} from 'fabric-components/imports';
 
 /**
  * Configure the aurelia loader to use handle urls with !component
