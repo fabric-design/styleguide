@@ -22684,7 +22684,7 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
       value: function render() {
         var _this7 = this;
 
-        var isWide = this.props.type === 'select' ? 'mod-wide' : '';
+        var isWide = this.props.type === 'select';
         return _imports.React.createElement(
           'div',
           { className: 'dropdown', ref: function ref(element) {
@@ -22696,7 +22696,8 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
           _imports.React.createElement(
             'div',
             {
-              className: 'dropdown-container ' + this.props.orientation + ' ' + isWide,
+              className: 'dropdown-container ' + this.props.orientation,
+              style: { width: this.props.width || (isWide ? '100%' : 'auto') },
               ref: function ref(element) {
                 if (element) {
                   _this7.dropdownContainer = element;
@@ -22728,6 +22729,7 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
       limit: 10,
       orientation: 'left',
       placeholder: '',
+      width: '',
       value: null,
       onChange: function onChange() {},
       disabled: false
@@ -22748,6 +22750,7 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
       limit: _imports.PropTypes.number,
       orientation: _imports.PropTypes.oneOf(['left', 'right']),
       placeholder: _imports.PropTypes.string,
+      width: _imports.PropTypes.string,
       value: _imports.PropTypes.oneOfType([_imports.PropTypes.string, _imports.PropTypes.object, _imports.PropTypes.array]),
       onChange: _imports.PropTypes.func,
       disabled: _imports.PropTypes.bool
@@ -26778,21 +26781,13 @@ define('fabric-components/ws-week-picker/ws-week-picker-calendar',['exports', '.
     return weeks;
   }
 });
-define('fabric-components/ws-tiles-chart/ws-tiles-chart',['exports', 'react', '../imports', './tile'], function (exports, _react, _imports, _tile) {
+define('fabric-components/ws-tiles-chart/ws-tiles-chart',['exports', '../imports', './tile'], function (exports, _imports, _tile) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
   exports.WSTilesChart = undefined;
-
-  var _react2 = _interopRequireDefault(_react);
-
-  function _interopRequireDefault(obj) {
-    return obj && obj.__esModule ? obj : {
-      default: obj
-    };
-  }
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -26917,15 +26912,15 @@ define('fabric-components/ws-tiles-chart/ws-tiles-chart',['exports', 'react', '.
             height = _props.height;
 
         var groups = data.groups || {};
-        return _react2.default.createElement(
+        return _imports.React.createElement(
           'div',
           { className: 'ws-tiles-chart', style: { width: width + 'px', height: height + 'px' } },
-          _react2.default.createElement(
+          _imports.React.createElement(
             'div',
             { className: 'tiles-chart-title' },
             title
           ),
-          _react2.default.createElement(
+          _imports.React.createElement(
             'div',
             {
               className: 'tiles-chart-container',
@@ -26935,7 +26930,7 @@ define('fabric-components/ws-tiles-chart/ws-tiles-chart',['exports', 'react', '.
             },
             Object.keys(groups).map(function (groupName) {
               return groups[groupName].map(function (tile) {
-                return _react2.default.createElement(_tile.Tile, {
+                return _imports.React.createElement(_tile.Tile, {
                   identifier: tile,
                   className: _this2.state.groupOver === groupName ? 'group-over' : '',
                   groupName: groupName,
@@ -26991,21 +26986,13 @@ define('fabric-components/ws-tiles-chart/ws-tiles-chart',['exports', 'react', '.
     }
   });
 });
-define('fabric-components/ws-tiles-chart/tile',['exports', 'react', '../imports'], function (exports, _react, _imports) {
+define('fabric-components/ws-tiles-chart/tile',['exports', '../imports'], function (exports, _imports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
   exports.Tile = undefined;
-
-  var _react2 = _interopRequireDefault(_react);
-
-  function _interopRequireDefault(obj) {
-    return obj && obj.__esModule ? obj : {
-      default: obj
-    };
-  }
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -27082,7 +27069,7 @@ define('fabric-components/ws-tiles-chart/tile',['exports', 'react', '../imports'
           height: size + 'px'
         };
 
-        return _react2.default.createElement('div', {
+        return _imports.React.createElement('div', {
           className: 'tile ' + groupName + ' ' + className,
           style: style,
           onClick: function onClick() {
@@ -30446,4 +30433,4 @@ define('aurelia-testing/wait',['exports'], function (exports) {
     }, options);
   }
 });
-function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"fabric-components","location":"../node_modules/fabric-components/dist/amd","main":"index"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","fabric-components/imports","app/view/app-header","style/index"]}})}
+function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"fabric-components","location":"../node_modules/fabric-components/dist/amd","main":"index"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","fabric-components/imports","app/view/app-header","style/index"]}})}
