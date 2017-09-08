@@ -22412,6 +22412,52 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
 
       var _this = _possibleConstructorReturn(this, (WSDropdown.__proto__ || Object.getPrototypeOf(WSDropdown)).call(this, props));
 
+      Object.defineProperty(_this, 'onDocumentClick', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          var element = event.target;
+          while (element && _this.element !== element) {
+            element = element.parentNode;
+          }
+
+          if (!element) {
+            _this.close();
+          }
+        }
+      });
+      Object.defineProperty(_this, 'onTriggerClick', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          event.stopPropagation();
+          if (WSDropdown.openDropdown !== _this) {
+            _this.open();
+          } else {
+            _this.close();
+          }
+        }
+      });
+      Object.defineProperty(_this, 'onAnyEvent', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          event.stopPropagation();
+        }
+      });
+      Object.defineProperty(_this, 'onGlobalKeyDown', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          switch (event.key) {
+            case 'Escape':
+              _this.close();
+              break;
+            default:
+              break;
+          }
+        }
+      });
       Object.defineProperty(_this, 'handlePropagation', {
         enumerable: true,
         writable: true,
@@ -22425,7 +22471,6 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
         }
       });
 
-      _this.opened = false;
       _this.state = _this.createState(props);
       return _this;
     }
@@ -22440,7 +22485,9 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
     }, {
       key: 'componentDidMount',
       value: function componentDidMount() {
-        window.addEventListener('click', this.onDocumentClick.bind(this));
+        this.element.addEventListener('click', this.onAnyEvent);
+        this.trigger.addEventListener('click', this.onTriggerClick);
+        window.addEventListener('click', this.onDocumentClick);
       }
     }, {
       key: 'componentWillReceiveProps',
@@ -22450,19 +22497,9 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
     }, {
       key: 'componentWillUnmount',
       value: function componentWillUnmount() {
-        window.removeEventListener('click', this.onDocumentClick.bind(this));
-      }
-    }, {
-      key: 'onDocumentClick',
-      value: function onDocumentClick(event) {
-        var element = event.target;
-        while (element && this.element !== element) {
-          element = element.parentNode;
-        }
-
-        if (!element) {
-          this.close();
-        }
+        this.element.removeEventListener('click', this.onAnyEvent);
+        this.trigger.removeEventListener('click', this.onTriggerClick);
+        window.removeEventListener('click', this.onDocumentClick);
       }
     }, {
       key: 'getTextFromValue',
@@ -22476,7 +22513,7 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
               return item.label || item;
             }).join(', ');
           } else if (value) {
-            text = value.label;
+            text = value.label || value;
           }
         }
         return text;
@@ -22502,11 +22539,17 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
     }, {
       key: 'createState',
       value: function createState(props) {
-        var state = {
-          text: this.getTextFromValue(props.value, props.text),
-          value: this.enrichItems(props.value),
-          items: this.enrichItems(props.items)
-        };
+        var items = this.enrichItems(props.items);
+        var value = props.value;
+
+        if (typeof value === 'string' && props.type !== 'input') {
+          value = items.find(function (item) {
+            return item.value === value;
+          });
+        }
+        value = this.enrichItems(value);
+        var text = this.getTextFromValue(props.value, props.text);
+        var state = { text: text, value: value, items: items };
 
         state.items.forEach(function (item) {
           var isActive = !!state.value.find(function (val) {
@@ -22542,30 +22585,45 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
     }, {
       key: 'open',
       value: function open() {
-        if (this.opened || this.props.disabled) {
+        if (WSDropdown.openDropdown === this || this.props.disabled) {
           return;
+        } else if (WSDropdown.openDropdown) {
+          WSDropdown.openDropdown.close();
         }
-        this.opened = true;
+
+        WSDropdown.openDropdown = this;
         this.dropdownContainer.style.height = 0;
         this.dropdownContainer.classList.add('mod-open');
         this.adjustSize(this.dropdownMenu.getHeight());
+
+        window.addEventListener('keydown', this.onGlobalKeyDown);
+
+        if (typeof this.dropdownMenu.onOpen === 'function') {
+          this.dropdownMenu.onOpen();
+        }
       }
     }, {
       key: 'close',
       value: function close() {
         var _this4 = this;
 
-        if (!this.opened) {
+        if (WSDropdown.openDropdown !== this) {
           return;
         }
+        WSDropdown.openDropdown = null;
         this.animateElement(this.dropdownContainer, 'animate-close', function (container) {
-          _this4.opened = false;
           container.classList.remove('mod-open');
 
           if (_this4.props.multiple) {
             _this4.dropdownMenu.clearSelections();
           }
         });
+
+        window.addEventListener('keydown', this.onGlobalKeyDown);
+
+        if (typeof this.dropdownMenu.onClose === 'function') {
+          this.dropdownMenu.onClose();
+        }
       }
     }, {
       key: 'adjustSize',
@@ -22606,8 +22664,8 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
               'a',
               {
                 className: 'dropdown-trigger ' + disabledStyle,
-                onClick: function onClick() {
-                  return _this5.open();
+                ref: function ref(element) {
+                  _this5.trigger = element;
                 }
               },
               icon,
@@ -22619,8 +22677,8 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
               'button',
               {
                 className: 'dropdown-trigger ' + disabledStyle,
-                onClick: function onClick() {
-                  return _this5.open();
+                ref: function ref(element) {
+                  _this5.trigger = element;
                 }
               },
               icon,
@@ -22632,8 +22690,8 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
               'div',
               {
                 className: 'dropdown-trigger select-box ' + disabledStyle,
-                onClick: function onClick() {
-                  return _this5.open();
+                ref: function ref(element) {
+                  _this5.trigger = element;
                 }
               },
               icon,
@@ -22646,8 +22704,8 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
               'a',
               {
                 className: 'dropdown-trigger ' + disabledStyle,
-                onClick: function onClick() {
-                  return _this5.open();
+                ref: function ref(element) {
+                  _this5.trigger = element;
                 }
               },
               icon
@@ -22700,7 +22758,7 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
             'div',
             {
               className: 'dropdown-container ' + this.props.orientation,
-              style: { width: this.props.width || (isWide ? '100%' : 'auto') },
+              style: { width: this.props.width || (isWide ? '100%' : '') },
               ref: function ref(element) {
                 if (element) {
                   _this7.dropdownContainer = element;
@@ -22758,6 +22816,11 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
       onChange: _imports.PropTypes.func,
       disabled: _imports.PropTypes.bool
     }
+  });
+  Object.defineProperty(WSDropdown, 'openDropdown', {
+    enumerable: true,
+    writable: true,
+    value: null
   });
   Object.defineProperty(WSDropdown, 'childContextTypes', {
     enumerable: true,
@@ -22834,6 +22897,67 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
 
       var _this = _possibleConstructorReturn(this, (DropdownMenu.__proto__ || Object.getPrototypeOf(DropdownMenu)).call(this, props, context));
 
+      Object.defineProperty(_this, 'onOpen', {
+        enumerable: true,
+        writable: true,
+        value: function value() {
+          if (_this.input) {
+            _this.input.focus();
+          }
+          window.addEventListener('keydown', _this.onGlobalKeyDown);
+        }
+      });
+      Object.defineProperty(_this, 'onClose', {
+        enumerable: true,
+        writable: true,
+        value: function value() {
+          window.removeEventListener('keydown', _this.onGlobalKeyDown);
+        }
+      });
+      Object.defineProperty(_this, 'onGlobalKeyDown', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          switch (event.key) {
+            case 'ArrowUp':
+              event.preventDefault();
+              _this.focusNextItem(-1);
+              break;
+            case 'ArrowDown':
+              event.preventDefault();
+              _this.focusNextItem(1);
+              break;
+            case 'Enter':
+              _this.selectCurrentItem();
+              break;
+            default:
+              break;
+          }
+        }
+      });
+      Object.defineProperty(_this, 'onKeyUpUpdateFilter', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          event.stopPropagation();
+          _this.setState({ filter: event.target.value });
+        }
+      });
+      Object.defineProperty(_this, 'onClickSubmit', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          event.stopPropagation();
+          var value = _this.state.items.filter(function (item) {
+            item.focused = false;
+            item.stored = item.selected;
+            return item.selected;
+          });
+
+          _this.props.handle('change', value);
+          _this.setState({ value: value });
+        }
+      });
       Object.defineProperty(_this, 'handlePropagation', {
         enumerable: true,
         writable: true,
@@ -22872,6 +22996,7 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
       });
 
       _this.openSubMenu = null;
+      _this.selectedIndex = -1;
       _this.state = {
         filter: props.filter,
         items: props.items,
@@ -22884,7 +23009,14 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
       key: 'componentDidMount',
       value: function componentDidMount() {
         if (this.input) {
+          this.input.addEventListener('keyup', this.onKeyUpUpdateFilter);
           this.input.addEventListener('change', function (event) {
+            return event.stopPropagation();
+          });
+        }
+        if (this.button) {
+          this.button.addEventListener('click', this.onClickSubmit);
+          this.button.addEventListener('keydown', function (event) {
             return event.stopPropagation();
           });
         }
@@ -22907,7 +23039,14 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
       key: 'componentWillUnmount',
       value: function componentWillUnmount() {
         if (this.input) {
+          this.input.removeEventListener('keyup', this.onKeyUpUpdateFilter);
           this.input.removeEventListener('change', function (event) {
+            return event.stopPropagation();
+          });
+        }
+        if (this.button) {
+          this.button.removeEventListener('click', this.onClickSubmit);
+          this.button.removeEventListener('keydown', function (event) {
             return event.stopPropagation();
           });
         }
@@ -22935,10 +23074,57 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
         });
       }
     }, {
-      key: 'updateFilter',
-      value: function updateFilter(event) {
-        event.stopPropagation();
-        this.setState({ filter: event.target.value });
+      key: 'getItemAtIndex',
+      value: function getItemAtIndex(index) {
+        var limit = this.props.filterable ? this.props.limit : this.state.items.length;
+        var filteredItems = this.getFilteredItems().slice(0, limit);
+        var valueLength = 0;
+        if (this.context.multiple || this.props.filterable) {
+          if (Array.isArray(this.state.value)) {
+            valueLength = this.state.value.length;
+          } else {
+            valueLength = this.state.value ? 1 : 0;
+          }
+        }
+        var visibleItems = filteredItems.length + valueLength;
+        var correctedIndex = index;
+
+        if (index >= visibleItems) {
+          correctedIndex = 0;
+        } else if (index < 0) {
+          correctedIndex = visibleItems - 1;
+        }
+
+        if (valueLength && correctedIndex < valueLength && correctedIndex >= 0) {
+          return {
+            item: Array.isArray(this.state.value) ? this.state.value[correctedIndex] : this.state.value,
+            index: correctedIndex
+          };
+        }
+        return { item: filteredItems[correctedIndex - valueLength], index: correctedIndex };
+      }
+    }, {
+      key: 'focusNextItem',
+      value: function focusNextItem(direction) {
+        this.state.items.forEach(function (item) {
+          item.focused = false;
+        });
+        var result = this.getItemAtIndex(this.selectedIndex + direction);
+        result.item.focused = true;
+
+        this.forceUpdate();
+        this.selectedIndex = result.index;
+      }
+    }, {
+      key: 'selectCurrentItem',
+      value: function selectCurrentItem() {
+        var result = this.getItemAtIndex(this.selectedIndex);
+        result.item.selected = !result.item.selected;
+        if (!this.context.multiple) {
+          result.item.stored = result.item.selected;
+          this.handlePropagation('change', result.item.stored ? result.item : null);
+        }
+        this.forceUpdate();
       }
     }, {
       key: 'clearSelections',
@@ -22949,19 +23135,8 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
               item.selected = false;
             }
           });
+          this.setState({ items: this.state.items });
         }
-      }
-    }, {
-      key: 'submit',
-      value: function submit(event) {
-        event.stopPropagation();
-        var value = this.state.items.filter(function (item) {
-          item.stored = item.selected;
-          return item.selected;
-        });
-
-        this.props.handle('change', value);
-        this.setState({ value: value });
       }
     }, {
       key: 'showChild',
@@ -23057,9 +23232,6 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
               type: 'text',
               defaultValue: this.state.filter,
               placeholder: this.props.placeholder,
-              onKeyUp: function onKeyUp(event) {
-                return _this3.updateFilter(event);
-              },
               ref: function ref(element) {
                 _this3.input = element;
               }
@@ -23086,8 +23258,8 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
             { className: 'dropdown-submit', key: 'submit' },
             _imports.React.createElement(
               'button',
-              { className: 'mod-small', onClick: function onClick(event) {
-                  return _this3.submit(event);
+              { className: 'mod-small', ref: function ref(element) {
+                  _this3.button = element;
                 } },
               'OK'
             )
@@ -23197,6 +23369,37 @@ define('fabric-components/ws-dropdown/dropdown-menu-item',['exports', '../import
 
       var _this = _possibleConstructorReturn(this, (DropdownMenuItem.__proto__ || Object.getPrototypeOf(DropdownMenuItem)).call(this, props, context));
 
+      Object.defineProperty(_this, 'onClick', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          event.stopPropagation();
+
+          if (_this.state.disabled) {
+            return;
+          }
+
+          if (_this.props.isParent) {
+            _this.props.handle('go-back');
+          } else if (_this.state.children && _this.state.children.length) {
+            _this.props.handle('show-child', _this.menu);
+          } else {
+            if (!_this.context.multiple) {
+              if (_this.state.selected) {
+                _this.props.handle('change', null);
+              } else {
+                _this.state.selected = true;
+                _this.state.stored = true;
+                _this.props.handle('change', _this.state);
+              }
+            } else {
+              _this.state.selected = !_this.state.selected;
+            }
+
+            _this.setState(_this.state);
+          }
+        }
+      });
       Object.defineProperty(_this, 'handlePropagation', {
         enumerable: true,
         writable: true,
@@ -23211,38 +23414,19 @@ define('fabric-components/ws-dropdown/dropdown-menu-item',['exports', '../import
     }
 
     _createClass(DropdownMenuItem, [{
+      key: 'componentDidMount',
+      value: function componentDidMount() {
+        this.dropdownItem.addEventListener('click', this.onClick);
+      }
+    }, {
       key: 'componentWillReceiveProps',
       value: function componentWillReceiveProps(props) {
         this.state = props.item;
       }
     }, {
-      key: 'onClick',
-      value: function onClick(event) {
-        event.stopPropagation();
-
-        if (this.state.disabled) {
-          return;
-        }
-
-        if (this.props.isParent) {
-          this.props.handle('go-back');
-        } else if (this.state.children && this.state.children.length) {
-          this.props.handle('show-child', this.menu);
-        } else {
-          if (!this.context.multiple) {
-            if (this.state.selected) {
-              this.props.handle('change', null);
-            } else {
-              this.state.selected = true;
-              this.state.stored = true;
-              this.props.handle('change', this.state);
-            }
-          } else {
-            this.state.selected = !this.state.selected;
-          }
-
-          this.setState(this.state);
-        }
+      key: 'componentWillUnmount',
+      value: function componentWillUnmount() {
+        this.dropdownItem.removeEventListener('click', this.onClick);
       }
     }, {
       key: 'render',
@@ -23262,8 +23446,8 @@ define('fabric-components/ws-dropdown/dropdown-menu-item',['exports', '../import
           'li',
           {
             className: itemClass,
-            onClick: function onClick(event) {
-              return _this2.onClick(event);
+            ref: function ref(element) {
+              _this2.dropdownItem = element;
             }
           },
           _imports.React.createElement(
@@ -23381,6 +23565,34 @@ define('fabric-components/ws-dropdown/dropdown-input',['exports', '../imports'],
 
       var _this = _possibleConstructorReturn(this, (DropdownInput.__proto__ || Object.getPrototypeOf(DropdownInput)).call(this, props));
 
+      Object.defineProperty(_this, 'onKeyDown', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          if (event.which === KEY_ENTER) {
+            _this.onChange(event);
+            _this.onSubmit();
+            event.preventDefault();
+            return false;
+          }
+          return true;
+        }
+      });
+      Object.defineProperty(_this, 'onChange', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          _this.setState({ value: event.target.value });
+        }
+      });
+      Object.defineProperty(_this, 'onSubmit', {
+        enumerable: true,
+        writable: true,
+        value: function value() {
+          _this.props.handle('change', _this.state.value);
+        }
+      });
+
       _this.state = {
         value: props.value
       };
@@ -23393,6 +23605,9 @@ define('fabric-components/ws-dropdown/dropdown-input',['exports', '../imports'],
         this.input.addEventListener('change', function (event) {
           return event.stopPropagation();
         });
+        this.input.addEventListener('keydown', this.onKeyDown);
+        this.input.addEventListener('blur', this.onChange);
+        this.button.addEventListener('click', this.onSubmit);
       }
     }, {
       key: 'componentWillUnmount',
@@ -23400,27 +23615,16 @@ define('fabric-components/ws-dropdown/dropdown-input',['exports', '../imports'],
         this.input.removeEventListener('change', function (event) {
           return event.stopPropagation();
         });
+        this.input.removeEventListener('keydown', this.onKeyDown);
+        this.input.removeEventListener('blur', this.onChange);
+        this.button.removeEventListener('click', this.onSubmit);
       }
     }, {
-      key: 'onKeyDown',
-      value: function onKeyDown(event) {
-        if (event.which === KEY_ENTER) {
-          this.onChange(event);
-          this.onSubmit();
-          event.preventDefault();
-          return false;
+      key: 'onOpen',
+      value: function onOpen() {
+        if (this.input) {
+          this.input.focus();
         }
-        return true;
-      }
-    }, {
-      key: 'onChange',
-      value: function onChange(event) {
-        this.setState({ value: event.target.value });
-      }
-    }, {
-      key: 'onSubmit',
-      value: function onSubmit() {
-        this.props.handle('change', this.state.value);
       }
     }, {
       key: 'getHeight',
@@ -23444,12 +23648,6 @@ define('fabric-components/ws-dropdown/dropdown-input',['exports', '../imports'],
               type: 'text',
               defaultValue: this.state.value,
               placeholder: this.props.placeholder,
-              onKeyDown: function onKeyDown(event) {
-                return _this2.onKeyDown(event);
-              },
-              onBlur: function onBlur(event) {
-                return _this2.onChange(event);
-              },
               ref: function ref(element) {
                 _this2.input = element;
               }
@@ -23460,8 +23658,8 @@ define('fabric-components/ws-dropdown/dropdown-input',['exports', '../imports'],
             { className: 'dropdown-submit', key: 'submit' },
             _imports.React.createElement(
               'button',
-              { className: 'mod-small', onClick: function onClick() {
-                  return _this2.onSubmit();
+              { className: 'mod-small', ref: function ref(element) {
+                  _this2.button = element;
                 } },
               'OK'
             )
@@ -30436,4 +30634,4 @@ define('aurelia-testing/wait',['exports'], function (exports) {
     }, options);
   }
 });
-function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"fabric-components","location":"../node_modules/fabric-components/dist/amd","main":"index"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","fabric-components/imports","app/view/app-header","style/index"]}})}
+function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"fabric-components","location":"../node_modules/fabric-components/dist/amd","main":"index"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","fabric-components/imports","app/view/app-header","style/index"]}})}
