@@ -17661,8 +17661,6 @@ define('aurelia-templating',['exports', 'aurelia-logging', 'aurelia-metadata', '
         auTargetID = makeIntoInstructionTarget(node);
         instructions[auTargetID] = TargetInstruction.lifting(parentInjectorId, liftingInstruction);
       } else {
-        var skipContentProcessing = false;
-
         if (expressions.length || behaviorInstructions.length) {
           injectorId = behaviorInstructions.length ? getNextInjectorId() : false;
 
@@ -17670,7 +17668,6 @@ define('aurelia-templating',['exports', 'aurelia-logging', 'aurelia-metadata', '
             instruction = behaviorInstructions[i];
             instruction.type.compile(this, resources, node, instruction, parentNode);
             providers.push(instruction.type.target);
-            skipContentProcessing = skipContentProcessing || instruction.skipContentProcessing;
           }
 
           for (i = 0, ii = expressions.length; i < ii; ++i) {
@@ -17684,7 +17681,7 @@ define('aurelia-templating',['exports', 'aurelia-logging', 'aurelia-metadata', '
           instructions[auTargetID] = TargetInstruction.normal(injectorId, parentInjectorId, providers, behaviorInstructions, expressions, elementInstruction);
         }
 
-        if (skipContentProcessing) {
+        if (elementInstruction && elementInstruction.skipContentProcessing) {
           return node.nextSibling;
         }
 
@@ -18003,8 +18000,6 @@ define('aurelia-templating',['exports', 'aurelia-logging', 'aurelia-metadata', '
     return ProxyViewFactory;
   }();
 
-  var auSlotBehavior = null;
-
   var ViewEngine = exports.ViewEngine = (_dec8 = (0, _aureliaDependencyInjection.inject)(_aureliaLoader.Loader, _aureliaDependencyInjection.Container, ViewCompiler, ModuleAnalyzer, ViewResources), _dec8(_class14 = (_temp4 = _class15 = function () {
     function ViewEngine(loader, container, viewCompiler, moduleAnalyzer, appResources) {
       
@@ -18016,12 +18011,8 @@ define('aurelia-templating',['exports', 'aurelia-logging', 'aurelia-metadata', '
       this.appResources = appResources;
       this._pluginMap = {};
 
-      if (auSlotBehavior === null) {
-        auSlotBehavior = new HtmlBehaviorResource();
-        auSlotBehavior.attributeName = 'au-slot';
-        _aureliaMetadata.metadata.define(_aureliaMetadata.metadata.resource, auSlotBehavior, SlotCustomAttribute);
-      }
-
+      var auSlotBehavior = new HtmlBehaviorResource();
+      auSlotBehavior.attributeName = 'au-slot';
       auSlotBehavior.initialize(container, SlotCustomAttribute);
       auSlotBehavior.register(appResources);
     }
@@ -18888,8 +18879,6 @@ define('aurelia-templating',['exports', 'aurelia-logging', 'aurelia-metadata', '
         } else {
           instruction.skipContentProcessing = true;
         }
-      } else if (!this.processContent(compiler, resources, node, instruction)) {
-        instruction.skipContentProcessing = true;
       }
 
       return node;
@@ -21701,7 +21690,7 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
       value: function initAuthorization(props) {
         var _this3 = this;
 
-        this.authorization = new _authorization.Authorization(WSHeader.storage, props.loginUrl, props.clientId, props.businessPartnerId);
+        this.authorization = new _authorization.Authorization(WSHeader.storage, props.loginUrl, props.refreshUrl, props.clientId, props.businessPartnerId);
 
         this.authorization.onAccessTokenChange(function (accessToken) {
           if (_this3.mounted) {
@@ -21935,6 +21924,7 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
     writable: true,
     value: {
       loginUrl: 'https://identity.zalando.com/oauth2/authorize',
+      refreshUrl: null,
       businessPartnerId: '810d1d00-4312-43e5-bd31-d8373fdd24c7',
       clientId: null,
       links: [],
@@ -21949,6 +21939,7 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
     writable: true,
     value: {
       loginUrl: _imports.PropTypes.string,
+      refreshUrl: _imports.PropTypes.string,
       businessPartnerId: _imports.PropTypes.string,
       clientId: _imports.PropTypes.string,
       links: _imports.PropTypes.array,
@@ -22293,15 +22284,19 @@ define('fabric-components/ws-header/authorization',['exports'], function (export
   var Authorization = exports.Authorization = function () {
     function Authorization(storage) {
       var loginUrl = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-      var clientId = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
-      var businessPartnerId = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
+      var refreshUrl = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+      var clientId = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
+      var businessPartnerId = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : '';
 
       _classCallCheck(this, Authorization);
 
       this.storage = storage;
       this.loginUrl = loginUrl;
+      this.refreshUrl = refreshUrl;
       this.clientId = clientId;
       this.businessPartnerId = businessPartnerId;
+
+      this.checkExpiration();
     }
 
     _createClass(Authorization, [{
@@ -22315,6 +22310,25 @@ define('fabric-components/ws-header/authorization',['exports'], function (export
         if (typeof this.accessTokenChange === 'function') {
           this.accessTokenChange(accessToken);
         }
+      }
+    }, {
+      key: 'checkExpiration',
+      value: function checkExpiration() {
+        var _this = this;
+
+        var expiresAt = this.storage.get('expires_at') || 0;
+        var refreshToken = this.storage.get('refresh_token');
+        if (!refreshToken) {
+          return;
+        }
+
+        if (new Date().getTime() > expiresAt - 60000) {
+          this.refresh(refreshToken);
+        }
+
+        setTimeout(function () {
+          return _this.checkExpiration();
+        }, 59000);
       }
     }, {
       key: 'tryFetchToken',
@@ -22345,6 +22359,7 @@ define('fabric-components/ws-header/authorization',['exports'], function (export
       value: function updateTokens(params) {
         var expires = params.expires_in ? parseInt(params.expires_in, 10) : 3600;
         this.storage.set('access_token', params.access_token);
+        this.storage.set('refresh_token', params.refresh_token);
         this.storage.set('expires_at', new Date().getTime() + expires * 1000);
 
         this.changeAccessToken(params.access_token);
@@ -22357,9 +22372,34 @@ define('fabric-components/ws-header/authorization',['exports'], function (export
         location.href = this.loginUrl + '?' + query;
       }
     }, {
+      key: 'refresh',
+      value: function refresh(token) {
+        var _this2 = this;
+
+        if (!this.refreshUrl || !token) {
+          return;
+        }
+        var data = this.buildQuery([['business_partner_id', this.businessPartnerId], ['client_id', this.clientId], ['grant_type', 'refresh_token'], ['refresh_token', token], ['state', this.createAndRememberUUID()], ['response_type', 'token']]);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', this.refreshUrl, true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.addEventListener('load', function () {
+          if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+              _this2.updateTokens(JSON.parse(xhr.responseText));
+            } else {
+              throw new Error('Could not refresh token: ' + xhr.responseText);
+            }
+          }
+        });
+        xhr.send(data);
+      }
+    }, {
       key: 'unauthorize',
       value: function unauthorize() {
         this.storage.remove('access_key');
+        this.storage.remove('refresh_key');
         this.storage.remove('expires_at');
         this.changeAccessToken(null);
       }
@@ -30894,4 +30934,4 @@ define('aurelia-testing/wait',['exports'], function (exports) {
     }, options);
   }
 });
-function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"fabric-components","location":"../node_modules/fabric-components/dist/amd","main":"index"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","fabric-components/imports","app/view/app-header"]}})}
+function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"fabric-components","location":"../node_modules/fabric-components/dist/amd","main":"index"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","fabric-components/imports","app/view/app-header","style/index"]}})}
