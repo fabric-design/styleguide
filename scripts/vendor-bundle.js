@@ -17661,6 +17661,8 @@ define('aurelia-templating',['exports', 'aurelia-logging', 'aurelia-metadata', '
         auTargetID = makeIntoInstructionTarget(node);
         instructions[auTargetID] = TargetInstruction.lifting(parentInjectorId, liftingInstruction);
       } else {
+        var skipContentProcessing = false;
+
         if (expressions.length || behaviorInstructions.length) {
           injectorId = behaviorInstructions.length ? getNextInjectorId() : false;
 
@@ -17668,6 +17670,7 @@ define('aurelia-templating',['exports', 'aurelia-logging', 'aurelia-metadata', '
             instruction = behaviorInstructions[i];
             instruction.type.compile(this, resources, node, instruction, parentNode);
             providers.push(instruction.type.target);
+            skipContentProcessing = skipContentProcessing || instruction.skipContentProcessing;
           }
 
           for (i = 0, ii = expressions.length; i < ii; ++i) {
@@ -17681,7 +17684,7 @@ define('aurelia-templating',['exports', 'aurelia-logging', 'aurelia-metadata', '
           instructions[auTargetID] = TargetInstruction.normal(injectorId, parentInjectorId, providers, behaviorInstructions, expressions, elementInstruction);
         }
 
-        if (elementInstruction && elementInstruction.skipContentProcessing) {
+        if (skipContentProcessing) {
           return node.nextSibling;
         }
 
@@ -18000,6 +18003,8 @@ define('aurelia-templating',['exports', 'aurelia-logging', 'aurelia-metadata', '
     return ProxyViewFactory;
   }();
 
+  var auSlotBehavior = null;
+
   var ViewEngine = exports.ViewEngine = (_dec8 = (0, _aureliaDependencyInjection.inject)(_aureliaLoader.Loader, _aureliaDependencyInjection.Container, ViewCompiler, ModuleAnalyzer, ViewResources), _dec8(_class14 = (_temp4 = _class15 = function () {
     function ViewEngine(loader, container, viewCompiler, moduleAnalyzer, appResources) {
       
@@ -18011,8 +18016,12 @@ define('aurelia-templating',['exports', 'aurelia-logging', 'aurelia-metadata', '
       this.appResources = appResources;
       this._pluginMap = {};
 
-      var auSlotBehavior = new HtmlBehaviorResource();
-      auSlotBehavior.attributeName = 'au-slot';
+      if (auSlotBehavior === null) {
+        auSlotBehavior = new HtmlBehaviorResource();
+        auSlotBehavior.attributeName = 'au-slot';
+        _aureliaMetadata.metadata.define(_aureliaMetadata.metadata.resource, auSlotBehavior, SlotCustomAttribute);
+      }
+
       auSlotBehavior.initialize(container, SlotCustomAttribute);
       auSlotBehavior.register(appResources);
     }
@@ -18879,6 +18888,8 @@ define('aurelia-templating',['exports', 'aurelia-logging', 'aurelia-metadata', '
         } else {
           instruction.skipContentProcessing = true;
         }
+      } else if (!this.processContent(compiler, resources, node, instruction)) {
+        instruction.skipContentProcessing = true;
       }
 
       return node;
@@ -21496,7 +21507,7 @@ return index;
 //# sourceMappingURL=preact-compat.js.map
 ;define('preact-compat', ['preact-compat/preact-compat'], function (main) { return main; });
 
-define('fabric-components/index',['exports', './ws-header/ws-header', './ws-date-picker/ws-date-picker', './ws-dropdown/ws-dropdown', './ws-inline-edit/ws-inline-edit', './ws-notification/ws-notification', './ws-week-picker/ws-week-picker', './ws-tiles-chart/ws-tiles-chart', './ws-spinner/ws-spinner'], function (exports, _wsHeader, _wsDatePicker, _wsDropdown, _wsInlineEdit, _wsNotification, _wsWeekPicker, _wsTilesChart, _wsSpinner) {
+define('fabric-components/index',['exports', './ws-header/ws-header', './ws-date-picker/ws-date-picker', './ws-dropdown/ws-dropdown', './ws-inline-edit/ws-inline-edit', './ws-notification/ws-notification', './ws-week-picker/ws-week-picker', './ws-tiles-chart/ws-tiles-chart', './ws-spinner/ws-spinner', './ws-tab-menu/ws-tab-menu'], function (exports, _wsHeader, _wsDatePicker, _wsDropdown, _wsInlineEdit, _wsNotification, _wsWeekPicker, _wsTilesChart, _wsSpinner, _wsTabMenu) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -21548,6 +21559,12 @@ define('fabric-components/index',['exports', './ws-header/ws-header', './ws-date
     enumerable: true,
     get: function () {
       return _wsSpinner.WSSpinner;
+    }
+  });
+  Object.defineProperty(exports, 'WSTabMenu', {
+    enumerable: true,
+    get: function () {
+      return _wsTabMenu.WSTabMenu;
     }
   });
 });;define('fabric-components', ['fabric-components/index'], function (main) { return main; });
@@ -21690,7 +21707,7 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
       value: function initAuthorization(props) {
         var _this3 = this;
 
-        this.authorization = new _authorization.Authorization(WSHeader.storage, props.loginUrl, props.refreshUrl, props.clientId, props.businessPartnerId);
+        this.authorization = new _authorization.Authorization(WSHeader.storage, props.loginUrl, props.clientId, props.businessPartnerId);
 
         this.authorization.onAccessTokenChange(function (accessToken) {
           if (_this3.mounted) {
@@ -21924,7 +21941,6 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
     writable: true,
     value: {
       loginUrl: 'https://identity.zalando.com/oauth2/authorize',
-      refreshUrl: null,
       businessPartnerId: '810d1d00-4312-43e5-bd31-d8373fdd24c7',
       clientId: null,
       links: [],
@@ -21939,7 +21955,6 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
     writable: true,
     value: {
       loginUrl: _imports.PropTypes.string,
-      refreshUrl: _imports.PropTypes.string,
       businessPartnerId: _imports.PropTypes.string,
       clientId: _imports.PropTypes.string,
       links: _imports.PropTypes.array,
@@ -22284,19 +22299,15 @@ define('fabric-components/ws-header/authorization',['exports'], function (export
   var Authorization = exports.Authorization = function () {
     function Authorization(storage) {
       var loginUrl = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-      var refreshUrl = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
-      var clientId = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
-      var businessPartnerId = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : '';
+      var clientId = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+      var businessPartnerId = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
 
       _classCallCheck(this, Authorization);
 
       this.storage = storage;
       this.loginUrl = loginUrl;
-      this.refreshUrl = refreshUrl;
       this.clientId = clientId;
       this.businessPartnerId = businessPartnerId;
-
-      this.checkExpiration();
     }
 
     _createClass(Authorization, [{
@@ -22310,25 +22321,6 @@ define('fabric-components/ws-header/authorization',['exports'], function (export
         if (typeof this.accessTokenChange === 'function') {
           this.accessTokenChange(accessToken);
         }
-      }
-    }, {
-      key: 'checkExpiration',
-      value: function checkExpiration() {
-        var _this = this;
-
-        var expiresAt = this.storage.get('expires_at') || 0;
-        var refreshToken = this.storage.get('refresh_token');
-        if (!refreshToken) {
-          return;
-        }
-
-        if (new Date().getTime() > expiresAt - 60000) {
-          this.refresh(refreshToken);
-        }
-
-        setTimeout(function () {
-          return _this.checkExpiration();
-        }, 59000);
       }
     }, {
       key: 'tryFetchToken',
@@ -22359,7 +22351,6 @@ define('fabric-components/ws-header/authorization',['exports'], function (export
       value: function updateTokens(params) {
         var expires = params.expires_in ? parseInt(params.expires_in, 10) : 3600;
         this.storage.set('access_token', params.access_token);
-        this.storage.set('refresh_token', params.refresh_token);
         this.storage.set('expires_at', new Date().getTime() + expires * 1000);
 
         this.changeAccessToken(params.access_token);
@@ -22372,34 +22363,9 @@ define('fabric-components/ws-header/authorization',['exports'], function (export
         location.href = this.loginUrl + '?' + query;
       }
     }, {
-      key: 'refresh',
-      value: function refresh(token) {
-        var _this2 = this;
-
-        if (!this.refreshUrl || !token) {
-          return;
-        }
-        var data = this.buildQuery([['business_partner_id', this.businessPartnerId], ['client_id', this.clientId], ['grant_type', 'refresh_token'], ['refresh_token', token], ['state', this.createAndRememberUUID()], ['response_type', 'token']]);
-
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', this.refreshUrl, true);
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.addEventListener('load', function () {
-          if (xhr.readyState === XMLHttpRequest.DONE) {
-            if (xhr.status === 200) {
-              _this2.updateTokens(JSON.parse(xhr.responseText));
-            } else {
-              throw new Error('Could not refresh token: ' + xhr.responseText);
-            }
-          }
-        });
-        xhr.send(data);
-      }
-    }, {
       key: 'unauthorize',
       value: function unauthorize() {
         this.storage.remove('access_key');
-        this.storage.remove('refresh_key');
         this.storage.remove('expires_at');
         this.changeAccessToken(null);
       }
@@ -27504,6 +27470,233 @@ define('fabric-components/ws-spinner/ws-spinner',['exports', '../imports'], func
     }
   });
 });
+define('fabric-components/ws-tab-menu/ws-tab-menu',['exports', '../imports'], function (exports, _imports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.WSTabMenu = undefined;
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  var _createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
+  function _possibleConstructorReturn(self, call) {
+    if (!self) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return call && (typeof call === "object" || typeof call === "function") ? call : self;
+  }
+
+  function _inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+    }
+
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+      constructor: {
+        value: subClass,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+  }
+
+  var WSTabMenu = exports.WSTabMenu = function (_Component) {
+    _inherits(WSTabMenu, _Component);
+
+    function WSTabMenu(props) {
+      _classCallCheck(this, WSTabMenu);
+
+      var _this = _possibleConstructorReturn(this, (WSTabMenu.__proto__ || Object.getPrototypeOf(WSTabMenu)).call(this, props));
+
+      Object.defineProperty(_this, 'onClick', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          event.stopPropagation();
+          var selectedIndex = _this.menuItems.indexOf(event.currentTarget);
+          var selectedItem = _this.props.items[selectedIndex];
+
+          if (selectedItem.disabled) {
+            return;
+          }
+          if (selectedItem.value === _this.state.value) {
+            return;
+          }
+
+          _this.setState({ value: selectedItem.value });
+
+          _this.animateDash(event.currentTarget);
+
+          _this.dispatchEvent('change', selectedItem.value);
+          if (typeof _this.props.onChange === 'function') {
+            _this.props.onChange(selectedItem.value);
+          }
+        }
+      });
+
+
+      _this.state = _this.createState(props);
+      _this.menuItems = [];
+      return _this;
+    }
+
+    _createClass(WSTabMenu, [{
+      key: 'componentDidMount',
+      value: function componentDidMount() {
+        var _this2 = this;
+
+        this.menuItems.forEach(function (element, index) {
+          var item = _this2.props.items[index];
+
+          if (item.value === _this2.state.value) {
+            _this2.animateDash(element);
+          }
+          element.addEventListener('click', _this2.onClick);
+        });
+      }
+    }, {
+      key: 'componentWillReceiveProps',
+      value: function componentWillReceiveProps(props) {
+        var _this3 = this;
+
+        this.setState(this.createState(props));
+
+        var index = this.props.items.findIndex(function (item) {
+          return item.value === _this3.state.value;
+        }) || 0;
+        this.animateDash(this.menuItems[index]);
+      }
+    }, {
+      key: 'componentWillUnmount',
+      value: function componentWillUnmount() {
+        var _this4 = this;
+
+        this.menuItems.forEach(function (element) {
+          return element.removeEventListener('click', _this4.onClick);
+        });
+      }
+    }, {
+      key: 'animateDash',
+      value: function animateDash(newMenuItem) {
+        this.dash.style.left = newMenuItem.offsetLeft + 'px';
+        this.dash.style.right = newMenuItem.parentNode.offsetWidth - newMenuItem.offsetLeft - newMenuItem.offsetWidth + 'px';
+      }
+    }, {
+      key: 'createState',
+      value: function createState(props) {
+        if (!props.items.length) {
+          throw new Error('WSTabMenu has no items specified: ' + JSON.stringify(props));
+        }
+        if (props.value) {
+          return { value: props.value };
+        }
+        return { value: props.items[0].value };
+      }
+    }, {
+      key: 'renderMenuItem',
+      value: function renderMenuItem(item, index) {
+        var _this5 = this;
+
+        var className = 'tab-item ' + (item.className || '');
+        if (item.value === this.state.value) {
+          className += ' is-active';
+        } else if (item.disabled) {
+          className += ' is-disabled';
+        }
+
+        return _imports.React.createElement(
+          'li',
+          { className: className, ref: function ref(element) {
+              _this5.menuItems[index] = element;
+            }, key: 'item-' + index },
+          _imports.React.createElement(
+            'span',
+            { className: 'text' },
+            item.label || item.value
+          ),
+          item.badge !== undefined && _imports.React.createElement(
+            'span',
+            { className: 'badge mod-gray' },
+            item.badge
+          )
+        );
+      }
+    }, {
+      key: 'render',
+      value: function render() {
+        var _this6 = this;
+
+        return _imports.React.createElement(
+          'div',
+          { className: 'tab-menu-container', ref: function ref(element) {
+              _this6.element = element;
+            } },
+          _imports.React.createElement(
+            'ul',
+            { className: 'tab-menu' },
+            this.props.items.map(function (item, index) {
+              return _this6.renderMenuItem(item, index);
+            })
+          ),
+          _imports.React.createElement(
+            'div',
+            { className: 'dash-bar' },
+            _imports.React.createElement('div', { className: 'dash', ref: function ref(element) {
+                _this6.dash = element;
+              } })
+          )
+        );
+      }
+    }]);
+
+    return WSTabMenu;
+  }(_imports.Component);
+
+  Object.defineProperty(WSTabMenu, 'propTypes', {
+    enumerable: true,
+    writable: true,
+    value: {
+      items: _imports.PropTypes.array,
+      value: _imports.PropTypes.any,
+      onChange: _imports.PropTypes.func
+    }
+  });
+  Object.defineProperty(WSTabMenu, 'defaultProps', {
+    enumerable: true,
+    writable: true,
+    value: {
+      items: [],
+      value: null,
+      onChange: null
+    }
+  });
+});
 define('aurelia-templating-resources/aurelia-templating-resources',['exports', 'aurelia-pal', './compose', './if', './else', './with', './repeat', './show', './hide', './sanitize-html', './replaceable', './focus', 'aurelia-templating', './css-resource', './html-sanitizer', './attr-binding-behavior', './binding-mode-behaviors', './throttle-binding-behavior', './debounce-binding-behavior', './self-binding-behavior', './signal-binding-behavior', './binding-signaler', './update-trigger-binding-behavior', './abstract-repeater', './repeat-strategy-locator', './html-resource-plugin', './null-repeat-strategy', './array-repeat-strategy', './map-repeat-strategy', './set-repeat-strategy', './number-repeat-strategy', './repeat-utilities', './analyze-view-factory', './aurelia-hide-style'], function (exports, _aureliaPal, _compose, _if, _else, _with, _repeat, _show, _hide, _sanitizeHtml, _replaceable, _focus, _aureliaTemplating, _cssResource, _htmlSanitizer, _attrBindingBehavior, _bindingModeBehaviors, _throttleBindingBehavior, _debounceBindingBehavior, _selfBindingBehavior, _signalBindingBehavior, _bindingSignaler, _updateTriggerBindingBehavior, _abstractRepeater, _repeatStrategyLocator, _htmlResourcePlugin, _nullRepeatStrategy, _arrayRepeatStrategy, _mapRepeatStrategy, _setRepeatStrategy, _numberRepeatStrategy, _repeatUtilities, _analyzeViewFactory, _aureliaHideStyle) {
   'use strict';
 
@@ -30934,4 +31127,4 @@ define('aurelia-testing/wait',['exports'], function (exports) {
     }, options);
   }
 });
-function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"fabric-components","location":"../node_modules/fabric-components/dist/amd","main":"index"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","fabric-components/imports","app/view/app-header","style/index"]}})}
+function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"fabric-components","location":"../node_modules/fabric-components/dist/amd","main":"index"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","fabric-components/imports","app/view/app-header"]}})}

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="762px" height="246px" viewBox="0 0 762 246" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 47 (45396) - http://www.bohemiancoding.com/sketch -->
-    <title>Group 7</title>
+<svg width="748px" height="248px" viewBox="0 0 748 248" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 45.1 (43504) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 22</title>
     <desc>Created with Sketch.</desc>
     <defs>
         <rect id="path-1" x="0" y="0" width="248" height="208"></rect>
@@ -19,11 +19,8 @@
         </filter>
         <rect id="path-3" x="16" y="40" width="216" height="32"></rect>
         <rect id="path-4" x="16" y="112" width="216" height="32"></rect>
-        <rect id="path-5" x="16" y="112" width="216" height="32"></rect>
-        <rect id="path-6" x="16" y="40" width="184" height="32"></rect>
-        <rect id="path-7" x="16" y="40" width="216" height="32"></rect>
-        <rect id="path-8" x="0" y="0" width="113" height="32" rx="3"></rect>
-        <filter x="-6.2%" y="-15.6%" width="112.4%" height="143.8%" filterUnits="objectBoundingBox" id="filter-9">
+        <rect id="path-5" x="44" y="160" width="88" height="32" rx="3"></rect>
+        <filter x="-8.0%" y="-15.6%" width="115.9%" height="143.8%" filterUnits="objectBoundingBox" id="filter-6">
             <feOffset dx="0" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
             <feGaussianBlur stdDeviation="1" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
             <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.24 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
@@ -35,8 +32,8 @@
                 <feMergeNode in="shadowMatrixOuter2"></feMergeNode>
             </feMerge>
         </filter>
-        <rect id="path-10" x="0" y="0" width="91" height="32" rx="3"></rect>
-        <filter x="-7.7%" y="-15.6%" width="115.4%" height="143.8%" filterUnits="objectBoundingBox" id="filter-11">
+        <rect id="path-7" x="144" y="160" width="88" height="32" rx="3"></rect>
+        <filter x="-8.0%" y="-15.6%" width="115.9%" height="143.8%" filterUnits="objectBoundingBox" id="filter-8">
             <feOffset dx="0" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
             <feGaussianBlur stdDeviation="1" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
             <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.24 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
@@ -48,87 +45,106 @@
                 <feMergeNode in="shadowMatrixOuter2"></feMergeNode>
             </feMerge>
         </filter>
+        <rect id="path-9" x="16" y="112" width="216" height="32"></rect>
+        <rect id="path-10" x="16" y="40" width="184" height="32"></rect>
+        <rect id="path-11" x="16" y="40" width="216" height="32"></rect>
     </defs>
-    <g id="Documentation-Images" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Desktop-HD" transform="translate(-134.000000, -586.000000)">
-            <g id="Group-7" transform="translate(137.000000, 588.000000)">
-                <g id="paper-shadow-1">
-                    <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
-                    <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-1"></use>
+    <g id="Space" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Space-V4" transform="translate(-305.000000, -5936.000000)">
+            <g id="Group-22" transform="translate(308.000000, 5938.000000)">
+                <g id="Group-7">
+                    <g id="paper-shadow-1">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
+                        <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-1"></use>
+                    </g>
+                    <g id="Rectangle-36-Copy-11">
+                        <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-3"></use>
+                        <rect stroke="#BDBFC7" stroke-width="1" x="16.5" y="40.5" width="215" height="31"></rect>
+                    </g>
+                    <g id="Rectangle-36-Copy-12">
+                        <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-4"></use>
+                        <rect stroke="#BDBFC7" stroke-width="1" x="16.5" y="112.5" width="215" height="31"></rect>
+                    </g>
+                    <text id="E-mail" font-family="Avenir-Book, Avenir" font-size="13" font-weight="normal" line-spacing="24" fill="#8B8A91">
+                        <tspan x="16" y="30">E-mail</tspan>
+                    </text>
+                    <text id="Password" font-family="Avenir-Book, Avenir" font-size="13" font-weight="normal" line-spacing="24" fill="#8B8A91">
+                        <tspan x="16" y="102">Password</tspan>
+                    </text>
+                    <g id="Rectangle-31-Copy-3">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-6)" xlink:href="#path-5"></use>
+                        <use fill="#E9EAEF" fill-rule="evenodd" xlink:href="#path-5"></use>
+                    </g>
+                    <g id="Rectangle-31-Copy-4">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-8)" xlink:href="#path-7"></use>
+                        <use fill="#00ABF2" fill-rule="evenodd" xlink:href="#path-7"></use>
+                    </g>
+                    <text id="8:13:8:13-copy-11" font-family="Avenir-Book, Avenir" font-size="13" font-weight="normal" line-spacing="16" fill="#454547">
+                        <tspan x="60.0565" y="181.779968">CANCEL</tspan>
+                    </text>
+                    <text id="8:13:8:13-copy-12" font-family="Avenir-Book, Avenir" font-size="13" font-weight="normal" line-spacing="16" fill="#FFFFFF">
+                        <tspan x="163.521" y="181.779968">LOG IN</tspan>
+                    </text>
                 </g>
-                <g id="Rectangle-36-Copy-11">
-                    <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-3"></use>
-                    <rect stroke="#BDBFC7" stroke-width="1" x="16.5" y="40.5" width="215" height="31"></rect>
-                </g>
-                <g id="Rectangle-36-Copy-12">
-                    <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-4"></use>
-                    <rect stroke="#BDBFC7" stroke-width="1" x="16.5" y="112.5" width="215" height="31"></rect>
-                </g>
-                <text id="E-Mail" font-family="ObjektivMk1-Regular, Objektiv Mk1" font-size="13" font-weight="normal" line-spacing="24" fill="#4A556C">
-                    <tspan x="16" y="30">E-Mail</tspan>
-                </text>
-                <text id="Password" font-family="ObjektivMk1-Regular, Objektiv Mk1" font-size="13" font-weight="normal" line-spacing="24" fill="#4A556C">
-                    <tspan x="16" y="102">Password</tspan>
-                </text>
                 <g id="Group-6" transform="translate(303.000000, 0.000000)">
                     <rect id="Rectangle-5" fill="#ECC4E1" x="0" y="0" width="248" height="208"></rect>
                     <rect id="Rectangle-2-Copy-6" fill="#C0B0FB" x="16" y="144" width="216" height="16"></rect>
                     <rect id="Rectangle-2-Copy-4" fill="#C0B0FB" x="16" y="72" width="216" height="16"></rect>
                     <rect id="Rectangle-Copy" fill="#F5F6F9" x="16" y="88" width="216" height="24"></rect>
                     <rect id="Rectangle-Copy-3" fill="#F5F6F9" x="16" y="160" width="216" height="32"></rect>
-                    <rect id="Rectangle-Copy-3" fill="#B41596" x="111" y="172" width="12" height="20"></rect>
+                    <rect id="Rectangle-Copy-3" fill="#B41596" x="131" y="172" width="13" height="20"></rect>
                     <rect id="Rectangle-Copy-2" fill="#F5F6F9" x="16" y="16" width="216" height="24"></rect>
-                    <text id="E-Mail-Copy" font-family="ObjektivMk1-Regular, Objektiv Mk1" font-size="13" font-weight="normal" line-spacing="24" fill="#4A556C">
-                        <tspan x="15" y="31">E-Mail</tspan>
-                    </text>
-                    <text id="Password-Copy" font-family="ObjektivMk1-Regular, Objektiv Mk1" font-size="13" font-weight="normal" line-spacing="24" fill="#4A556C">
-                        <tspan x="15" y="103">Password</tspan>
-                    </text>
                     <path d="M277.5,15.5 L240.5,15.5" id="Line" stroke="#000000" stroke-linecap="square"></path>
                     <path id="Line-decoration-1" d="M240.5,15.5 L251.3,18.5 L251.3,12.5 L240.5,15.5 Z" stroke="#000000" stroke-linecap="square"></path>
                     <g id="Rectangle-36-Copy-9">
-                        <use fill="#C9FFD1" fill-rule="evenodd" xlink:href="#path-5"></use>
+                        <use fill="#C9FFD1" fill-rule="evenodd" xlink:href="#path-9"></use>
                         <rect stroke="#BDBFC7" stroke-width="1" x="16.5" y="112.5" width="215" height="31"></rect>
                     </g>
                     <g id="Rectangle-36-Copy-10">
-                        <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-6"></use>
+                        <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-10"></use>
                         <rect stroke="#BDBFC7" stroke-width="1" x="16.5" y="40.5" width="183" height="31"></rect>
                     </g>
+                    <text id="Password" font-family="Avenir-Heavy, Avenir" font-size="13" font-weight="600" line-spacing="24" fill="#8B8A91">
+                        <tspan x="16" y="102">Password</tspan>
+                    </text>
+                    <text id="E-mail" font-family="Avenir-Heavy, Avenir" font-size="13" font-weight="600" line-spacing="24" fill="#8B8A91">
+                        <tspan x="16" y="31">E-mail</tspan>
+                    </text>
                     <rect id="Rectangle-2-Copy-5" fill="#FFFFFF" x="24" y="120" width="200" height="16"></rect>
                     <g id="Rectangle-36-Copy-9">
-                        <use fill="#C9FFD1" fill-rule="evenodd" xlink:href="#path-7"></use>
+                        <use fill="#C9FFD1" fill-rule="evenodd" xlink:href="#path-11"></use>
                         <rect stroke="#BDBFC7" stroke-width="1" x="16.5" y="40.5" width="215" height="31"></rect>
                     </g>
-                    <g id="$space-s:-0.75rem/12px" transform="translate(111.000000, 160.000000)" fill="#AD008D">
+                    <g id="Spacing/Space/$space-s:-0.75rem-12px" transform="translate(132.000000, 160.000000)" fill="#AD008D">
                         <path d="M0,0 L12,0 L12,12 L0,12 L0,0 Z M2,8.00987306 C2.22566996,9.78702398 3.53737659,11 6.00564175,11 C8.57263752,11 9.91255289,9.77291961 9.91255289,8.00987306 C9.91255289,6.62764457 9.29196051,5.58392102 6.47108604,4.90691114 C4.89139633,4.55430183 4.48236953,4.27221439 4.48236953,3.59520451 C4.48236953,2.90409027 4.99012694,2.55148096 5.85049365,2.55148096 C7.10578279,2.55148096 7.43018336,3.20028209 7.54301834,3.8067701 L9.65867419,3.8067701 C9.51763047,2.38222849 8.48801128,1 5.90691114,1 C3.60789845,1 2.33850494,2.14245416 2.33850494,3.83497884 C2.33850494,5.14668547 2.98730606,6.11988717 5.63892807,6.74047955 C7.30324401,7.1212976 7.76868829,7.45980254 7.76868829,8.26375176 C7.76868829,8.96897038 7.28913963,9.4203103 6.16078984,9.4203103 C5.03244006,9.4203103 4.34132581,8.98307475 4.11565585,8.00987306 L2,8.00987306 Z" id="$space-s:-0.75rem-12px"></path>
                     </g>
                     <rect id="Rectangle-2-Copy-5" fill="#FFFFFF" x="24" y="48" width="200" height="16"></rect>
-                    <rect id="Rectangle-31-Copy-5" fill="#FFB2AE" x="16" y="160" width="95" height="32" rx="3"></rect>
-                    <rect id="Rectangle-31-Copy-6" fill="#FFB2AE" x="122" y="160" width="110" height="32" rx="3"></rect>
-                    <rect id="Rectangle-31-Copy-8" fill="#E9EAEF" x="32" y="168" width="63" height="16" rx="3"></rect>
-                    <rect id="Rectangle-31-Copy-7" fill="#E9EAEF" x="138" y="168" width="78" height="16" rx="3"></rect>
-                    <text id="space-inset-m" font-family="ObjektivMk1-Bold, Objektiv Mk1" font-size="13" font-weight="bold" fill="#D08CBE">
-                        <tspan x="280" y="18">space-inset-m</tspan>
+                    <rect id="Rectangle-31-Copy-5" fill="#FFB2AE" x="44" y="160" width="88" height="32" rx="3"></rect>
+                    <rect id="Rectangle-31-Copy-6" fill="#FFB2AE" x="144" y="160" width="88" height="32" rx="3"></rect>
+                    <rect id="Rectangle-31-Copy-5" fill="#E9EAEF" x="60" y="168" width="56" height="16" rx="3"></rect>
+                    <rect id="Rectangle-31-Copy-7" fill="#E9EAEF" x="160" y="168" width="56" height="16" rx="3"></rect>
+                    <text id="space-inset-m" font-family="Avenir-Heavy, Avenir" font-size="13" font-weight="600" fill="#D08CBE">
+                        <tspan x="280" y="21">space-inset-m</tspan>
                     </text>
-                    <text id="space-inset-stretch-" font-family="ObjektivMk1-Bold, Objektiv Mk1" font-size="13" font-weight="bold" fill="#84D190">
-                        <tspan x="310" y="55">space-inset-stretch-xs</tspan>
+                    <text id="space-inset-stretch-" font-family="Avenir-Heavy, Avenir" font-size="13" font-weight="600" fill="#84D190">
+                        <tspan x="310" y="58">space-inset-stretch-xs</tspan>
                     </text>
-                    <text id="space-inset-squish-m" font-family="ObjektivMk1-Bold, Objektiv Mk1" font-size="13" font-weight="bold" fill="#E8A19D">
-                        <tspan x="74" y="240">space-inset-squish-m</tspan>
+                    <text id="space-inset-squish-m" font-family="Avenir-Heavy, Avenir" font-size="13" font-weight="600" fill="#E8A19D">
+                        <tspan x="74" y="243">space-inset-squish-m</tspan>
                     </text>
-                    <text id="space-inset-stretch-" font-family="ObjektivMk1-Bold, Objektiv Mk1" font-size="13" font-weight="bold" fill="#7AD489">
-                        <tspan x="311" y="132">space-inset-stretch-xs</tspan>
+                    <text id="space-inset-stretch-" font-family="Avenir-Heavy, Avenir" font-size="13" font-weight="600" fill="#7AD489">
+                        <tspan x="311" y="135">space-inset-stretch-xs</tspan>
                     </text>
-                    <text id="space-stack-m" font-family="ObjektivMk1-Bold, Objektiv Mk1" font-size="13" font-weight="bold" fill="#A692F2">
-                        <tspan x="279" y="81">space-stack-m</tspan>
+                    <text id="space-stack-m" font-family="Avenir-Heavy, Avenir" font-size="13" font-weight="600" fill="#A692F2">
+                        <tspan x="279" y="84">space-stack-m</tspan>
                     </text>
-                    <text id="space-stack-m-copy" font-family="ObjektivMk1-Bold, Objektiv Mk1" font-size="13" font-weight="bold" fill="#A692F2">
-                        <tspan x="279" y="155">space-stack-m</tspan>
+                    <text id="space-stack-m-copy" font-family="Avenir-Heavy, Avenir" font-size="13" font-weight="600" fill="#A692F2">
+                        <tspan x="279" y="158">space-stack-m</tspan>
                     </text>
                     <path d="M305.465517,130.5 L227.706897,130.5" id="Line" stroke="#000000" stroke-linecap="square"></path>
                     <path id="Line-decoration-1" d="M227.706897,130.5 L238.506897,133.5 L238.506897,127.5 L227.706897,130.5 Z" stroke="#000000" stroke-linecap="square"></path>
-                    <path d="M286.5,176.5 L117.5,176.5" id="Line-Copy-4" stroke="#000000" stroke-linecap="square"></path>
-                    <path id="Line-Copy-4-decoration-1" d="M117.5,176.5 L128.3,179.5 L128.3,173.5 L117.5,176.5 Z" stroke="#000000" stroke-linecap="square"></path>
+                    <path d="M286.5,176.5 L142.5,176.5" id="Line-Copy-4" stroke="#000000" stroke-linecap="square"></path>
+                    <path id="Line-Copy-4-decoration-1" d="M142.5,176.5 L153.3,179.5 L153.3,173.5 L142.5,176.5 Z" stroke="#000000" stroke-linecap="square"></path>
                     <g id="Group" transform="translate(218.000000, 78.000000)" stroke="#000000" stroke-linecap="square">
                         <path d="M55.5,1.5 L0.5,1.5" id="Line-Copy"></path>
                         <path id="Line-Copy-decoration-1" d="M0.5,1.5 L11.3,4.5 L11.3,-1.5 L0.5,1.5 Z"></path>
@@ -142,29 +158,11 @@
                         <path id="Line-Copy-5-decoration-1" d="M59,16 L69.8,19 L69.8,13 L59,16 Z" stroke="#000000"></path>
                         <path d="M37.5,-4.5 L37.5,69.5" id="Line" stroke="#979797" transform="translate(37.500000, 32.500000) rotate(90.000000) translate(-37.500000, -32.500000) "></path>
                     </g>
-                    <text id="space-inline-s" font-family="ObjektivMk1-Bold, Objektiv Mk1" font-size="13" font-weight="bold" fill="#D17AD9">
-                        <tspan x="291" y="180">space-inline-s</tspan>
+                    <text id="space-inline-s" font-family="Avenir-Heavy, Avenir" font-size="13" font-weight="600" fill="#D17AD9">
+                        <tspan x="291" y="183">space-inline-s</tspan>
                     </text>
                     <path d="M303.5,53.5 L225.706897,53.5" id="Line-Copy-3" stroke="#000000" stroke-linecap="square"></path>
                     <path id="Line-Copy-3-decoration-1" d="M225.706897,53.5 L236.506897,56.5 L236.506897,50.5 L225.706897,53.5 Z" stroke="#000000" stroke-linecap="square"></path>
-                </g>
-                <g id="$btn-dflt-sec-copy" transform="translate(119.000000, 160.000000)">
-                    <g id="Rectangle-31-Copy">
-                        <use fill="black" fill-opacity="1" filter="url(#filter-9)" xlink:href="#path-8"></use>
-                        <use fill="#00ABF2" fill-rule="evenodd" xlink:href="#path-8"></use>
-                    </g>
-                    <text id="Button-Text" font-family="ObjektivMk1-Bold, Objektiv Mk1" font-size="13" font-weight="bold" line-spacing="16" fill="#FFFFFF">
-                        <tspan x="20.724" y="21.9210968">Button XL</tspan>
-                    </text>
-                </g>
-                <g id="$btn-dflt-sec" transform="translate(16.000000, 160.000000)">
-                    <g id="Rectangle-31-Copy">
-                        <use fill="black" fill-opacity="1" filter="url(#filter-11)" xlink:href="#path-10"></use>
-                        <use fill="#E9EAEF" fill-rule="evenodd" xlink:href="#path-10"></use>
-                    </g>
-                    <text id="Button-Text" font-family="ObjektivMk1-Bold, Objektiv Mk1" font-size="13" font-weight="bold" line-spacing="16" fill="#454547">
-                        <tspan x="16" y="23">CANCEL</tspan>
-                    </text>
                 </g>
             </g>
         </g>
