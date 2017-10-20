@@ -3,3 +3,5 @@ scripts
 .idea
 .DS_STORE
 src/app/articles.js
+
+package-lock.json
