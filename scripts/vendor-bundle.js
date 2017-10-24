@@ -2151,7 +2151,7 @@ define('aurelia-binding',['exports', 'aurelia-logging', 'aurelia-pal', 'aurelia-
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.getSetObserver = exports.BindingEngine = exports.NameExpression = exports.Listener = exports.ListenerExpression = exports.BindingBehaviorResource = exports.ValueConverterResource = exports.Call = exports.CallExpression = exports.Binding = exports.BindingExpression = exports.ObjectObservationAdapter = exports.ObserverLocator = exports.SVGAnalyzer = exports.presentationAttributes = exports.presentationElements = exports.elements = exports.ComputedExpression = exports.ClassObserver = exports.SelectValueObserver = exports.CheckedObserver = exports.ValueAttributeObserver = exports.StyleObserver = exports.DataAttributeObserver = exports.dataAttributeAccessor = exports.XLinkAttributeObserver = exports.SetterObserver = exports.PrimitiveObserver = exports.propertyAccessor = exports.DirtyCheckProperty = exports.DirtyChecker = exports.EventManager = exports.delegationStrategy = exports.getMapObserver = exports.ParserImplementation = exports.Parser = exports.Scanner = exports.Lexer = exports.Token = exports.bindingMode = exports.ExpressionCloner = exports.Unparser = exports.LiteralObject = exports.LiteralArray = exports.LiteralString = exports.LiteralPrimitive = exports.PrefixNot = exports.Binary = exports.CallFunction = exports.CallMember = exports.CallScope = exports.AccessKeyed = exports.AccessMember = exports.AccessScope = exports.AccessThis = exports.Conditional = exports.Assign = exports.ValueConverter = exports.BindingBehavior = exports.Chain = exports.Expression = exports.getArrayObserver = exports.CollectionLengthObserver = exports.ModifyCollectionObserver = exports.ExpressionObserver = exports.sourceContext = undefined;
+  exports.getSetObserver = exports.BindingEngine = exports.NameExpression = exports.Listener = exports.ListenerExpression = exports.BindingBehaviorResource = exports.ValueConverterResource = exports.Call = exports.CallExpression = exports.Binding = exports.BindingExpression = exports.ObjectObservationAdapter = exports.ObserverLocator = exports.SVGAnalyzer = exports.presentationAttributes = exports.presentationElements = exports.elements = exports.ComputedExpression = exports.ClassObserver = exports.SelectValueObserver = exports.CheckedObserver = exports.ValueAttributeObserver = exports.StyleObserver = exports.DataAttributeObserver = exports.dataAttributeAccessor = exports.XLinkAttributeObserver = exports.SetterObserver = exports.PrimitiveObserver = exports.propertyAccessor = exports.DirtyCheckProperty = exports.DirtyChecker = exports.EventManager = exports.delegationStrategy = exports.getMapObserver = exports.ParserImplementation = exports.Parser = exports.Scanner = exports.Lexer = exports.Token = exports.bindingMode = exports.ExpressionCloner = exports.Unparser = exports.LiteralObject = exports.LiteralArray = exports.LiteralString = exports.LiteralPrimitive = exports.PrefixNot = exports.Binary = exports.CallFunction = exports.CallMember = exports.CallScope = exports.AccessKeyed = exports.AccessMember = exports.AccessScope = exports.AccessThis = exports.Conditional = exports.Assign = exports.ValueConverter = exports.BindingBehavior = exports.Chain = exports.Expression = exports.getArrayObserver = exports.CollectionLengthObserver = exports.ModifyCollectionObserver = exports.ExpressionObserver = exports.sourceContext = exports.targetContext = undefined;
   exports.camelCase = camelCase;
   exports.createOverrideContext = createOverrideContext;
   exports.getContextFor = getContextFor;
@@ -2171,6 +2171,8 @@ define('aurelia-binding',['exports', 'aurelia-logging', 'aurelia-pal', 'aurelia-
   exports.valueConverter = valueConverter;
   exports.bindingBehavior = bindingBehavior;
   exports.observable = observable;
+  exports.connectBindingToSignal = connectBindingToSignal;
+  exports.signalBindings = signalBindings;
 
   var LogManager = _interopRequireWildcard(_aureliaLogging);
 
@@ -2243,6 +2245,9 @@ define('aurelia-binding',['exports', 'aurelia-logging', 'aurelia-pal', 'aurelia-
 
   var _dec, _dec2, _class, _dec3, _class2, _dec4, _class3, _dec5, _class5, _dec6, _class7, _dec7, _class8, _dec8, _class9, _dec9, _class10, _class12, _temp, _dec10, _class13, _class14, _temp2;
 
+  var targetContext = exports.targetContext = 'Binding:target';
+  var sourceContext = exports.sourceContext = 'Binding:source';
+
   var map = Object.create(null);
 
   function camelCase(name) {
@@ -2300,7 +2305,6 @@ define('aurelia-binding',['exports', 'aurelia-logging', 'aurelia-pal', 'aurelia-
     };
   }
 
-  var sourceContext = exports.sourceContext = 'Binding:source';
   var slotNames = [];
   var versionSlotNames = [];
 
@@ -3485,6 +3489,18 @@ define('aurelia-binding',['exports', 'aurelia-logging', 'aurelia-pal', 'aurelia-
       while (i--) {
         expressions[i].connect(binding, scope);
       }
+      var converter = binding.lookupFunctions.valueConverters(this.name);
+      if (!converter) {
+        throw new Error('No ValueConverter named "' + this.name + '" was found!');
+      }
+      var signals = converter.signals;
+      if (signals === undefined) {
+        return;
+      }
+      i = signals.length;
+      while (i--) {
+        connectBindingToSignal(binding, signals[i]);
+      }
     };
 
     return ValueConverter;
@@ -4454,9 +4470,9 @@ define('aurelia-binding',['exports', 'aurelia-logging', 'aurelia-pal', 'aurelia-
 
   var bindingMode = exports.bindingMode = {
     oneTime: 0,
+    toView: 1,
     oneWay: 1,
     twoWay: 2,
-    toView: 1,
     fromView: 3
   };
 
@@ -5624,14 +5640,14 @@ define('aurelia-binding',['exports', 'aurelia-logging', 'aurelia-pal', 'aurelia-
 
     EventManager.prototype.createElementHandler = function createElementHandler(events) {
       return {
-        subscribe: function subscribe(target, callback) {
+        subscribe: function subscribe(target, callbackOrListener) {
           events.forEach(function (changeEvent) {
-            target.addEventListener(changeEvent, callback, false);
+            target.addEventListener(changeEvent, callbackOrListener, false);
           });
 
           return function () {
             events.forEach(function (changeEvent) {
-              target.removeEventListener(changeEvent, callback);
+              target.removeEventListener(changeEvent, callbackOrListener, false);
             });
           };
         }
@@ -5917,7 +5933,11 @@ define('aurelia-binding',['exports', 'aurelia-logging', 'aurelia-pal', 'aurelia-
       return obj.getAttribute(propertyName);
     },
     setValue: function setValue(value, obj, propertyName) {
-      return obj.setAttribute(propertyName, value);
+      if (value === null || value === undefined) {
+        obj.removeAttribute(propertyName);
+      } else {
+        obj.setAttribute(propertyName, value);
+      }
     }
   };
 
@@ -5934,6 +5954,9 @@ define('aurelia-binding',['exports', 'aurelia-logging', 'aurelia-pal', 'aurelia-
     };
 
     DataAttributeObserver.prototype.setValue = function setValue(newValue) {
+      if (newValue === null || newValue === undefined) {
+        return this.element.removeAttribute(this.propertyName);
+      }
       return this.element.setAttribute(this.propertyName, newValue);
     };
 
@@ -6059,10 +6082,14 @@ define('aurelia-binding',['exports', 'aurelia-logging', 'aurelia-pal', 'aurelia-
       this.oldValue = newValue;
     };
 
+    ValueAttributeObserver.prototype.handleEvent = function handleEvent() {
+      this.notify();
+    };
+
     ValueAttributeObserver.prototype.subscribe = function subscribe(context, callable) {
       if (!this.hasSubscribers()) {
         this.oldValue = this.getValue();
-        this.disposeHandler = this.handler.subscribe(this.element, this.notify.bind(this));
+        this.disposeHandler = this.handler.subscribe(this.element, this);
       }
 
       this.addSubscriber(context, callable);
@@ -6192,9 +6219,13 @@ define('aurelia-binding',['exports', 'aurelia-logging', 'aurelia-pal', 'aurelia-
       this.callSubscribers(newValue, oldValue);
     };
 
+    CheckedObserver.prototype.handleEvent = function handleEvent() {
+      this.synchronizeValue();
+    };
+
     CheckedObserver.prototype.subscribe = function subscribe(context, callable) {
       if (!this.hasSubscribers()) {
-        this.disposeHandler = this.handler.subscribe(this.element, this.synchronizeValue.bind(this, false));
+        this.disposeHandler = this.handler.subscribe(this.element, this);
       }
       this.addSubscriber(context, callable);
     };
@@ -6385,9 +6416,13 @@ define('aurelia-binding',['exports', 'aurelia-logging', 'aurelia-pal', 'aurelia-
       this.callSubscribers(newValue, oldValue);
     };
 
+    SelectValueObserver.prototype.handleEvent = function handleEvent() {
+      this.synchronizeValue();
+    };
+
     SelectValueObserver.prototype.subscribe = function subscribe(context, callable) {
       if (!this.hasSubscribers()) {
-        this.disposeHandler = this.handler.subscribe(this.element, this.synchronizeValue.bind(this, false));
+        this.disposeHandler = this.handler.subscribe(this.element, this);
       }
       this.addSubscriber(context, callable);
     };
@@ -6954,7 +6989,7 @@ define('aurelia-binding',['exports', 'aurelia-logging', 'aurelia-pal', 'aurelia-
         if (propertyName === 'class' || propertyName === 'style' || propertyName === 'css' || propertyName === 'value' && (obj.tagName.toLowerCase() === 'input' || obj.tagName.toLowerCase() === 'select') || propertyName === 'checked' && obj.tagName.toLowerCase() === 'input' || propertyName === 'model' && obj.tagName.toLowerCase() === 'input' || /^xlink:.+$/.exec(propertyName)) {
           return this.getObserver(obj, propertyName);
         }
-        if (/^\w+:|^data-|^aria-/.test(propertyName) || obj instanceof _aureliaPal.DOM.SVGElement && this.svgAnalyzer.isStandardSvgAttribute(obj.nodeName, propertyName)) {
+        if (/^\w+:|^data-|^aria-/.test(propertyName) || obj instanceof _aureliaPal.DOM.SVGElement && this.svgAnalyzer.isStandardSvgAttribute(obj.nodeName, propertyName) || obj.tagName.toLowerCase() === 'img' && propertyName === 'src' || obj.tagName.toLowerCase() === 'a' && propertyName === 'href') {
           return dataAttributeAccessor;
         }
       }
@@ -7007,8 +7042,6 @@ define('aurelia-binding',['exports', 'aurelia-logging', 'aurelia-pal', 'aurelia-
 
     return BindingExpression;
   }();
-
-  var targetContext = 'Binding:target';
 
   var Binding = exports.Binding = (_dec10 = connectable(), _dec10(_class13 = function () {
     function Binding(observerLocator, sourceExpression, target, targetProperty, mode, lookupFunctions) {
@@ -7084,7 +7117,7 @@ define('aurelia-binding',['exports', 'aurelia-logging', 'aurelia-pal', 'aurelia-
         this.updateTarget(value);
       }
 
-      if (mode === bindingMode.oneWay) {
+      if (mode === bindingMode.toView) {
         enqueueBindingConnect(this);
       } else if (mode === bindingMode.twoWay) {
         this.sourceExpression.connect(this, source);
@@ -7461,7 +7494,7 @@ define('aurelia-binding',['exports', 'aurelia-logging', 'aurelia-pal', 'aurelia-
     }
 
     BindingEngine.prototype.createBindingExpression = function createBindingExpression(targetProperty, sourceExpression) {
-      var mode = arguments.length <= 2 || arguments[2] === undefined ? bindingMode.oneWay : arguments[2];
+      var mode = arguments.length <= 2 || arguments[2] === undefined ? bindingMode.toView : arguments[2];
       var lookupFunctions = arguments.length <= 3 || arguments[3] === undefined ? LookupFunctions : arguments[3];
 
       return new BindingExpression(this.observerLocator, targetProperty, this.parser.parse(sourceExpression), mode, lookupFunctions);
@@ -7674,6 +7707,21 @@ define('aurelia-binding',['exports', 'aurelia-logging', 'aurelia-pal', 'aurelia-
       };
     }
     return deco(targetOrConfig, key, descriptor);
+  }
+
+  var signals = {};
+
+  function connectBindingToSignal(binding, name) {
+    if (!signals.hasOwnProperty(name)) {
+      signals[name] = 0;
+    }
+    binding.observeProperty(signals, name);
+  }
+
+  function signalBindings(name) {
+    if (signals.hasOwnProperty(name)) {
+      signals[name]++;
+    }
   }
 });
 define('aurelia-bootstrapper',['exports', 'aurelia-pal', 'aurelia-pal-browser', 'aurelia-polyfills'], function (exports, _aureliaPal, _aureliaPalBrowser) {
@@ -28090,7 +28138,9 @@ define('aurelia-templating-resources/if',['exports', 'aurelia-templating', 'aure
 
     If.prototype.bind = function bind(bindingContext, overrideContext) {
       _IfCore.prototype.bind.call(this, bindingContext, overrideContext);
-      this.conditionChanged(this.condition);
+      if (this.condition) {
+        this._show();
+      }
     };
 
     If.prototype.conditionChanged = function conditionChanged(newValue) {
@@ -28105,8 +28155,8 @@ define('aurelia-templating-resources/if',['exports', 'aurelia-templating', 'aure
       }
 
       var promise = void 0;
-      if (this.else) {
-        promise = show ? this._swap(this.else, this) : this._swap(this, this.else);
+      if (this.elseVm) {
+        promise = show ? this._swap(this.elseVm, this) : this._swap(this, this.elseVm);
       } else {
         promise = show ? this._show() : this._hide();
       }
@@ -28182,6 +28232,7 @@ define('aurelia-templating-resources/if-core',["exports"], function (exports) {
       this.view.unbind();
 
       if (!this.viewFactory.isCaching) {
+        this.showing = false;
         return;
       }
 
@@ -28282,6 +28333,14 @@ define('aurelia-templating-resources/else',['exports', 'aurelia-templating', 'au
       return _this;
     }
 
+    Else.prototype.bind = function bind(bindingContext, overrideContext) {
+      _IfCore.prototype.bind.call(this, bindingContext, overrideContext);
+
+      if (!this.ifVm.condition) {
+        this._show();
+      }
+    };
+
     Else.prototype._registerInIf = function _registerInIf() {
       var previous = this.viewSlot.anchor.previousSibling;
       while (previous && !previous.au) {
@@ -28290,8 +28349,8 @@ define('aurelia-templating-resources/else',['exports', 'aurelia-templating', 'au
       if (!previous || !previous.au.if) {
         throw new Error("Can't find matching If for Else custom attribute.");
       }
-      var ifVm = previous.au.if.viewModel;
-      ifVm.else = this;
+      this.ifVm = previous.au.if.viewModel;
+      this.ifVm.elseVm = this;
     };
 
     return Else;
@@ -31127,4 +31186,4 @@ define('aurelia-testing/wait',['exports'], function (exports) {
     }, options);
   }
 });
-function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"fabric-components","location":"../node_modules/fabric-components/dist/amd","main":"index"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","fabric-components/imports","app/view/app-header"]}})}
+function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"fabric-components","location":"../node_modules/fabric-components/dist/amd","main":"index"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","fabric-components/imports","app/view/app-header","style/index"]}})}
