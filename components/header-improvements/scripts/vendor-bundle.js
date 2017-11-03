@@ -21996,7 +21996,7 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
     writable: true,
     value: {
       loginUrl: 'https://identity.zalando.com/oauth2/authorize',
-      businessPartnerId: '810d1d00-4312-43e5-bd31-d8373fdd24c7',
+      businessPartnerId: null,
       clientId: null,
       links: [],
       appName: 'Zalando',
@@ -28144,6 +28144,8 @@ define('aurelia-templating-resources/if',['exports', 'aurelia-templating', 'aure
       _IfCore.prototype.bind.call(this, bindingContext, overrideContext);
       if (this.condition) {
         this._show();
+      } else {
+        this._hide();
       }
     };
 
@@ -28236,7 +28238,6 @@ define('aurelia-templating-resources/if-core',["exports"], function (exports) {
       this.view.unbind();
 
       if (!this.viewFactory.isCaching) {
-        this.showing = false;
         return;
       }
 
@@ -28252,6 +28253,9 @@ define('aurelia-templating-resources/if-core',["exports"], function (exports) {
 
     IfCore.prototype._show = function _show() {
       if (this.showing) {
+        if (!this.view.isBound) {
+          this.view.bind(this.bindingContext, this.overrideContext);
+        }
         return;
       }
 
@@ -28340,7 +28344,9 @@ define('aurelia-templating-resources/else',['exports', 'aurelia-templating', 'au
     Else.prototype.bind = function bind(bindingContext, overrideContext) {
       _IfCore.prototype.bind.call(this, bindingContext, overrideContext);
 
-      if (!this.ifVm.condition) {
+      if (this.ifVm.condition) {
+        this._hide();
+      } else {
         this._show();
       }
     };
