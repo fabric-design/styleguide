@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800px" height="420px" viewBox="0 0 800 420" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 45.1 (43504) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 6</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="6" y="83" width="586" height="332"></rect>
+        <filter x="-1.2%" y="-1.5%" width="102.4%" height="104.2%" filterUnits="objectBoundingBox" id="filter-2">
+            <feOffset dx="0" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="1" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.24 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feOffset dx="0" dy="1" in="SourceAlpha" result="shadowOffsetOuter2"></feOffset>
+            <feGaussianBlur stdDeviation="1.5" in="shadowOffsetOuter2" result="shadowBlurOuter2"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.12 0" type="matrix" in="shadowBlurOuter2" result="shadowMatrixOuter2"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="shadowMatrixOuter2"></feMergeNode>
+            </feMerge>
+        </filter>
+        <rect id="path-3" x="1" y="1" width="794" height="61"></rect>
+        <filter x="-0.9%" y="-8.2%" width="101.8%" height="123.0%" filterUnits="objectBoundingBox" id="filter-4">
+            <feOffset dx="0" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="1" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.24 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feOffset dx="0" dy="1" in="SourceAlpha" result="shadowOffsetOuter2"></feOffset>
+            <feGaussianBlur stdDeviation="1.5" in="shadowOffsetOuter2" result="shadowBlurOuter2"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter2" in2="SourceAlpha" operator="out" result="shadowBlurOuter2"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.12 0" type="matrix" in="shadowBlurOuter2" result="shadowMatrixOuter2"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="shadowMatrixOuter2"></feMergeNode>
+            </feMerge>
+        </filter>
+        <rect id="path-5" x="603" y="83" width="189" height="332"></rect>
+        <filter x="-3.7%" y="-1.5%" width="107.4%" height="104.2%" filterUnits="objectBoundingBox" id="filter-6">
+            <feOffset dx="0" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="1" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.24 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feOffset dx="0" dy="1" in="SourceAlpha" result="shadowOffsetOuter2"></feOffset>
+            <feGaussianBlur stdDeviation="1.5" in="shadowOffsetOuter2" result="shadowBlurOuter2"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter2" in2="SourceAlpha" operator="out" result="shadowBlurOuter2"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.12 0" type="matrix" in="shadowBlurOuter2" result="shadowMatrixOuter2"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="shadowMatrixOuter2"></feMergeNode>
+            </feMerge>
+        </filter>
+    </defs>
+    <g id="Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Grid" transform="translate(-376.000000, -1341.000000)">
+            <g id="Group-6" transform="translate(378.000000, 1342.000000)">
+                <g id="paper-shadow-1-copy">
+                    <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
+                    <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-1"></use>
+                </g>
+                <g id="paper-shadow-1-copy">
+                    <use fill="black" fill-opacity="1" filter="url(#filter-4)" xlink:href="#path-3"></use>
+                    <use fill-opacity="0.700000048" fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-3"></use>
+                </g>
+                <g id="paper-shadow-1-copy">
+                    <use fill="black" fill-opacity="1" filter="url(#filter-6)" xlink:href="#path-5"></use>
+                    <use fill-opacity="0.700000048" fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-5"></use>
+                </g>
+                <g id="Group-9" transform="translate(0.000000, 119.000000)" stroke="#F44F41" stroke-width="2" stroke-linecap="square">
+                    <path d="M1.8968515,6.5 L595.811717,6.5" id="Line"></path>
+                    <path d="M1.26456767,0.40625 L1.26456767,12.59375" id="Line"></path>
+                    <path d="M596.735432,0.40625 L596.735432,12.59375" id="Line"></path>
+                </g>
+                <g id="Group-9" transform="translate(0.000000, 39.000000)" stroke="#F44F41" stroke-width="2" stroke-linecap="square">
+                    <path d="M2.52490602,6.5 L793.087168,6.5" id="Line"></path>
+                    <path d="M1.68327068,0.40625 L1.68327068,12.59375" id="Line"></path>
+                    <path d="M794.316729,0.40625 L794.316729,12.59375" id="Line"></path>
+                </g>
+                <text id="18-columns---75-%" font-family="ArialMT, Arial" font-size="13" font-weight="normal" fill="#F44F41">
+                    <tspan x="245.668701" y="119">18 columns - 75 %</tspan>
+                </text>
+                <text id="24-columns---100-%" font-family="ArialMT, Arial" font-size="13" font-weight="normal" fill="#F44F41">
+                    <tspan x="326.053711" y="38">24 columns - 100 %</tspan>
+                </text>
+                <g id="Group-9" transform="translate(597.000000, 166.000000)" stroke="#F44F41" stroke-width="2" stroke-linecap="square">
+                    <path d="M0.628028745,6.5 L197.267358,6.5" id="Line"></path>
+                    <path d="M0.41868583,0.40625 L0.41868583,12.59375" id="Line"></path>
+                    <path d="M197.573191,0.40625 L197.573191,12.59375" id="Line"></path>
+                </g>
+                <text id="6-columns---25-%" font-family="ArialMT, Arial" font-size="13" font-weight="normal" fill="#F44F41">
+                    <tspan x="647.398158" y="166">6 columns - 25 %</tspan>
+                </text>
+            </g>
+        </g>
+    </g>
+</svg>
