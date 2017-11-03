@@ -21688,17 +21688,19 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
     }, {
       key: 'getAccessToken',
       value: function getAccessToken() {
-        var _this2 = this;
-
         var queryString = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : location.hash.substr(1);
 
-        return new Promise(function (resolve) {
-          var authorization = new _authorization.Authorization(_this2.storage);
-          authorization.onAccessTokenChange(function (accessToken) {
-            return resolve(accessToken);
-          });
-          authorization.tryFetchToken(queryString);
-        });
+        this.authorization = this.authorization || new _authorization.Authorization(this.storage);
+        if (!this.authorization.accessToken) {
+          this.authorization.tryFetchToken(queryString);
+        }
+        return this.authorization.accessToken;
+      }
+    }, {
+      key: 'removeAccessToken',
+      value: function removeAccessToken() {
+        this.authorization = this.authorization || new _authorization.Authorization(this.storage);
+        this.authorization.unauthorize();
       }
     }, {
       key: 'getLocale',
@@ -21753,28 +21755,28 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
     }, {
       key: 'initAuthorization',
       value: function initAuthorization(props) {
-        var _this3 = this;
+        var _this2 = this;
 
-        this.authorization = new _authorization.Authorization(WSHeader.storage, props.loginUrl, props.clientId, props.businessPartnerId);
+        this.constructor.authorization = this.constructor.authorization || new _authorization.Authorization(WSHeader.storage);
 
-        this.authorization.onAccessTokenChange(function (accessToken) {
-          if (_this3.mounted) {
-            _this3.setState({ isLoggedIn: !!accessToken });
+        this.constructor.authorization.onAccessTokenChange(function (accessToken) {
+          if (_this2.mounted) {
+            _this2.setState({ isLoggedIn: !!accessToken });
           } else {
-            _this3.state.isLoggedIn = !!accessToken;
+            _this2.state.isLoggedIn = !!accessToken;
           }
 
-          _this3.dispatchEvent('ws-auth-changed', accessToken);
+          _this2.dispatchEvent('ws-auth-changed', accessToken);
         });
 
-        this.authorization.tryFetchToken(location.hash.substr(1));
+        this.constructor.authorization.tryFetchToken(location.hash.substr(1));
 
         window.addEventListener('ws-authorize', function () {
-          _this3.authorization.authorize();
+          _this2.constructor.authorization.authorize(props.loginUrl, props.clientId, props.businessPartnerId);
         });
 
         window.addEventListener('ws-unauthorize', function () {
-          _this3.authorization.unauthorize();
+          _this2.constructor.authorization.unauthorize();
         });
       }
     }, {
@@ -21801,14 +21803,14 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
     }, {
       key: 'leaveMenuItem',
       value: function leaveMenuItem(index) {
-        var _this4 = this;
+        var _this3 = this;
 
         this.leaveTimeout = setTimeout(function () {
-          _this4.level2.classList.remove('is-active');
-          if (_this4.subMenus[index]) {
-            var subMenu = _this4.subMenus[index];
+          _this3.level2.classList.remove('is-active');
+          if (_this3.subMenus[index]) {
+            var subMenu = _this3.subMenus[index];
             subMenu.classList.remove('is-active');
-            var item = _this4.menuItems[index];
+            var item = _this3.menuItems[index];
             item.classList.remove('is-hovered');
           }
         }, 10);
@@ -21832,12 +21834,12 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
     }, {
       key: 'render',
       value: function render() {
-        var _this5 = this;
+        var _this4 = this;
 
         return _imports.React.createElement(
           'header',
           { className: 'ws-header', ref: function ref(element) {
-              _this5.element = element;
+              _this4.element = element;
             } },
           _imports.React.createElement(
             'div',
@@ -21867,13 +21869,13 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
                     {
                       key: 'header-link' + index,
                       onMouseEnter: function onMouseEnter() {
-                        return _this5.enterMenuItem(index);
+                        return _this4.enterMenuItem(index);
                       },
                       onMouseLeave: function onMouseLeave() {
-                        return _this5.leaveMenuItem(index);
+                        return _this4.leaveMenuItem(index);
                       },
                       ref: function ref(element) {
-                        _this5.menuItems[index] = element;
+                        _this4.menuItems[index] = element;
                       },
                       className: link.isCurrent ? 'is-current' : null
                     },
@@ -21903,7 +21905,7 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
                     items: this.locales,
                     text: this.state.locale,
                     onChange: function onChange(item) {
-                      return _this5.setLocale(item.value);
+                      return _this4.setLocale(item.value);
                     },
                     orientation: 'right',
                     type: 'anchor'
@@ -21912,7 +21914,7 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
                 !this.state.isLoggedIn ? _imports.React.createElement(
                   'li',
                   { onClick: function onClick() {
-                      return _this5.authorization.authorize();
+                      return _this4.authorization.authorize();
                     } },
                   _imports.React.createElement(
                     'a',
@@ -21922,7 +21924,7 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
                 ) : _imports.React.createElement(
                   'li',
                   { onClick: function onClick() {
-                      return _this5.authorization.unauthorize();
+                      return _this4.authorization.unauthorize();
                     } },
                   _imports.React.createElement(
                     'a',
@@ -21938,23 +21940,23 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
             {
               className: 'level-2',
               onMouseEnter: function onMouseEnter() {
-                return _this5.enterLevel2();
+                return _this4.enterLevel2();
               },
               onMouseLeave: function onMouseLeave() {
-                return _this5.leaveLevel2();
+                return _this4.leaveLevel2();
               },
               onClick: function onClick() {
-                return _this5.leaveLevel2();
+                return _this4.leaveLevel2();
               },
               ref: function ref(element) {
-                _this5.level2 = element;
+                _this4.level2 = element;
               }
             },
             this.props.links.map(function (parent, index) {
               return parent.children && parent.children.length && _imports.React.createElement(
                 'ul',
                 { className: 'main-sub-menu', key: 'sub-menu' + index, ref: function ref(element) {
-                    _this5.subMenus[index] = element;
+                    _this4.subMenus[index] = element;
                   } },
                 parent.children.map(function (child, childIndex) {
                   return _imports.React.createElement(
@@ -21979,6 +21981,11 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
     return WSHeader;
   }(_imports.Component);
 
+  Object.defineProperty(WSHeader, 'authorization', {
+    enumerable: true,
+    writable: true,
+    value: undefined
+  });
   Object.defineProperty(WSHeader, 'storage', {
     enumerable: true,
     writable: true,
@@ -21989,7 +21996,7 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
     writable: true,
     value: {
       loginUrl: 'https://identity.zalando.com/oauth2/authorize',
-      businessPartnerId: '810d1d00-4312-43e5-bd31-d8373fdd24c7',
+      businessPartnerId: null,
       clientId: null,
       links: [],
       appName: 'Zalando',
@@ -22346,16 +22353,10 @@ define('fabric-components/ws-header/authorization',['exports'], function (export
 
   var Authorization = exports.Authorization = function () {
     function Authorization(storage) {
-      var loginUrl = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-      var clientId = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
-      var businessPartnerId = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
-
       _classCallCheck(this, Authorization);
 
       this.storage = storage;
-      this.loginUrl = loginUrl;
-      this.clientId = clientId;
-      this.businessPartnerId = businessPartnerId;
+      this.accessToken = undefined;
     }
 
     _createClass(Authorization, [{
@@ -22366,8 +22367,11 @@ define('fabric-components/ws-header/authorization',['exports'], function (export
     }, {
       key: 'changeAccessToken',
       value: function changeAccessToken(accessToken) {
-        if (typeof this.accessTokenChange === 'function') {
-          this.accessTokenChange(accessToken);
+        if (this.accessToken !== accessToken) {
+          this.accessToken = accessToken;
+          if (typeof this.accessTokenChange === 'function') {
+            this.accessTokenChange(accessToken);
+          }
         }
       }
     }, {
@@ -22405,15 +22409,15 @@ define('fabric-components/ws-header/authorization',['exports'], function (export
       }
     }, {
       key: 'authorize',
-      value: function authorize() {
-        var query = this.buildQuery([['business_partner_id', this.businessPartnerId], ['client_id', this.clientId], ['state', this.createAndRememberUUID()], ['response_type', 'token']]);
+      value: function authorize(loginUrl, clientId, businessPartnerId) {
+        var query = this.buildQuery([['business_partner_id', businessPartnerId], ['client_id', clientId], ['state', this.createAndRememberUUID()], ['response_type', 'token']]);
 
-        location.href = this.loginUrl + '?' + query;
+        location.href = loginUrl + '?' + query;
       }
     }, {
       key: 'unauthorize',
       value: function unauthorize() {
-        this.storage.remove('access_key');
+        this.storage.remove('access_token');
         this.storage.remove('expires_at');
         this.changeAccessToken(null);
       }
@@ -28140,6 +28144,8 @@ define('aurelia-templating-resources/if',['exports', 'aurelia-templating', 'aure
       _IfCore.prototype.bind.call(this, bindingContext, overrideContext);
       if (this.condition) {
         this._show();
+      } else {
+        this._hide();
       }
     };
 
@@ -28232,7 +28238,6 @@ define('aurelia-templating-resources/if-core',["exports"], function (exports) {
       this.view.unbind();
 
       if (!this.viewFactory.isCaching) {
-        this.showing = false;
         return;
       }
 
@@ -28248,6 +28253,9 @@ define('aurelia-templating-resources/if-core',["exports"], function (exports) {
 
     IfCore.prototype._show = function _show() {
       if (this.showing) {
+        if (!this.view.isBound) {
+          this.view.bind(this.bindingContext, this.overrideContext);
+        }
         return;
       }
 
@@ -28336,7 +28344,9 @@ define('aurelia-templating-resources/else',['exports', 'aurelia-templating', 'au
     Else.prototype.bind = function bind(bindingContext, overrideContext) {
       _IfCore.prototype.bind.call(this, bindingContext, overrideContext);
 
-      if (!this.ifVm.condition) {
+      if (this.ifVm.condition) {
+        this._hide();
+      } else {
         this._show();
       }
     };
