@@ -56,11 +56,11 @@ As an example, you can either run them via `au run [--watch, --env] `if you have
 
 ## Contributing
 
-The styleguide is in active development and we welcome any contributions and feedback. See our [contributing guidelines](CONTRIBUTING.MD) for detailed information.
+The styleguide is in active development and we welcome any contributions and feedback. See our [contributing guidelines](./CONTRIBUTING.MD) for detailed information.
 
 ## Contact
 
-Feel free to reach out any of us [here](MAINTAINERS). We are all friendly and will be more then happy to answer any question regarding our styleguide.
+Feel free to reach out any of us. We are all friendly and will be more then happy to answer any question regarding our styleguide.
 
 ## License
 
