@@ -23256,10 +23256,7 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
             index: correctedIndex
           };
         }
-        return {
-          item: filteredItems[correctedIndex - valueLength],
-          index: correctedIndex
-        };
+        return { item: filteredItems[correctedIndex - valueLength], index: correctedIndex };
       }
     }, {
       key: 'focusNextItem',
@@ -23429,7 +23426,7 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
               'button',
               {
                 key: 'selectAll',
-                className: 'mod-secondary mod-small ' + (this.state.selectAllActive ? 'mod-toggle is-active' : ''),
+                className: 'mod-secondary mr-s mod-small ' + (this.state.selectAllActive ? 'mod-toggle is-active' : ''),
                 ref: function ref(element) {
                   _this3.selectAllButton = element;
                 }
