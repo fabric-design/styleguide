@@ -22863,6 +22863,7 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
           filterable: this.props.filterable,
           filter: this.props.filter,
           placeholder: this.props.placeholder,
+          selectAll: this.props.selectAll,
           handle: this.handlePropagation,
           ref: function ref(element) {
             _this6.dropdownMenu = element;
@@ -22922,7 +22923,8 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
       width: '',
       value: null,
       onChange: function onChange() {},
-      disabled: false
+      disabled: false,
+      selectAll: false
     }
   });
   Object.defineProperty(WSDropdown, 'propTypes', {
@@ -22943,7 +22945,8 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
       width: _imports.PropTypes.string,
       value: _imports.PropTypes.oneOfType([_imports.PropTypes.string, _imports.PropTypes.object, _imports.PropTypes.array]),
       onChange: _imports.PropTypes.func,
-      disabled: _imports.PropTypes.bool
+      disabled: _imports.PropTypes.bool,
+      selectAll: _imports.PropTypes.bool
     }
   });
   Object.defineProperty(WSDropdown, 'openDropdown', {
@@ -23087,6 +23090,21 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
           _this.setState({ value: value });
         }
       });
+      Object.defineProperty(_this, 'onClickSelectAll', {
+        enumerable: true,
+        writable: true,
+        value: function value() {
+          if (_this.state.items) {
+            _this.state.items.forEach(function (item) {
+              item.selected = !_this.state.selectAllActive;
+            });
+            _this.setState({
+              items: _this.state.items,
+              selectAllActive: !_this.state.selectAllActive
+            });
+          }
+        }
+      });
       Object.defineProperty(_this, 'handlePropagation', {
         enumerable: true,
         writable: true,
@@ -23129,7 +23147,8 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
       _this.state = {
         filter: props.filter,
         items: props.items,
-        value: props.value
+        value: props.value,
+        selectAllActive: false
       };
       return _this;
     }
@@ -23149,6 +23168,9 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
             return event.stopPropagation();
           });
         }
+        if (this.selectAllButton) {
+          this.selectAllButton.addEventListener('click', this.onClickSelectAll);
+        }
       }
     }, {
       key: 'componentWillReceiveProps',
@@ -23156,7 +23178,8 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
         this.setState({
           filter: props.filter,
           items: props.items,
-          value: props.value
+          value: props.value,
+          selectAllActive: props.selectAllActive
         });
       }
     }, {
@@ -23178,6 +23201,9 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
           this.button.removeEventListener('keydown', function (event) {
             return event.stopPropagation();
           });
+        }
+        if (this.selectAllButton) {
+          this.selectAllButton.removeEventListener('click', this.onClickSelectAll);
         }
       }
     }, {
@@ -23385,9 +23411,20 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
           this.context.multiple && [_imports.React.createElement('li', { className: 'dropdown-item-separator', key: 'submit-separator' }), _imports.React.createElement(
             'li',
             { className: 'dropdown-submit', key: 'submit' },
+            this.props.selectAll && [_imports.React.createElement(
+              'button',
+              {
+                key: 'selectAll',
+                className: 'mod-secondary mr-s mod-small ' + (this.state.selectAllActive ? 'mod-toggle is-active' : ''),
+                ref: function ref(element) {
+                  _this3.selectAllButton = element;
+                }
+              },
+              'ALL'
+            )],
             _imports.React.createElement(
               'button',
-              { className: 'mod-small', ref: function ref(element) {
+              { className: 'mod-small dropdown-submit-button', ref: function ref(element) {
                   _this3.button = element;
                 } },
               'OK'
@@ -23411,6 +23448,7 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
       filter: null,
       placeholder: '',
       limit: 10,
+      selectAll: false,
       handle: function handle() {}
     }
   });
@@ -23423,7 +23461,8 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
       filterable: _imports.PropTypes.bool,
       filter: _imports.PropTypes.string,
       placeholder: _imports.PropTypes.string,
-      limit: _imports.PropTypes.number
+      limit: _imports.PropTypes.number,
+      selectAll: _imports.PropTypes.bool
     }
   });
   Object.defineProperty(DropdownMenu, 'contextTypes', {
@@ -31162,4 +31201,4 @@ define('aurelia-testing/wait',["require", "exports"], function (require, exports
     exports.waitForDocumentElements = waitForDocumentElements;
 });
 
-function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","text":"../node_modules/text/text","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"fabric-components","location":"../node_modules/fabric-components/dist/amd","main":"index"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","fabric-components/imports","app/view/app-header","style/index"]}})}
+function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"fabric-components","location":"../node_modules/fabric-components/dist/amd","main":"index"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","fabric-components/imports","app/view/app-header","style/index"]}})}
