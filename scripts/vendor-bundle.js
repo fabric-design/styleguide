@@ -27792,36 +27792,46 @@ define('fabric-components/ws-tab-menu/ws-tab-menu',['exports', '../imports'], fu
     _createClass(WSTabMenu, [{
       key: 'componentDidMount',
       value: function componentDidMount() {
-        var _this2 = this;
-
-        this.menuItems.forEach(function (element, index) {
-          var item = _this2.props.items[index];
-
-          if (item.value === _this2.state.value) {
-            _this2.animateDash(element);
-          }
-          element.addEventListener('click', _this2.onClick);
-        });
+        this.configureMenuItems();
       }
     }, {
       key: 'componentWillReceiveProps',
       value: function componentWillReceiveProps(props) {
-        var _this3 = this;
+        var _this2 = this;
 
         this.setState(this.createState(props));
 
         var index = this.props.items.findIndex(function (item) {
-          return item.value === _this3.state.value;
+          return item.value === _this2.state.value;
         }) || 0;
         this.animateDash(this.menuItems[index]);
       }
     }, {
+      key: 'componentDidUpdate',
+      value: function componentDidUpdate() {
+        this.configureMenuItems();
+      }
+    }, {
       key: 'componentWillUnmount',
       value: function componentWillUnmount() {
-        var _this4 = this;
+        var _this3 = this;
 
         this.menuItems.forEach(function (element) {
-          return element.removeEventListener('click', _this4.onClick);
+          return element.removeEventListener('click', _this3.onClick);
+        });
+      }
+    }, {
+      key: 'configureMenuItems',
+      value: function configureMenuItems() {
+        var _this4 = this;
+
+        this.menuItems.forEach(function (element, index) {
+          var item = _this4.props.items[index];
+
+          if (item.value === _this4.state.value) {
+            _this4.animateDash(element);
+          }
+          element.addEventListener('click', _this4.onClick);
         });
       }
     }, {
