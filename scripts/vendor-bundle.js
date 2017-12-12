@@ -22324,7 +22324,7 @@ define('fabric-components/ws-header/storage/local-storage',['exports', './abstra
     return LocalStorage;
   }(_abstractStorage.AbstractStorage);
 });
-define('fabric-components/ws-header/authorization',['exports', './access-token'], function (exports, _accessToken) {
+define('fabric-components/ws-header/authorization',['exports', './json-web-token'], function (exports, _jsonWebToken) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -22434,11 +22434,11 @@ define('fabric-components/ws-header/authorization',['exports', './access-token']
           if (this.storage.get('state') !== queryParams.state) {
             throw new Error('Unexpected authorisation response');
           }
-          var token = new _accessToken.JsonWebToken(queryParams.access_token);
+          var token = new _jsonWebToken.JsonWebToken(queryParams.access_token);
           this.storage.set('access_token', token);
           this.changeAccessToken(token);
         } else if (this.storage.get('access_token')) {
-          var _token = new _accessToken.JsonWebToken(this.storage.get('access_token'));
+          var _token = new _jsonWebToken.JsonWebToken(this.storage.get('access_token'));
           this.changeAccessToken(_token);
         } else {
           this.changeAccessToken(null);
@@ -22479,7 +22479,7 @@ define('fabric-components/ws-header/authorization',['exports', './access-token']
     return Authorization;
   }();
 });
-define('fabric-components/ws-header/access-token',['exports'], function (exports) {
+define('fabric-components/ws-header/json-web-token',['exports'], function (exports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -22556,14 +22556,19 @@ define('fabric-components/ws-header/access-token',['exports'], function (exports
         return null;
       }
     }, {
-      key: 'valueOf',
-      value: function valueOf() {
-        return this.token;
-      }
-    }, {
       key: 'toString',
       value: function toString() {
         return this.token;
+      }
+    }, {
+      key: 'valueOf',
+      value: function valueOf() {
+        return this.toString();
+      }
+    }, {
+      key: 'toJSON',
+      value: function toJSON() {
+        return this.toString();
       }
     }]);
 
