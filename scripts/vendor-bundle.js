@@ -28253,12 +28253,24 @@ define('fabric-components/ws-option-buttons/ws-option-buttons',['exports', '../i
         this.setState(this.createState(props));
       }
     }, {
-      key: 'componentWillUnmount',
-      value: function componentWillUnmount() {
+      key: 'componentDidUpdate',
+      value: function componentDidUpdate() {
         var _this3 = this;
 
         this.buttons.forEach(function (button) {
-          return button.removeEventListener('click', _this3.onClickButton);
+          return button.addEventListener('click', _this3.onClickButton);
+        });
+        if (this.moreAnchor) {
+          this.moreAnchor.addEventListener('click', this.onClickToggle);
+        }
+      }
+    }, {
+      key: 'componentWillUnmount',
+      value: function componentWillUnmount() {
+        var _this4 = this;
+
+        this.buttons.forEach(function (button) {
+          return button.removeEventListener('click', _this4.onClickButton);
         });
         if (this.moreAnchor) {
           this.moreAnchor.removeEventListener('click', this.onClickToggle);
@@ -28298,35 +28310,38 @@ define('fabric-components/ws-option-buttons/ws-option-buttons',['exports', '../i
     }, {
       key: 'render',
       value: function render() {
-        var _this4 = this;
+        var _this5 = this;
 
         return _imports.React.createElement(
           'div',
           { className: 'ws-option-buttons', ref: function ref(element) {
-              _this4.element = element;
+              _this5.element = element;
             } },
           this.state.items.map(function (item, index) {
             return _imports.React.createElement(
               'div',
-              { className: 'option-button ' + (index < _this4.state.visible ? '' : 'is-hidden') },
+              { className: 'option-button ' + (index < _this5.state.visible ? '' : 'is-hidden') },
               _imports.React.createElement(
                 'a',
                 {
-                  className: _this4.props.buttonClass + ' ' + (item.selected ? 'is-active' : ''),
+                  className: _this5.props.buttonClass + ' ' + (item.selected ? 'is-active' : ''),
                   'data-index': '',
                   ref: function ref(element) {
-                    _this4.buttons[index] = element;
+                    _this5.buttons[index] = element;
                   }
                 },
                 item.label || item.value
               )
             );
           }),
-          this.props.initialVisible < this.state.items.length && _imports.React.createElement(
+          _imports.React.createElement(
             'a',
-            { className: 'show-more', ref: function ref(element) {
-                _this4.moreAnchor = element;
-              } },
+            {
+              className: 'show-more ' + (this.props.initialVisible < this.state.items.length ? 'is-hidden' : ''),
+              ref: function ref(element) {
+                _this5.moreAnchor = element;
+              }
+            },
             this.state.visible === this.state.items.length ? 'less' : 'more'
           )
         );
