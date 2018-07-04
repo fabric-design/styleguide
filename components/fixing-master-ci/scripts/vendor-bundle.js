@@ -24269,7 +24269,7 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
       limit: _imports.PropTypes.number,
       selectAll: _imports.PropTypes.bool,
       value: _imports.PropTypes.object,
-      handle: _imports.PropTypes.fn
+      handle: _imports.PropTypes.func
     }
   });
   Object.defineProperty(DropdownMenu, 'contextTypes', {
