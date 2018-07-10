@@ -24157,11 +24157,11 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
             key: 'parent',
             isParent: true
           }), _imports.React.createElement('li', { className: 'dropdown-item-separator', key: 'parent-separator' })],
-          hasValue && (this.context.multiple || this.props.filterable) && [this.state.items.filter(function (item) {
+          hasValue && (this.context.multiple || this.props.filterable) ? [this.state.items.filter(function (item) {
             return item.stored;
           }).map(function (item, index) {
             return _imports.React.createElement(_dropdownMenuItem.DropdownMenuItem, { item: item, handle: _this3.handlePropagation, key: 'value-' + index });
-          }), _imports.React.createElement('li', { className: 'dropdown-item-separator', key: 'value-separator' })],
+          }), _imports.React.createElement('li', { className: 'dropdown-item-separator', key: 'value-separator' })] : null,
           items.map(function (item, index) {
             return _imports.React.createElement(_dropdownMenuItem.DropdownMenuItem, { item: item, handle: _this3.handlePropagation, key: 'item-' + index });
           }),
