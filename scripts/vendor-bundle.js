@@ -22381,7 +22381,7 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
     }, {
       key: 'getAccessToken',
       value: function getAccessToken() {
-        var queryString = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : location.hash.substr(1);
+        var queryString = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : window.location.hash.substr(1);
 
         if (!this.authorization.accessToken) {
           this.authorization.tryFetchToken(queryString);
@@ -22458,7 +22458,7 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
           _this2.dispatchEvent('ws-auth-changed', accessToken);
         });
 
-        this.constructor.authorization.tryFetchToken(location.hash.substr(1));
+        this.constructor.authorization.tryFetchToken(window.location.hash.substr(1));
 
         window.addEventListener('ws-authorize', function () {
           return _this2.login();
@@ -22531,6 +22531,34 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
         this.level2.classList.remove('is-active');
       }
     }, {
+      key: 'renderLink',
+      value: function renderLink(link) {
+        return _imports.React.createElement(
+          'a',
+          { href: link.href, onClick: function onClick(event) {
+              if (link.onClick) link.onClick(event);
+            } },
+          link.label
+        );
+      }
+    }, {
+      key: 'renderMenuCommons',
+      value: function renderMenuCommons(props) {
+        return _imports.React.createElement(
+          'a',
+          {
+            className: 'application-name',
+            href: props.rootUrl
+          },
+          props.appLogo && _imports.React.createElement(
+            'figure',
+            { className: 'application-logo' },
+            _imports.React.createElement('img', { src: props.appLogo, alt: 'Application logo' })
+          ),
+          props.appName
+        );
+      }
+    }, {
       key: 'render',
       value: function render() {
         var _this4 = this;
@@ -22543,19 +22571,7 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
           _imports.React.createElement(
             'div',
             { className: 'level-1' },
-            _imports.React.createElement(
-              'a',
-              {
-                className: 'application-name',
-                href: this.props.rootUrl
-              },
-              this.props.appLogo && _imports.React.createElement(
-                'figure',
-                { className: 'application-logo' },
-                _imports.React.createElement('img', { src: this.props.appLogo, alt: 'Application logo' })
-              ),
-              this.props.appName
-            ),
+            this.props.rootUrl.$$typeof ? this.props.rootUrl : this.renderMenuCommons(this.props),
             _imports.React.createElement(
               'nav',
               { className: 'main-menu' },
@@ -22578,13 +22594,7 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
                       },
                       className: link.isCurrent ? 'is-current' : null
                     },
-                    _imports.React.createElement(
-                      'a',
-                      { href: link.href, onClick: function onClick(event) {
-                          if (link.onClick) link.onClick(event);
-                        } },
-                      link.label
-                    )
+                    link.$$typeof ? link : _this4.renderLink(link)
                   );
                 })
               )
@@ -22612,23 +22622,41 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
                 ),
                 this.props.showAuthorization && (!this.state.isLoggedIn ? _imports.React.createElement(
                   'li',
-                  { onClick: function onClick() {
-                      return _this4.login();
-                    } },
+                  null,
                   _imports.React.createElement(
-                    'a',
-                    null,
-                    'Login'
+                    'div',
+                    {
+                      onClick: function onClick() {
+                        return _this4.login();
+                      },
+                      onKeyPress: function onKeyPress() {
+                        return _this4.login();
+                      }
+                    },
+                    _imports.React.createElement(
+                      'a',
+                      { href: '#voidLogin' },
+                      'Login'
+                    )
                   )
                 ) : _imports.React.createElement(
                   'li',
-                  { onClick: function onClick() {
-                      return _this4.logout();
-                    } },
+                  null,
                   _imports.React.createElement(
-                    'a',
-                    null,
-                    _imports.React.createElement('span', { className: 'icon icon24 icon-power' })
+                    'div',
+                    {
+                      onClick: function onClick() {
+                        return _this4.logout();
+                      },
+                      onKeyPress: function onKeyPress() {
+                        return _this4.logout();
+                      }
+                    },
+                    _imports.React.createElement(
+                      'a',
+                      { href: '#voidLogout' },
+                      _imports.React.createElement('span', { className: 'icon icon24 icon-power' })
+                    )
                   )
                 ))
               )
@@ -22647,6 +22675,9 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
               onClick: function onClick() {
                 return _this4.leaveLevel2();
               },
+              onKeyPress: function onKeyPress() {
+                return _this4.leaveLevel2();
+              },
               ref: function ref(element) {
                 _this4.level2 = element;
               }
@@ -22661,13 +22692,7 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
                   return _imports.React.createElement(
                     'li',
                     { key: 'sub-link-' + index + '-' + childIndex, className: child.isCurrent ? 'is-current' : null },
-                    _imports.React.createElement(
-                      'a',
-                      { href: child.href, onClick: function onClick(event) {
-                          if (child.onClick) child.onClick(event);
-                        } },
-                      child.label
-                    )
+                    _this4.renderLink(child)
                   );
                 })
               );
@@ -22825,7 +22850,7 @@ define('fabric-components/ws-header/storage/cookie-storage',['exports', './abstr
       key: 'createCookie',
       value: function createCookie(key, value, expires) {
         var encodedValue = encodeURIComponent(JSON.stringify(value));
-        var domain = location.hostname.replace(EXTRACT_TOP_LEVEL_DOMAIN, '$1');
+        var domain = window.location.hostname.replace(EXTRACT_TOP_LEVEL_DOMAIN, '$1');
 
         document.cookie = '' + this.name + key + '=' + encodedValue + ';expires=' + expires + ';domain=' + domain;
       }
@@ -22961,12 +22986,12 @@ define('fabric-components/ws-header/storage/local-storage',['exports', './abstra
       key: 'set',
       value: function set(key, value) {
         var encodedValue = encodeURIComponent(JSON.stringify(value));
-        localStorage.setItem('' + this.name + key, encodedValue);
+        window.localStorage.setItem('' + this.name + key, encodedValue);
       }
     }, {
       key: 'get',
       value: function get(key) {
-        var encodedValue = localStorage.getItem('' + this.name + key);
+        var encodedValue = window.localStorage.getItem('' + this.name + key);
 
         if (encodedValue) {
           try {
@@ -22980,7 +23005,7 @@ define('fabric-components/ws-header/storage/local-storage',['exports', './abstra
     }, {
       key: 'remove',
       value: function remove(key) {
-        localStorage.removeItem('' + this.name + key);
+        window.localStorage.removeItem('' + this.name + key);
       }
     }]);
 
@@ -23112,7 +23137,7 @@ define('fabric-components/ws-header/authorization',['exports', './json-web-token
       value: function authorize(loginUrl, clientId, businessPartnerId) {
         var query = this.buildQuery([['business_partner_id', businessPartnerId], ['client_id', clientId], ['state', this.createAndRememberUUID()], ['response_type', 'token']]);
 
-        location.href = loginUrl + '?' + query;
+        window.location.href = loginUrl + '?' + query;
       }
     }, {
       key: 'unauthorize',
@@ -23561,6 +23586,7 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
             return _imports.React.createElement(
               'a',
               {
+                href: '#void',
                 className: 'dropdown-trigger ' + disabledStyle,
                 ref: function ref(element) {
                   _this5.trigger = element;
@@ -23601,6 +23627,7 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
             return _imports.React.createElement(
               'a',
               {
+                href: '#void',
                 className: 'dropdown-trigger ' + disabledStyle,
                 ref: function ref(element) {
                   _this5.trigger = element;
@@ -23644,10 +23671,17 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
       value: function render() {
         var _this7 = this;
 
-        var isWide = this.props.type === 'select';
+        var _props = this.props,
+            type = _props.type,
+            className = _props.className,
+            orientation = _props.orientation,
+            width = _props.width;
+
+
+        var isWide = type === 'select';
         return _imports.React.createElement(
           'div',
-          { className: 'dropdown', ref: function ref(element) {
+          { className: 'dropdown  ' + className, ref: function ref(element) {
               if (element) {
                 _this7.element = element;
               }
@@ -23656,8 +23690,8 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
           _imports.React.createElement(
             'div',
             {
-              className: 'dropdown-container ' + this.props.orientation,
-              style: { width: this.props.width || (isWide ? '100%' : '') },
+              className: 'dropdown-container ' + orientation,
+              style: { width: width || (isWide ? '100%' : '') },
               ref: function ref(element) {
                 if (element) {
                   _this7.dropdownContainer = element;
@@ -23682,6 +23716,7 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
       text: '',
       icon: '',
       items: [],
+      className: '',
       multiple: false,
       inputOnly: false,
       filterable: false,
@@ -23704,6 +23739,7 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
       text: _imports.PropTypes.string,
       icon: _imports.PropTypes.string,
       items: _imports.PropTypes.array,
+      className: _imports.PropTypes.string,
       multiple: _imports.PropTypes.bool,
       filterable: _imports.PropTypes.bool,
       inputOnly: _imports.PropTypes.bool,
@@ -24231,7 +24267,9 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
       filter: _imports.PropTypes.string,
       placeholder: _imports.PropTypes.string,
       limit: _imports.PropTypes.number,
-      selectAll: _imports.PropTypes.bool
+      selectAll: _imports.PropTypes.bool,
+      value: _imports.PropTypes.object,
+      handle: _imports.PropTypes.func
     }
   });
   Object.defineProperty(DropdownMenu, 'contextTypes', {
@@ -24320,20 +24358,19 @@ define('fabric-components/ws-dropdown/dropdown-menu-item',['exports', '../import
             _this.props.handle('go-back');
           } else if (_this.state.children && _this.state.children.length) {
             _this.props.handle('show-child', _this.menu);
-          } else {
-            if (!_this.context.multiple) {
-              if (_this.state.selected) {
-                _this.props.handle('change', null);
-              } else {
-                _this.state.selected = true;
-                _this.state.stored = true;
-                _this.props.handle('change', _this.state);
-              }
+          } else if (!_this.context.multiple) {
+            if (_this.state.selected) {
+              _this.props.handle('change', null);
             } else {
-              _this.state.selected = !_this.state.selected;
-            }
+              _this.setState({
+                selected: true,
+                stored: true
+              });
 
-            _this.setState(_this.state);
+              _this.props.handle('change', _this.state);
+            }
+          } else {
+            _this.setState({ selected: !_this.state.selected });
           }
         }
       });
@@ -24358,7 +24395,7 @@ define('fabric-components/ws-dropdown/dropdown-menu-item',['exports', '../import
     }, {
       key: 'componentWillReceiveProps',
       value: function componentWillReceiveProps(props) {
-        this.state = props.item;
+        this.setState(props.item);
       }
     }, {
       key: 'componentWillUnmount',
@@ -24821,28 +24858,38 @@ define('fabric-components/ws-date-picker/ws-date-picker',['exports', '../imports
       value: function render() {
         var _this3 = this;
 
+        var _props = this.props,
+            className = _props.className,
+            iconOnly = _props.iconOnly,
+            placeholder = _props.placeholder;
+
+
         return _imports.React.createElement(
           'div',
           {
-            className: 'ws-date-picker ' + (this.props.iconOnly ? 'icon-only' : 'with-input'),
+            className: 'ws-date-picker ' + (iconOnly ? 'icon-only' : 'with-input'),
             ref: function ref(element) {
               _this3.element = element;
             }
           },
-          !this.props.iconOnly && [_imports.React.createElement('input', {
+          !iconOnly && [_imports.React.createElement('input', {
+            className: className || '',
             defaultValue: this.state.value,
-            placeholder: this.props.placeholder,
+            placeholder: placeholder,
             ref: function ref(element) {
               _this3.input = element;
             },
             key: 'input'
           }), _imports.React.createElement('span', { className: 'icon icon-calendar icon16', key: 'icon' })],
-          this.props.iconOnly && _imports.React.createElement('span', {
-            className: 'icon icon-calendar icon16',
+          iconOnly && _imports.React.createElement('span', {
+            className: 'icon icon-calendar icon16 ' + (className || ''),
             ref: function ref(element) {
               _this3.input = element;
             },
             onClick: function onClick(event) {
+              return _this3.flatpickr.open(event);
+            },
+            onKeyDown: function onKeyDown(event) {
               return _this3.flatpickr.open(event);
             }
           })
@@ -24861,7 +24908,8 @@ define('fabric-components/ws-date-picker/ws-date-picker',['exports', '../imports
       placeholder: '',
       iconOnly: false,
       options: {},
-      onChange: function onChange() {}
+      onChange: function onChange() {},
+      className: ''
     }
   });
   Object.defineProperty(WSDatePicker, 'propTypes', {
@@ -24872,7 +24920,8 @@ define('fabric-components/ws-date-picker/ws-date-picker',['exports', '../imports
       placeholder: _imports.PropTypes.string,
       iconOnly: _imports.PropTypes.bool,
       options: _imports.PropTypes.object,
-      onChange: _imports.PropTypes.func
+      onChange: _imports.PropTypes.func,
+      className: _imports.PropTypes.string
     }
   });
   Object.defineProperty(WSDatePicker, 'format', {
@@ -27190,6 +27239,8 @@ define('fabric-components/ws-inline-edit/ws-inline-edit',['exports', '../imports
           'div',
           { className: 'ws-inline-edit', onClick: function onClick() {
               return _this3.editElement();
+            }, onKeyPress: function onKeyPress() {
+              return _this3.editElement();
             } },
           _imports.React.createElement('input', {
             type: 'text',
@@ -27345,7 +27396,9 @@ define('fabric-components/ws-notification/ws-notification',['exports', '../impor
           type = DEFAULT_NOTIFICATION_TYPE;
         }
         this.setState({
-          notifications: this.state.notifications.concat([{ title: title, description: description, type: type, lifetime: lifetime }])
+          notifications: this.state.notifications.concat([{
+            title: title, description: description, type: type, lifetime: lifetime
+          }])
         });
       }
     }, {
@@ -27353,7 +27406,8 @@ define('fabric-components/ws-notification/ws-notification',['exports', '../impor
       value: function animateIn(notification, index) {
         var _this2 = this;
 
-        var list = this.list;
+        var list = this.list.list;
+
         list.style.transition = 'none';
         list.style.transform = 'translate3d(0, 80px, 0)';
         setTimeout(function () {
@@ -27407,6 +27461,9 @@ define('fabric-components/ws-notification/ws-notification',['exports', '../impor
                     _this3['notification-' + i] = element;
                   },
                   onClick: function onClick() {
+                    return _this3.close(i);
+                  },
+                  onKeyPress: function onKeyPress() {
                     return _this3.close(i);
                   }
                 },
@@ -27584,6 +27641,9 @@ define('fabric-components/ws-week-picker/ws-week-picker',['exports', '../imports
           _imports.React.createElement('span', {
             className: 'icon icon16 ' + (this.state.show ? '' : 'icon-calendar'),
             onClick: function onClick() {
+              return _this3.toggleCalendar();
+            },
+            onKeyPress: function onKeyPress() {
               return _this3.toggleCalendar();
             }
           }),
@@ -27763,11 +27823,14 @@ define('fabric-components/ws-week-picker/ws-week-picker-calendar',['exports', '.
                   key: monthIndex + '_' + weekIndex,
                   onClick: function onClick() {
                     return _this2.props.onChange({ week: week, year: year });
+                  },
+                  onKeyPress: function onKeyPress() {
+                    return _this2.props.onChange({ week: week, year: year });
                   }
                 },
                 _imports.React.createElement(
                   'a',
-                  { className: 'week' },
+                  { href: '#voidWeek', className: 'week' },
                   week
                 )
               );
@@ -27791,9 +27854,15 @@ define('fabric-components/ws-week-picker/ws-week-picker-calendar',['exports', '.
               null,
               _imports.React.createElement(
                 'span',
-                { className: 'prev', onClick: function onClick() {
+                {
+                  className: 'prev',
+                  onClick: function onClick() {
                     return _this3.prevYear();
-                  } },
+                  },
+                  onKeyPress: function onKeyPress() {
+                    return _this3.prevYear();
+                  }
+                },
                 _imports.React.createElement('span', { className: 'icon icon32 icon-left' }),
                 this.state.showingYear - 1
               ),
@@ -27804,9 +27873,15 @@ define('fabric-components/ws-week-picker/ws-week-picker-calendar',['exports', '.
               ),
               _imports.React.createElement(
                 'span',
-                { className: 'next', onClick: function onClick() {
+                {
+                  className: 'next',
+                  onClick: function onClick() {
                     return _this3.nextYear();
-                  } },
+                  },
+                  onKeyPress: function onKeyPress() {
+                    return _this3.nextYear();
+                  }
+                },
                 this.state.showingYear + 1,
                 _imports.React.createElement('span', { className: 'icon icon32 icon-right' })
               )
@@ -28116,6 +28191,7 @@ define('fabric-components/ws-tiles-chart/ws-tiles-chart',['exports', '../imports
       config: _imports.PropTypes.object,
       title: _imports.PropTypes.string,
       maxTileSize: _imports.PropTypes.number,
+      minTileSize: _imports.PropTypes.number,
       width: _imports.PropTypes.number,
       height: _imports.PropTypes.number,
       onMouseEnter: _imports.PropTypes.func,
@@ -28211,6 +28287,9 @@ define('fabric-components/ws-tiles-chart/tile',['exports', '../imports'], functi
           className: 'tile ' + groupName + ' ' + className,
           style: style,
           onClick: function onClick() {
+            return _this2.props.onClick(groupName, identifier);
+          },
+          onKeyPress: function onKeyPress() {
             return _this2.props.onClick(groupName, identifier);
           },
           onMouseEnter: this.props.onMouseEnter,
@@ -28689,6 +28768,7 @@ define('fabric-components/ws-option-buttons/ws-option-buttons',['exports', '../i
           }).map(function (item) {
             return item.value;
           });
+
           _this.setState({ items: _this.state.items, value: value });
 
           _this.dispatchEvent('change', value);
@@ -28700,7 +28780,6 @@ define('fabric-components/ws-option-buttons/ws-option-buttons',['exports', '../i
       });
 
       _this.buttons = [];
-
       _this.state = _this.createState(props);
       return _this;
     }
@@ -28794,6 +28873,7 @@ define('fabric-components/ws-option-buttons/ws-option-buttons',['exports', '../i
               _imports.React.createElement(
                 'a',
                 {
+                  href: '#void',
                   className: _this5.props.buttonClass + ' ' + (item.selected ? 'is-active' : ''),
                   'data-index': '',
                   ref: function ref(element) {
@@ -28807,6 +28887,7 @@ define('fabric-components/ws-option-buttons/ws-option-buttons',['exports', '../i
           _imports.React.createElement(
             'a',
             {
+              href: '#void',
               className: 'show-more ' + (this.props.initialVisible < this.state.items.length ? 'is-hidden' : ''),
               ref: function ref(element) {
                 _this5.moreAnchor = element;
