@@ -22240,7 +22240,7 @@ return index;
 //# sourceMappingURL=preact-compat.js.map
 ;define('preact-compat', ['preact-compat/preact-compat'], function (main) { return main; });
 
-define('fabric-components/index',['exports', './ws-header/ws-header', './ws-date-picker/ws-date-picker', './ws-dropdown/ws-dropdown', './ws-inline-edit/ws-inline-edit', './ws-notification/ws-notification', './ws-week-picker/ws-week-picker', './ws-tiles-chart/ws-tiles-chart', './ws-spinner/ws-spinner', './ws-tab-menu/ws-tab-menu', './ws-option-buttons/ws-option-buttons'], function (exports, _wsHeader, _wsDatePicker, _wsDropdown, _wsInlineEdit, _wsNotification, _wsWeekPicker, _wsTilesChart, _wsSpinner, _wsTabMenu, _wsOptionButtons) {
+define('fabric-components/index',['exports', './ws-header/ws-header', './ws-date-picker/ws-date-picker', './ws-dropdown/ws-dropdown', './ws-inline-edit/ws-inline-edit', './ws-notification/ws-notification', './ws-week-picker/ws-week-picker', './ws-tiles-chart/ws-tiles-chart', './ws-spinner/ws-spinner', './ws-tab-menu/ws-tab-menu', './ws-option-buttons/ws-option-buttons', './ws-multi-select/ws-multi-select'], function (exports, _wsHeader, _wsDatePicker, _wsDropdown, _wsInlineEdit, _wsNotification, _wsWeekPicker, _wsTilesChart, _wsSpinner, _wsTabMenu, _wsOptionButtons, _wsMultiSelect) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -22304,6 +22304,12 @@ define('fabric-components/index',['exports', './ws-header/ws-header', './ws-date
     enumerable: true,
     get: function () {
       return _wsOptionButtons.WSOptionButtons;
+    }
+  });
+  Object.defineProperty(exports, 'WSMultiSelect', {
+    enumerable: true,
+    get: function () {
+      return _wsMultiSelect.WSMultiSelect;
     }
   });
 });;define('fabric-components', ['fabric-components/index'], function (main) { return main; });
@@ -22544,12 +22550,12 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
     }, {
       key: 'renderMenuCommons',
       value: function renderMenuCommons(props) {
+        if (props.rootUrl.$$typeof) {
+          return props.rootUrl;
+        }
         return _imports.React.createElement(
           'a',
-          {
-            className: 'application-name',
-            href: props.rootUrl
-          },
+          { className: 'application-name', href: props.rootUrl },
           props.appLogo && _imports.React.createElement(
             'figure',
             { className: 'application-logo' },
@@ -22563,6 +22569,12 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
       value: function render() {
         var _this4 = this;
 
+        var _props = this.props,
+            links = _props.links,
+            showLocale = _props.showLocale,
+            showAuthorization = _props.showAuthorization;
+
+
         return _imports.React.createElement(
           'header',
           { className: 'ws-header', ref: function ref(element) {
@@ -22571,7 +22583,7 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
           _imports.React.createElement(
             'div',
             { className: 'level-1' },
-            this.props.rootUrl.$$typeof ? this.props.rootUrl : this.renderMenuCommons(this.props),
+            this.renderMenuCommons(this.props),
             _imports.React.createElement(
               'nav',
               { className: 'main-menu' },
@@ -22605,7 +22617,7 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
               _imports.React.createElement(
                 'ul',
                 null,
-                this.props.showLocale && _imports.React.createElement(
+                showLocale && _imports.React.createElement(
                   'li',
                   null,
                   _imports.React.createElement(_wsDropdown.WSDropdown, {
@@ -22620,43 +22632,29 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
                     type: 'anchor'
                   })
                 ),
-                this.props.showAuthorization && (!this.state.isLoggedIn ? _imports.React.createElement(
+                showAuthorization && (!this.state.isLoggedIn ? _imports.React.createElement(
                   'li',
                   null,
                   _imports.React.createElement(
-                    'div',
-                    {
-                      onClick: function onClick() {
+                    'a',
+                    { onClick: function onClick() {
                         return _this4.login();
-                      },
-                      onKeyPress: function onKeyPress() {
+                      }, onKeyPress: function onKeyPress() {
                         return _this4.login();
-                      }
-                    },
-                    _imports.React.createElement(
-                      'a',
-                      { href: '#voidLogin' },
-                      'Login'
-                    )
+                      } },
+                    'Login'
                   )
                 ) : _imports.React.createElement(
                   'li',
                   null,
                   _imports.React.createElement(
-                    'div',
-                    {
-                      onClick: function onClick() {
+                    'a',
+                    { onClick: function onClick() {
                         return _this4.logout();
-                      },
-                      onKeyPress: function onKeyPress() {
+                      }, onKeyPress: function onKeyPress() {
                         return _this4.logout();
-                      }
-                    },
-                    _imports.React.createElement(
-                      'a',
-                      { href: '#voidLogout' },
-                      _imports.React.createElement('span', { className: 'icon icon24 icon-power' })
-                    )
+                      } },
+                    _imports.React.createElement('span', { className: 'icon icon24 icon-power' })
                   )
                 ))
               )
@@ -22682,12 +22680,16 @@ define('fabric-components/ws-header/ws-header',['exports', '../imports', './stor
                 _this4.level2 = element;
               }
             },
-            this.props.links.map(function (parent, index) {
+            links.map(function (parent, index) {
               return parent.children && parent.children.length && _imports.React.createElement(
                 'ul',
-                { className: 'main-sub-menu', key: 'sub-menu' + index, ref: function ref(element) {
+                {
+                  className: 'main-sub-menu',
+                  key: 'sub-menu' + index,
+                  ref: function ref(element) {
                     _this4.subMenus[index] = element;
-                  } },
+                  }
+                },
                 parent.children.map(function (child, childIndex) {
                   return _imports.React.createElement(
                     'li',
@@ -23263,7 +23265,7 @@ define('fabric-components/ws-header/json-web-token',['exports'], function (expor
     return JsonWebToken;
   }();
 });
-define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './dropdown-menu', './dropdown-input'], function (exports, _imports, _dropdownMenu, _dropdownInput) {
+define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './dropdown-menu', './dropdown-input', '../ws-overlay/ws-overlay'], function (exports, _imports, _dropdownMenu, _dropdownInput, _wsOverlay) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -23325,7 +23327,23 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
     if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
   }
 
-  var ANIMATION_END_EVENTS = ['oAnimationEnd', 'MSAnimationEnd', 'animationend'];
+  function deep(items, getChildren, callback) {
+    var levels = [items];
+    for (var l = 0; l < levels.length; l++) {
+      for (var i = 0; i < levels[l].length; i++) {
+        var item = levels[l][i];
+
+        if (callback(item)) {
+          return;
+        }
+
+        var children = getChildren(item);
+        if (children) {
+          levels.push(children);
+        }
+      }
+    }
+  }
 
   var WSDropdown = exports.WSDropdown = function (_Component) {
     _inherits(WSDropdown, _Component);
@@ -23335,32 +23353,6 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
 
       var _this = _possibleConstructorReturn(this, (WSDropdown.__proto__ || Object.getPrototypeOf(WSDropdown)).call(this, props));
 
-      Object.defineProperty(_this, 'onDocumentClick', {
-        enumerable: true,
-        writable: true,
-        value: function value(event) {
-          var element = event.target;
-          while (element && _this.element !== element) {
-            element = element.parentNode;
-          }
-
-          if (!element) {
-            _this.close();
-          }
-        }
-      });
-      Object.defineProperty(_this, 'onTriggerClick', {
-        enumerable: true,
-        writable: true,
-        value: function value(event) {
-          event.stopPropagation();
-          if (WSDropdown.openDropdown !== _this) {
-            _this.open();
-          } else {
-            _this.close();
-          }
-        }
-      });
       Object.defineProperty(_this, 'onAnyEvent', {
         enumerable: true,
         writable: true,
@@ -23368,16 +23360,13 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
           event.stopPropagation();
         }
       });
-      Object.defineProperty(_this, 'onGlobalKeyDown', {
+      Object.defineProperty(_this, 'onTriggerClick', {
         enumerable: true,
         writable: true,
         value: function value(event) {
-          switch (event.key) {
-            case 'Escape':
-              _this.close();
-              break;
-            default:
-              break;
+          event.stopPropagation();
+          if (!_this.props.disabled) {
+            _this.overlay.toggle();
           }
         }
       });
@@ -23386,10 +23375,12 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
         writable: true,
         value: function value(type, data) {
           if (type === 'change') {
-            _this.close();
+            _this.overlay.close();
+
+            _this.overlay.contentHeight = null;
             _this.setValue(data);
-          } else if (type === 'change-size') {
-            _this.adjustSize(data);
+          } else if (type === 'change-height') {
+            _this.overlay.setHeight(data);
           }
         }
       });
@@ -23410,7 +23401,6 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
       value: function componentDidMount() {
         this.element.addEventListener('click', this.onAnyEvent);
         this.trigger.addEventListener('click', this.onTriggerClick);
-        window.addEventListener('click', this.onDocumentClick);
       }
     }, {
       key: 'componentWillReceiveProps',
@@ -23422,7 +23412,20 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
       value: function componentWillUnmount() {
         this.element.removeEventListener('click', this.onAnyEvent);
         this.trigger.removeEventListener('click', this.onTriggerClick);
-        window.removeEventListener('click', this.onDocumentClick);
+      }
+    }, {
+      key: 'onOpen',
+      value: function onOpen() {
+        if (typeof this.dropdownMenu.onOpen === 'function') {
+          this.dropdownMenu.onOpen();
+        }
+      }
+    }, {
+      key: 'onClose',
+      value: function onClose() {
+        if (typeof this.dropdownMenu.onClose === 'function') {
+          this.dropdownMenu.onClose();
+        }
       }
     }, {
       key: 'getTextFromValue',
@@ -23466,15 +23469,28 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
         var value = props.value;
 
         if (typeof value === 'string' && props.type !== 'input') {
-          value = items.find(function (item) {
-            return item.value === value;
+          deep(items, function (item) {
+            return item.children;
+          }, function (item) {
+            if (item.value === value) {
+              value = item;
+              return true;
+            }
+            return false;
           });
         }
-        value = this.enrichItems(value);
-        var text = this.getTextFromValue(props.value, props.text);
-        var state = { text: text, value: value, items: items };
+        value = this.enrichItems(value, function (val) {
+          var item = items.find(function (i) {
+            return i.value === val;
+          });
+          return item ? item.label : val;
+        });
+        var text = this.getTextFromValue(value, props.text);
+        var state = { text: text, value: value, items: items, filter: props.filter };
 
-        state.items.forEach(function (item) {
+        deep(state.items, function (item) {
+          return item.children;
+        }, function (item) {
           var isActive = !!state.value.find(function (val) {
             return val.value === item.value;
           });
@@ -23488,93 +23504,29 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
       value: function enrichItems(items) {
         var _this3 = this;
 
+        var resolveLabel = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function (value) {
+          return value;
+        };
+
         var itemsToWrap = items;
 
         if (!Array.isArray(items)) {
-          if (this.props.inputOnly) {
-            return items;
-          }
-
           itemsToWrap = items ? [items] : [];
         }
         return itemsToWrap.map(function (item) {
-          var enriched = (typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object' ? item : { label: item, value: item };
-          if (enriched.children) {
-            enriched.children = _this3.enrichItems(enriched.children);
+          if ((typeof item === 'undefined' ? 'undefined' : _typeof(item)) !== 'object') {
+            return { value: item, label: resolveLabel(item) };
           }
-          return enriched;
-        });
-      }
-    }, {
-      key: 'open',
-      value: function open() {
-        if (WSDropdown.openDropdown === this || this.props.disabled) {
-          return;
-        } else if (WSDropdown.openDropdown) {
-          WSDropdown.openDropdown.close();
-        }
-
-        WSDropdown.openDropdown = this;
-        this.dropdownContainer.style.height = 0;
-        this.dropdownContainer.classList.add('mod-open');
-        this.adjustSize(this.dropdownMenu.getHeight());
-
-        window.addEventListener('keydown', this.onGlobalKeyDown);
-
-        if (typeof this.dropdownMenu.onOpen === 'function') {
-          this.dropdownMenu.onOpen();
-        }
-      }
-    }, {
-      key: 'close',
-      value: function close() {
-        var _this4 = this;
-
-        if (WSDropdown.openDropdown !== this) {
-          return;
-        }
-        WSDropdown.openDropdown = null;
-        this.animateElement(this.dropdownContainer, 'animate-close', function (container) {
-          container.classList.remove('mod-open');
-
-          if (_this4.props.multiple) {
-            _this4.dropdownMenu.clearSelections();
+          if (item.children) {
+            item.children = _this3.enrichItems(item.children);
           }
+          return item;
         });
-
-        window.addEventListener('keydown', this.onGlobalKeyDown);
-
-        if (typeof this.dropdownMenu.onClose === 'function') {
-          this.dropdownMenu.onClose();
-        }
-      }
-    }, {
-      key: 'adjustSize',
-      value: function adjustSize(newSize) {
-        this.dropdownContainer.style.height = newSize + 'px';
-      }
-    }, {
-      key: 'animateElement',
-      value: function animateElement(item, animationClass, callback) {
-        var getEventHandler = function getEventHandler(eventName) {
-          var eventHandler = function eventHandler() {
-            item.classList.remove(animationClass);
-            item.removeEventListener(eventName, eventHandler);
-            callback(item);
-          };
-          return eventHandler;
-        };
-
-        ANIMATION_END_EVENTS.forEach(function (eventName) {
-          item.addEventListener(eventName, getEventHandler(eventName));
-        });
-
-        item.classList.add(animationClass);
       }
     }, {
       key: 'renderTrigger',
       value: function renderTrigger() {
-        var _this5 = this;
+        var _this4 = this;
 
         var icon = void 0;
         if (this.props.icon) {
@@ -23589,7 +23541,7 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
                 href: '#void',
                 className: 'dropdown-trigger ' + disabledStyle,
                 ref: function ref(element) {
-                  _this5.trigger = element;
+                  _this4.trigger = element;
                 }
               },
               icon,
@@ -23602,7 +23554,7 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
               {
                 className: 'dropdown-trigger ' + disabledStyle,
                 ref: function ref(element) {
-                  _this5.trigger = element;
+                  _this4.trigger = element;
                 }
               },
               icon,
@@ -23615,12 +23567,12 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
               {
                 className: 'dropdown-trigger select-box ' + disabledStyle,
                 ref: function ref(element) {
-                  _this5.trigger = element;
+                  _this4.trigger = element;
                 }
               },
               icon,
               ' ',
-              this.state.text
+              this.state.text || this.props.placeholder
             );
           case 'icon':
           default:
@@ -23630,7 +23582,7 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
                 href: '#void',
                 className: 'dropdown-trigger ' + disabledStyle,
                 ref: function ref(element) {
-                  _this5.trigger = element;
+                  _this4.trigger = element;
                 }
               },
               icon
@@ -23640,15 +23592,15 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
     }, {
       key: 'renderContent',
       value: function renderContent() {
-        var _this6 = this;
+        var _this5 = this;
 
         if (this.props.inputOnly) {
           return _imports.React.createElement(_dropdownInput.DropdownInput, {
-            value: this.state.value,
+            value: this.state.value[0],
             placeholder: this.props.placeholder,
             handle: this.handlePropagation,
             ref: function ref(element) {
-              _this6.dropdownMenu = element;
+              _this5.dropdownMenu = element;
             }
           });
         }
@@ -23656,20 +23608,21 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
           items: this.state.items,
           value: this.state.value,
           limit: this.props.limit,
+          filter: this.state.filter,
           filterable: this.props.filterable,
-          filter: this.props.filter,
+          filtered: this.props.filtered,
           placeholder: this.props.placeholder,
           selectAll: this.props.selectAll,
           handle: this.handlePropagation,
           ref: function ref(element) {
-            _this6.dropdownMenu = element;
+            _this5.dropdownMenu = element;
           }
         });
       }
     }, {
       key: 'render',
       value: function render() {
-        var _this7 = this;
+        var _this6 = this;
 
         var _props = this.props,
             type = _props.type,
@@ -23683,24 +23636,29 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
           'div',
           { className: 'dropdown  ' + className, ref: function ref(element) {
               if (element) {
-                _this7.element = element;
+                _this6.element = element;
               }
             } },
           this.renderTrigger(),
           _imports.React.createElement(
-            'div',
+            _wsOverlay.WSOverlay,
             {
-              className: 'dropdown-container ' + orientation,
-              style: { width: width || (isWide ? '100%' : '') },
+              width: width || (isWide ? '100%' : ''),
+              orientation: orientation,
+              onOpen: function onOpen() {
+                return _this6.onOpen();
+              },
+              onClose: function onClose() {
+                return _this6.onClose();
+              },
               ref: function ref(element) {
                 if (element) {
-                  _this7.dropdownContainer = element;
+                  _this6.overlay = element;
                 }
               }
             },
             this.renderContent()
-          ),
-          _imports.React.createElement('div', { className: 'dropdown-arrow' })
+          )
         );
       }
     }]);
@@ -23721,6 +23679,7 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
       inputOnly: false,
       filterable: false,
       filter: '',
+      filtered: false,
       limit: 10,
       orientation: 'left',
       placeholder: '',
@@ -23741,9 +23700,10 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
       items: _imports.PropTypes.array,
       className: _imports.PropTypes.string,
       multiple: _imports.PropTypes.bool,
-      filterable: _imports.PropTypes.bool,
       inputOnly: _imports.PropTypes.bool,
+      filterable: _imports.PropTypes.bool,
       filter: _imports.PropTypes.string,
+      filtered: _imports.PropTypes.bool,
       limit: _imports.PropTypes.number,
       orientation: _imports.PropTypes.oneOf(['left', 'right']),
       placeholder: _imports.PropTypes.string,
@@ -23753,11 +23713,6 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
       disabled: _imports.PropTypes.bool,
       selectAll: _imports.PropTypes.bool
     }
-  });
-  Object.defineProperty(WSDropdown, 'openDropdown', {
-    enumerable: true,
-    writable: true,
-    value: null
   });
   Object.defineProperty(WSDropdown, 'childContextTypes', {
     enumerable: true,
@@ -23838,9 +23793,7 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
         enumerable: true,
         writable: true,
         value: function value() {
-          if (_this.input) {
-            _this.input.focus();
-          }
+          _this.isActive = true;
           window.addEventListener('keydown', _this.onGlobalKeyDown);
         }
       });
@@ -23848,6 +23801,7 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
         enumerable: true,
         writable: true,
         value: function value() {
+          _this.isActive = false;
           window.removeEventListener('keydown', _this.onGlobalKeyDown);
         }
       });
@@ -23926,7 +23880,9 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
               _this.showChild(data);
               break;
             case 'change':
-              _this.clearSelections();
+              if (_this.props.filterable) {
+                _this.setState({ filter: '' });
+              }
 
               if (!_this.context.multiple) {
                 var previous = _this.state.items.find(function (item) {
@@ -23939,7 +23895,7 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
               }
               _this.props.handle(type, data);
               break;
-            case 'change-size':
+            case 'change-height':
             default:
               _this.props.handle(type, data);
               break;
@@ -23951,6 +23907,7 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
       _this.selectedIndex = -1;
       _this.state = {
         filter: props.filter,
+        filtered: props.filtered || props.filterable,
         items: props.items,
         value: props.value,
         selectAllActive: false
@@ -23982,6 +23939,7 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
       value: function componentWillReceiveProps(props) {
         this.setState({
           filter: props.filter,
+          filtered: props.filtered || props.filterable,
           items: props.items,
           value: props.value,
           selectAllActive: props.selectAllActive
@@ -23990,7 +23948,9 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
     }, {
       key: 'componentDidUpdate',
       value: function componentDidUpdate() {
-        this.props.handle('change-size', this.getHeight());
+        if (this.isActive) {
+          this.props.handle('change-height', this.getHeight());
+        }
       }
     }, {
       key: 'componentWillUnmount',
@@ -24023,11 +23983,11 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
 
         var regex = new RegExp(this.state.filter, 'i');
         return this.state.items.filter(function (item) {
-          if (_this2.props.filterable && _this2.state.filter && !regex.test(item.label)) {
+          if (_this2.state.filtered && _this2.state.filter && !regex.test(item.label)) {
             return false;
           }
 
-          if (_this2.props.filterable || _this2.context.multiple) {
+          if (_this2.state.filtered || _this2.context.multiple) {
             return !item.stored;
           }
           return true;
@@ -24036,10 +23996,10 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
     }, {
       key: 'getItemAtIndex',
       value: function getItemAtIndex(index) {
-        var limit = this.props.filterable ? this.props.limit : this.state.items.length;
+        var limit = this.state.filtered ? this.props.limit : this.state.items.length;
         var filteredItems = this.getFilteredItems().slice(0, limit);
         var valueLength = 0;
-        if (this.context.multiple || this.props.filterable) {
+        if (this.context.multiple || this.state.filtered) {
           if (Array.isArray(this.state.value)) {
             valueLength = this.state.value.length;
           } else {
@@ -24087,32 +24047,25 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
         this.forceUpdate();
       }
     }, {
-      key: 'clearSelections',
-      value: function clearSelections() {
-        if (this.state.items) {
-          this.state.items.forEach(function (item) {
-            if (item.selected && !item.stored) {
-              item.selected = false;
-            }
-          });
-          this.setState({ items: this.state.items });
-        }
-      }
-    }, {
       key: 'showChild',
       value: function showChild(subMenu) {
         this.openSubMenu = subMenu;
-        this.props.handle('change-size', subMenu.getHeight());
+        this.props.handle('change-height', subMenu.getHeight());
         this.animateOut(false);
         subMenu.animateIn(false);
+
+        subMenu.isActive = true;
+        this.isActive = false;
       }
     }, {
       key: 'showCurrent',
       value: function showCurrent() {
         if (this.openSubMenu) {
-          this.props.handle('change-size', this.getHeight());
+          this.props.handle('change-height', this.getHeight());
           this.openSubMenu.animateOut(true);
           this.animateIn(true);
+          this.openSubMenu.isActive = false;
+          this.isActive = true;
           this.openSubMenu = null;
         }
       }
@@ -24173,7 +24126,7 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
       value: function render() {
         var _this3 = this;
 
-        var limit = this.props.filterable ? this.props.limit : this.state.items.length;
+        var limit = this.state.filtered ? this.props.limit : this.state.items.length;
         var items = this.getFilteredItems().slice(0, limit);
         var hasValue = Array.isArray(this.state.value) ? this.state.value.length : this.state.value;
 
@@ -24190,7 +24143,7 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
             { className: 'dropdown-input', key: 'filter' },
             _imports.React.createElement('input', {
               type: 'text',
-              defaultValue: this.state.filter,
+              value: this.state.filter,
               placeholder: this.props.placeholder,
               ref: function ref(element) {
                 _this3.input = element;
@@ -24251,6 +24204,7 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
       value: null,
       filterable: false,
       filter: null,
+      filtered: false,
       placeholder: '',
       limit: 10,
       selectAll: false,
@@ -24263,12 +24217,13 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
     value: {
       parent: _imports.PropTypes.object,
       items: _imports.PropTypes.array,
+      value: _imports.PropTypes.oneOfType([_imports.PropTypes.string, _imports.PropTypes.array, _imports.PropTypes.object]),
       filterable: _imports.PropTypes.bool,
       filter: _imports.PropTypes.string,
+      filtered: _imports.PropTypes.bool,
       placeholder: _imports.PropTypes.string,
       limit: _imports.PropTypes.number,
       selectAll: _imports.PropTypes.bool,
-      value: _imports.PropTypes.object,
       handle: _imports.PropTypes.func
     }
   });
@@ -24344,33 +24299,46 @@ define('fabric-components/ws-dropdown/dropdown-menu-item',['exports', '../import
 
       var _this = _possibleConstructorReturn(this, (DropdownMenuItem.__proto__ || Object.getPrototypeOf(DropdownMenuItem)).call(this, props, context));
 
+      Object.defineProperty(_this, 'onMouseDown', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          event.preventDefault();
+        }
+      });
       Object.defineProperty(_this, 'onClick', {
         enumerable: true,
         writable: true,
         value: function value(event) {
           event.stopPropagation();
 
-          if (_this.state.disabled) {
+          if ('activeElement' in document) {
+            document.activeElement.blur();
+          }
+          var item = _this.state.item;
+
+          if (item.disabled) {
             return;
           }
 
           if (_this.props.isParent) {
             _this.props.handle('go-back');
-          } else if (_this.state.children && _this.state.children.length) {
+          } else if (item.children && item.children.length) {
             _this.props.handle('show-child', _this.menu);
           } else if (!_this.context.multiple) {
-            if (_this.state.selected) {
+            if (item.selected) {
               _this.props.handle('change', null);
             } else {
-              _this.setState({
-                selected: true,
-                stored: true
-              });
+              item.selected = true;
+              item.stored = true;
 
-              _this.props.handle('change', _this.state);
+              _this.setState({ item: item });
+
+              _this.props.handle('change', item);
             }
           } else {
-            _this.setState({ selected: !_this.state.selected });
+            item.selected = !item.selected;
+            _this.setState({ item: item });
           }
         }
       });
@@ -24382,7 +24350,7 @@ define('fabric-components/ws-dropdown/dropdown-menu-item',['exports', '../import
         }
       });
 
-      _this.state = props.item;
+      _this.state = { item: props.item };
       _this.menu = null;
       return _this;
     }
@@ -24391,48 +24359,54 @@ define('fabric-components/ws-dropdown/dropdown-menu-item',['exports', '../import
       key: 'componentDidMount',
       value: function componentDidMount() {
         this.dropdownItem.addEventListener('click', this.onClick);
+        this.dropdownItem.addEventListener('mousedown', this.onMouseDown);
       }
     }, {
       key: 'componentWillReceiveProps',
       value: function componentWillReceiveProps(props) {
-        this.setState(props.item);
+        this.setState({ item: props.item });
       }
     }, {
       key: 'componentWillUnmount',
       value: function componentWillUnmount() {
         this.dropdownItem.removeEventListener('click', this.onClick);
+        this.dropdownItem.removeEventListener('mousedown', this.onMouseDown);
       }
     }, {
       key: 'render',
       value: function render() {
         var _this2 = this;
 
+        var item = this.state.item;
+
         var anchorClass = 'text';
-        anchorClass += this.state.selected ? ' is-active' : '';
-        anchorClass += this.state.focused ? ' is-focused' : '';
-        anchorClass += this.state.disabled ? ' is-disabled' : '';
-        anchorClass += ' ' + (this.state.className || '');
+        anchorClass += item.selected ? ' is-active' : '';
+        anchorClass += item.focused ? ' is-focused' : '';
+        anchorClass += item.disabled ? ' is-disabled' : '';
+        anchorClass += ' ' + (item.className || '');
         var itemClass = 'dropdown-item';
         itemClass += this.props.isParent ? ' dropdown-parent-item' : '';
-        itemClass += this.state.children && !this.props.isParent ? ' has-children' : '';
+        itemClass += item.children && !this.props.isParent ? ' has-children' : '';
 
         return _imports.React.createElement(
           'li',
-          {
-            className: itemClass,
-            ref: function ref(element) {
-              _this2.dropdownItem = element;
-            }
-          },
+          { className: itemClass },
           _imports.React.createElement(
             'a',
-            { className: anchorClass, href: this.state.href, title: this.state.title || this.state.label },
-            (this.props.icon || this.state.icon) && _imports.React.createElement('i', { className: 'icon ' + (this.props.icon || this.state.icon) }),
-            this.state.label
+            {
+              className: anchorClass,
+              href: item.href,
+              title: item.title || item.label,
+              ref: function ref(element) {
+                _this2.dropdownItem = element;
+              }
+            },
+            (this.props.icon || item.icon) && _imports.React.createElement('i', { className: 'icon ' + (this.props.icon || item.icon) }),
+            item.label
           ),
-          !this.props.isParent && this.state.children && _imports.React.createElement(_dropdownMenu.DropdownMenu, {
-            items: this.state.children,
-            parent: this.state,
+          !this.props.isParent && item.children && _imports.React.createElement(_dropdownMenu.DropdownMenu, {
+            items: item.children,
+            parent: item,
             ref: function ref(element) {
               _this2.menu = element;
             },
@@ -24568,7 +24542,7 @@ define('fabric-components/ws-dropdown/dropdown-input',['exports', '../imports'],
       });
 
       _this.state = {
-        value: props.value
+        value: props.value && props.value.value
       };
       return _this;
     }
@@ -24662,6 +24636,252 @@ define('fabric-components/ws-dropdown/dropdown-input',['exports', '../imports'],
       placeholder: _imports.PropTypes.string,
       handle: _imports.PropTypes.func
     }
+  });
+});
+define('fabric-components/ws-overlay/ws-overlay',['exports', '../imports'], function (exports, _imports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.WSOverlay = undefined;
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  var _createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
+  function _possibleConstructorReturn(self, call) {
+    if (!self) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return call && (typeof call === "object" || typeof call === "function") ? call : self;
+  }
+
+  function _inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+    }
+
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+      constructor: {
+        value: subClass,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+  }
+
+  var ANIMATION_END_EVENTS = ['oAnimationEnd', 'MSAnimationEnd', 'animationend'];
+
+  var WSOverlay = exports.WSOverlay = function (_Component) {
+    _inherits(WSOverlay, _Component);
+
+    function WSOverlay(props) {
+      _classCallCheck(this, WSOverlay);
+
+      var _this = _possibleConstructorReturn(this, (WSOverlay.__proto__ || Object.getPrototypeOf(WSOverlay)).call(this, props));
+
+      Object.defineProperty(_this, 'onDocumentClick', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          var element = event.target;
+          while (element && _this.element !== element) {
+            element = element.parentNode;
+          }
+
+          if (!element) {
+            _this.close();
+          }
+        }
+      });
+      Object.defineProperty(_this, 'onGlobalKeyDown', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          switch (event.key) {
+            case 'Escape':
+              _this.close();
+              break;
+            default:
+              break;
+          }
+        }
+      });
+
+      _this.contentHeight = 0;
+      return _this;
+    }
+
+    _createClass(WSOverlay, [{
+      key: 'setHeight',
+      value: function setHeight(newHeight) {
+        this.contentHeight = newHeight;
+        this.container.style.height = newHeight + 'px';
+      }
+    }, {
+      key: 'open',
+      value: function open() {
+        var _this2 = this;
+
+        if (WSOverlay.openOverlay === this) {
+          return;
+        } else if (WSOverlay.openOverlay) {
+          WSOverlay.openOverlay.close();
+        }
+
+        WSOverlay.openOverlay = this;
+        this.container.style.height = 0;
+        this.container.classList.add('mod-open');
+
+        if (!this.contentHeight) {
+          this.contentHeight = Array.from(this.container.children).reduce(function (height, child) {
+            return height + child.clientHeight;
+          }, 0);
+        }
+
+        setTimeout(function () {
+          _this2.setHeight(_this2.contentHeight);
+        }, 0);
+
+        window.addEventListener('keydown', this.onGlobalKeyDown);
+        window.addEventListener('click', this.onDocumentClick);
+
+        if (typeof this.props.onOpen === 'function') {
+          this.props.onOpen();
+        }
+      }
+    }, {
+      key: 'close',
+      value: function close() {
+        if (WSOverlay.openOverlay !== this) {
+          return;
+        }
+        WSOverlay.openOverlay = null;
+        this.animateElement(this.container, 'animate-close', function (container) {
+          container.classList.remove('mod-open');
+          container.style.height = 0;
+        });
+
+        window.removeEventListener('keydown', this.onGlobalKeyDown);
+        window.removeEventListener('click', this.onDocumentClick);
+
+        if (typeof this.props.onClose === 'function') {
+          this.props.onClose();
+        }
+      }
+    }, {
+      key: 'toggle',
+      value: function toggle() {
+        if (WSOverlay.openOverlay !== this) {
+          this.open();
+        } else {
+          this.close();
+        }
+      }
+    }, {
+      key: 'animateElement',
+      value: function animateElement(item, animationClass, callback) {
+        var getEventHandler = function getEventHandler(eventName) {
+          var eventHandler = function eventHandler() {
+            item.classList.remove(animationClass);
+            item.removeEventListener(eventName, eventHandler);
+            callback(item);
+          };
+          return eventHandler;
+        };
+
+        ANIMATION_END_EVENTS.forEach(function (eventName) {
+          item.addEventListener(eventName, getEventHandler(eventName));
+        });
+
+        item.classList.add(animationClass);
+      }
+    }, {
+      key: 'calculateWidth',
+      value: function calculateWidth() {
+        return this.props.width;
+      }
+    }, {
+      key: 'render',
+      value: function render() {
+        var _this3 = this;
+
+        return _imports.React.createElement(
+          'div',
+          { className: 'overlay', ref: function ref(element) {
+              if (element) {
+                _this3.element = element;
+              }
+            } },
+          _imports.React.createElement(
+            'div',
+            {
+              className: 'overlay-container mod-' + this.props.orientation,
+              style: { width: this.calculateWidth() },
+              ref: function ref(element) {
+                if (element) {
+                  _this3.container = element;
+                }
+              }
+            },
+            this.props.children
+          ),
+          _imports.React.createElement('div', { className: 'overlay-arrow' })
+        );
+      }
+    }]);
+
+    return WSOverlay;
+  }(_imports.Component);
+
+  Object.defineProperty(WSOverlay, 'defaultProps', {
+    enumerable: true,
+    writable: true,
+    value: {
+      width: '',
+      orientation: 'left',
+      onOpen: function onOpen() {},
+      onClose: function onClose() {}
+    }
+  });
+  Object.defineProperty(WSOverlay, 'propTypes', {
+    enumerable: true,
+    writable: true,
+    value: {
+      width: _imports.PropTypes.string,
+      orientation: _imports.PropTypes.string,
+      onOpen: _imports.PropTypes.func,
+      onClose: _imports.PropTypes.func
+    }
+  });
+  Object.defineProperty(WSOverlay, 'openOverlay', {
+    enumerable: true,
+    writable: true,
+    value: null
   });
 });
 define('fabric-components/ws-date-picker/ws-date-picker',['exports', '../imports', './flatpickr'], function (exports, _imports, _flatpickr) {
@@ -24795,6 +25015,14 @@ define('fabric-components/ws-date-picker/ws-date-picker',['exports', '../imports
 
       var _this = _possibleConstructorReturn(this, (WSDatePicker.__proto__ || Object.getPrototypeOf(WSDatePicker)).call(this, props));
 
+      Object.defineProperty(_this, 'stopPropagation', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          event.stopPropagation();
+        }
+      });
+
       _this.element = null;
       _this.input = null;
       _this.flatpickr = null;
@@ -24815,9 +25043,8 @@ define('fabric-components/ws-date-picker/ws-date-picker',['exports', '../imports
           onChange: this.onChange.bind(this)
         }));
 
-        this.input.addEventListener('change', function (event) {
-          return event.stopPropagation();
-        }, true);
+        this.input.addEventListener('change', this.stopPropagation);
+        this.element.addEventListener('click', this.stopPropagation);
       }
     }, {
       key: 'componentWillReceiveProps',
@@ -24836,9 +25063,8 @@ define('fabric-components/ws-date-picker/ws-date-picker',['exports', '../imports
       key: 'componentWillUnmount',
       value: function componentWillUnmount() {
         this.flatpickr.destroy();
-        this.input.removeEventListener('change', function (event) {
-          return event.stopPropagation();
-        }, true);
+        this.input.removeEventListener('change', this.stopPropagation);
+        this.element.removeEventListener('click', this.stopPropagation);
       }
     }, {
       key: 'onChange',
@@ -24873,7 +25099,7 @@ define('fabric-components/ws-date-picker/ws-date-picker',['exports', '../imports
             }
           },
           !iconOnly && [_imports.React.createElement('input', {
-            className: className || '',
+            className: className,
             defaultValue: this.state.value,
             placeholder: placeholder,
             ref: function ref(element) {
@@ -24882,7 +25108,7 @@ define('fabric-components/ws-date-picker/ws-date-picker',['exports', '../imports
             key: 'input'
           }), _imports.React.createElement('span', { className: 'icon icon-calendar icon16', key: 'icon' })],
           iconOnly && _imports.React.createElement('span', {
-            className: 'icon icon-calendar icon16 ' + (className || ''),
+            className: 'icon icon-calendar icon16 ' + className,
             ref: function ref(element) {
               _this3.input = element;
             },
@@ -24906,10 +25132,10 @@ define('fabric-components/ws-date-picker/ws-date-picker',['exports', '../imports
     value: {
       value: null,
       placeholder: '',
+      className: '',
       iconOnly: false,
       options: {},
-      onChange: function onChange() {},
-      className: ''
+      onChange: function onChange() {}
     }
   });
   Object.defineProperty(WSDatePicker, 'propTypes', {
@@ -24918,10 +25144,10 @@ define('fabric-components/ws-date-picker/ws-date-picker',['exports', '../imports
     value: {
       value: _imports.PropTypes.oneOfType([_imports.PropTypes.string, _imports.PropTypes.number]),
       placeholder: _imports.PropTypes.string,
+      className: _imports.PropTypes.string,
       iconOnly: _imports.PropTypes.bool,
       options: _imports.PropTypes.object,
-      onChange: _imports.PropTypes.func,
-      className: _imports.PropTypes.string
+      onChange: _imports.PropTypes.func
     }
   });
   Object.defineProperty(WSDatePicker, 'format', {
@@ -27406,13 +27632,11 @@ define('fabric-components/ws-notification/ws-notification',['exports', '../impor
       value: function animateIn(notification, index) {
         var _this2 = this;
 
-        var list = this.list.list;
-
-        list.style.transition = 'none';
-        list.style.transform = 'translate3d(0, 80px, 0)';
+        this.list.style.transition = 'none';
+        this.list.style.transform = 'translate3d(0, 80px, 0)';
         setTimeout(function () {
-          list.style.transition = 'transform .35s cubic-bezier(.35, 1, .69, .98) .1s';
-          list.style.transform = 'translate3d(0, 0, 0)';
+          _this2.list.style.transition = 'transform .35s cubic-bezier(.35, 1, .69, .98) .1s';
+          _this2.list.style.transform = 'translate3d(0, 0, 0)';
         }, 0);
         clearTimeout(this.state.timeoutId);
         this.setState({ timeoutId: setTimeout(function () {
@@ -27461,9 +27685,6 @@ define('fabric-components/ws-notification/ws-notification',['exports', '../impor
                     _this3['notification-' + i] = element;
                   },
                   onClick: function onClick() {
-                    return _this3.close(i);
-                  },
-                  onKeyPress: function onKeyPress() {
                     return _this3.close(i);
                   }
                 },
@@ -27820,17 +28041,19 @@ define('fabric-components/ws-week-picker/ws-week-picker-calendar',['exports', '.
                 'td',
                 {
                   className: (monthIndex < 2 || monthIndex > 13 ? 'off ' : '') + (_this2.isActive(year, week) ? 'active ' : '') + (_this2.isToday(year, week) ? 'today ' : ''),
-                  key: monthIndex + '_' + weekIndex,
-                  onClick: function onClick() {
-                    return _this2.props.onChange({ week: week, year: year });
-                  },
-                  onKeyPress: function onKeyPress() {
-                    return _this2.props.onChange({ week: week, year: year });
-                  }
+                  key: monthIndex + '_' + weekIndex
                 },
                 _imports.React.createElement(
                   'a',
-                  { href: '#voidWeek', className: 'week' },
+                  {
+                    className: 'week',
+                    onClick: function onClick() {
+                      return _this2.props.onChange({ week: week, year: year });
+                    },
+                    onKeyPress: function onKeyPress() {
+                      return _this2.props.onChange({ week: week, year: year });
+                    }
+                  },
                   week
                 )
               );
@@ -28095,7 +28318,6 @@ define('fabric-components/ws-tiles-chart/ws-tiles-chart',['exports', '../imports
         }).reduce(function (a, b) {
           return a + b;
         });
-
         var tileSize = this.calculateMaximumPossibleTileSize(width, height - this.titleDivSize, tilesAmount);
 
         if (tileSize <= maxTileSize && tileSize >= minTileSize) {
@@ -28760,17 +28982,18 @@ define('fabric-components/ws-option-buttons/ws-option-buttons',['exports', '../i
         writable: true,
         value: function value(event) {
           event.stopPropagation();
+          var items = _this.state.items;
+
           var clickedIndex = _this.buttons.indexOf(event.currentTarget);
 
-          _this.state.items[clickedIndex].selected = !_this.state.items[clickedIndex].selected;
-          var value = _this.state.items.filter(function (item) {
+          items[clickedIndex].selected = !items[clickedIndex].selected;
+          _this.setState({ items: items });
+
+          var value = items.filter(function (item) {
             return item.selected;
           }).map(function (item) {
             return item.value;
           });
-
-          _this.setState({ items: _this.state.items, value: value });
-
           _this.dispatchEvent('change', value);
 
           if (typeof _this.props.onChange === 'function') {
@@ -28830,20 +29053,17 @@ define('fabric-components/ws-option-buttons/ws-option-buttons',['exports', '../i
       value: function createState(props) {
         var items = this.enrichItems(props.items);
 
+        var value = [];
         if (props.value) {
-          if (!Array.isArray(props.value)) {
-            props.value = [props.value];
-          }
-          props.value.forEach(function (value) {
-            items.find(function (item) {
-              return item.value === value;
-            }).selected = true;
-          });
+          value = Array.isArray(props.value) ? props.value : [props.value];
         }
+        items.forEach(function (item) {
+          item.selected = value.includes(item.value);
+        });
         return {
           items: items,
           visible: props.initialVisible,
-          value: props.value
+          value: value
         };
       }
     }, {
@@ -28873,7 +29093,6 @@ define('fabric-components/ws-option-buttons/ws-option-buttons',['exports', '../i
               _imports.React.createElement(
                 'a',
                 {
-                  href: '#void',
                   className: _this5.props.buttonClass + ' ' + (item.selected ? 'is-active' : ''),
                   'data-index': '',
                   ref: function ref(element) {
@@ -28923,6 +29142,271 @@ define('fabric-components/ws-option-buttons/ws-option-buttons',['exports', '../i
       buttonClass: '',
       onChange: function onChange() {}
     }
+  });
+});
+define('fabric-components/ws-multi-select/ws-multi-select',['exports', '../imports', '../ws-dropdown/ws-dropdown'], function (exports, _imports, _wsDropdown) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.WSMultiSelect = undefined;
+
+  var _extends = Object.assign || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
+  };
+
+  function _toConsumableArray(arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+        arr2[i] = arr[i];
+      }
+
+      return arr2;
+    } else {
+      return Array.from(arr);
+    }
+  }
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  var _createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
+  function _possibleConstructorReturn(self, call) {
+    if (!self) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return call && (typeof call === "object" || typeof call === "function") ? call : self;
+  }
+
+  var _get = function get(object, property, receiver) {
+    if (object === null) object = Function.prototype;
+    var desc = Object.getOwnPropertyDescriptor(object, property);
+
+    if (desc === undefined) {
+      var parent = Object.getPrototypeOf(object);
+
+      if (parent === null) {
+        return undefined;
+      } else {
+        return get(parent, property, receiver);
+      }
+    } else if ("value" in desc) {
+      return desc.value;
+    } else {
+      var getter = desc.get;
+
+      if (getter === undefined) {
+        return undefined;
+      }
+
+      return getter.call(receiver);
+    }
+  };
+
+  function _inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+    }
+
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+      constructor: {
+        value: subClass,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+  }
+
+  var WSMultiSelect = exports.WSMultiSelect = function (_WSDropdown) {
+    _inherits(WSMultiSelect, _WSDropdown);
+
+    function WSMultiSelect() {
+      var _ref;
+
+      var _temp, _this, _ret;
+
+      _classCallCheck(this, WSMultiSelect);
+
+      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = WSMultiSelect.__proto__ || Object.getPrototypeOf(WSMultiSelect)).call.apply(_ref, [this].concat(args))), _this), Object.defineProperty(_this, 'onClickIcon', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          event.stopPropagation();
+          _this.input.focus();
+        }
+      }), Object.defineProperty(_this, 'onKeyUp', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          event.stopPropagation();
+
+          _this.setState({ filter: event.target.value });
+        }
+      }), Object.defineProperty(_this, 'onFocus', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          event.stopPropagation();
+          _this.overlay.open();
+        }
+      }), Object.defineProperty(_this, 'onBlur', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          event.stopPropagation();
+
+          _this.overlay.close();
+        }
+      }), _temp), _possibleConstructorReturn(_this, _ret);
+    }
+
+    _createClass(WSMultiSelect, [{
+      key: 'componentDidMount',
+      value: function componentDidMount() {
+        window.select = this;
+        this.icon.addEventListener('click', this.onClickIcon);
+        this.input.addEventListener('keyup', this.onKeyUp);
+        this.input.addEventListener('focus', this.onFocus);
+        this.input.addEventListener('blur', this.onBlur);
+        this.input.addEventListener('change', this.stopPropagation);
+        this.element.addEventListener('click', this.stopPropagation);
+      }
+    }, {
+      key: 'componentWillUnmount',
+      value: function componentWillUnmount() {
+        this.icon.removeEventListener('click', this.onClickIcon);
+        this.input.removeEventListener('keyup', this.onKeyUp);
+        this.input.removeEventListener('focus', this.onFocus);
+        this.input.removeEventListener('blur', this.onBlur);
+        this.input.removeEventListener('change', this.stopPropagation);
+        this.element.removeEventListener('stopPropagation', this.stopPropagation);
+      }
+    }, {
+      key: 'stopPropagation',
+      value: function stopPropagation(event) {
+        event.stopPropagation();
+      }
+    }, {
+      key: 'setValue',
+      value: function setValue(item) {
+        var value = [].concat(_toConsumableArray(this.state.value), [item]);
+
+        this.setState({ filter: '' });
+
+        this.overlay.contentHeight = null;
+
+        _get(WSMultiSelect.prototype.__proto__ || Object.getPrototypeOf(WSMultiSelect.prototype), 'setValue', this).call(this, value);
+      }
+    }, {
+      key: 'removeItem',
+      value: function removeItem(item) {
+        item.selected = false;
+        item.stored = false;
+        var value = this.state.value.filter(function (i) {
+          return i !== item;
+        });
+        _get(WSMultiSelect.prototype.__proto__ || Object.getPrototypeOf(WSMultiSelect.prototype), 'setValue', this).call(this, value);
+      }
+    }, {
+      key: 'renderTrigger',
+      value: function renderTrigger() {
+        var _this2 = this;
+
+        return _imports.React.createElement(
+          'div',
+          { className: 'input-wrapper' },
+          _imports.React.createElement('input', {
+            type: 'text',
+            placeholder: this.props.placeholder,
+            value: this.state.filter,
+            ref: function ref(element) {
+              _this2.input = element;
+            }
+          }),
+          _imports.React.createElement('span', { className: 'icon icon16 icon-magnifiying-glass', ref: function ref(element) {
+              _this2.icon = element;
+            } })
+        );
+      }
+    }, {
+      key: 'render',
+      value: function render() {
+        var _this3 = this;
+
+        var jsx = _get(WSMultiSelect.prototype.__proto__ || Object.getPrototypeOf(WSMultiSelect.prototype), 'render', this).call(this);
+        return _imports.React.createElement(
+          'div',
+          { className: 'ws-multi-select' },
+          jsx,
+          _imports.React.createElement(
+            'ul',
+            { className: 'selected-items' },
+            this.state.value.map(function (item, index) {
+              return _imports.React.createElement(
+                'li',
+                { key: 'selected-item-' + index, title: item.label },
+                _imports.React.createElement(
+                  'span',
+                  { className: 'text' },
+                  item.label
+                ),
+                _imports.React.createElement('span', { className: 'icon icon16 icon-cross', onClick: function onClick() {
+                    return _this3.removeItem(item);
+                  } })
+              );
+            })
+          )
+        );
+      }
+    }]);
+
+    return WSMultiSelect;
+  }(_wsDropdown.WSDropdown);
+
+  Object.defineProperty(WSMultiSelect, 'defaultProps', {
+    enumerable: true,
+    writable: true,
+    value: _extends({}, _wsDropdown.WSDropdown.defaultProps, {
+      filtered: true
+    })
   });
 });
 define('aurelia-templating-resources/aurelia-templating-resources',['exports', './compose', './if', './else', './with', './repeat', './show', './hide', './sanitize-html', './replaceable', './focus', 'aurelia-templating', './css-resource', './html-sanitizer', './attr-binding-behavior', './binding-mode-behaviors', './throttle-binding-behavior', './debounce-binding-behavior', './self-binding-behavior', './signal-binding-behavior', './binding-signaler', './update-trigger-binding-behavior', './abstract-repeater', './repeat-strategy-locator', './html-resource-plugin', './null-repeat-strategy', './array-repeat-strategy', './map-repeat-strategy', './set-repeat-strategy', './number-repeat-strategy', './repeat-utilities', './analyze-view-factory', './aurelia-hide-style'], function (exports, _compose, _if, _else, _with, _repeat, _show, _hide, _sanitizeHtml, _replaceable, _focus, _aureliaTemplating, _cssResource, _htmlSanitizer, _attrBindingBehavior, _bindingModeBehaviors, _throttleBindingBehavior, _debounceBindingBehavior, _selfBindingBehavior, _signalBindingBehavior, _bindingSignaler, _updateTriggerBindingBehavior, _abstractRepeater, _repeatStrategyLocator, _htmlResourcePlugin, _nullRepeatStrategy, _arrayRepeatStrategy, _mapRepeatStrategy, _setRepeatStrategy, _numberRepeatStrategy, _repeatUtilities, _analyzeViewFactory, _aureliaHideStyle) {
