@@ -27346,7 +27346,7 @@ define('fabric-components/ws-date-picker/flatpickr',['module'], function (module
     module.exports = Flatpickr;
   }
 });
-define('fabric-components/ws-inline-edit/ws-inline-edit',['exports', '../imports', './types/type-handler'], function (exports, _imports, _typeHandler) {
+define('fabric-components/ws-inline-edit/ws-inline-edit',['exports', '../imports'], function (exports, _imports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -27410,137 +27410,79 @@ define('fabric-components/ws-inline-edit/ws-inline-edit',['exports', '../imports
 
       var _this = _possibleConstructorReturn(this, (WSInlineEdit.__proto__ || Object.getPrototypeOf(WSInlineEdit)).call(this, props));
 
-      Object.defineProperty(_this, 'onFocus', {
-        enumerable: true,
-        writable: true,
-        value: function value(event) {
-          event.stopPropagation();
-
-          if (!_this.state.isEditing) {
-            _this.setState({ isEditing: true }, function () {
-              _this.input.select();
-              _this.input.focus();
-            });
-          }
-        }
-      });
-      Object.defineProperty(_this, 'onKeyUp', {
-        enumerable: true,
-        writable: true,
-        value: function value(event) {
-          event.stopPropagation();
-          var inputValue = event.target.value;
-
-          switch (event.key) {
-            case 'Enter':
-              _this.submit(inputValue);
-              break;
-            case 'Escape':
-              _this.abort();
-              break;
-            default:
-              _this.setState({
-                isValid: _this.type.validate(inputValue),
-                value: inputValue
-              });
-          }
-        }
-      });
-      Object.defineProperty(_this, 'onBlur', {
-        enumerable: true,
-        writable: true,
-        value: function value(event) {
-          event.stopPropagation();
-          _this.submit(event.target.value);
-        }
-      });
-
-      _this.state = _this.createState(props);
+      _this.state = {
+        isEditing: false,
+        text: props.text
+      };
       return _this;
     }
 
     _createClass(WSInlineEdit, [{
-      key: 'componentDidMount',
-      value: function componentDidMount() {
-        this.input.addEventListener('focus', this.onFocus);
-        this.input.addEventListener('keyup', this.onKeyUp);
-        this.input.addEventListener('blur', this.onBlur);
-      }
-    }, {
-      key: 'componentWillReceiveProps',
-      value: function componentWillReceiveProps(props) {
-        this.setState(this.createState(props));
-      }
-    }, {
-      key: 'componentWillUnmount',
-      value: function componentWillUnmount() {
-        this.input.removeEventListener('focus', this.onFocus);
-        this.input.removeEventListener('keyup', this.onKeyUp);
-        this.input.removeEventListener('blur', this.onBlur);
-      }
-    }, {
-      key: 'createState',
-      value: function createState(props) {
-        this.type = _typeHandler.TypeHandler.getStrategy(props.type, props.options);
-        return {
-          isEditing: false,
-          isValid: true,
-          value: props.value,
-          initialValue: props.value
-        };
-      }
-    }, {
-      key: 'submit',
-      value: function submit(inputValue) {
-        var state = { isEditing: false, value: inputValue };
+      key: 'editElement',
+      value: function editElement() {
+        var _this2 = this;
 
-        if (inputValue !== this.state.initialValue && this.type.validate(inputValue)) {
-          state.initialValue = inputValue;
-
-          var eventData = {
-            plain: inputValue,
-            value: this.type.convert(inputValue)
-          };
-          this.dispatchEvent('change', eventData);
-
-          if (typeof this.props.onChange === 'function') {
-            this.props.onChange(eventData);
-          }
+        if (!this.state.isEditing) {
+          this.setState({ isEditing: true }, function () {
+            _this2.editEl.focus();
+          });
         }
-        this.setState(state);
+      }
+    }, {
+      key: 'keyAction',
+      value: function keyAction(e) {
+        if (e.keyCode === 13) {
+          this.setState({
+            text: e.target.value,
+            isEditing: false
+          });
+        } else if (e.keyCode === 27) {
+          this.setState({ isEditing: false });
+        }
+      }
+    }, {
+      key: 'blurAction',
+      value: function blurAction(e) {
+        this.setState({
+          text: e.target.value,
+          isEditing: false
+        });
+        this.updating(e.target.value);
+      }
+    }, {
+      key: 'updating',
+      value: function updating(text) {
+        if (text !== this.props.text) {
+          this.props.onUpdate(text);
+        }
       }
     }, {
       key: 'render',
       value: function render() {
-        var _this2 = this;
-
-        var _state = this.state,
-            isEditing = _state.isEditing,
-            isValid = _state.isValid,
-            value = _state.value;
-
-
-        var classes = 'ws-inline-edit';
-        classes += isEditing ? ' is-editing' : '';
-        classes += ' ' + this.props.type;
+        var _this3 = this;
 
         return _imports.React.createElement(
           'div',
-          { className: classes, ref: function ref(element) {
-              _this2.element = element;
+          { className: 'ws-inline-edit', onClick: function onClick() {
+              return _this3.editElement();
+            }, onKeyPress: function onKeyPress() {
+              return _this3.editElement();
             } },
-          _imports.React.createElement(
-            'div',
-            { className: 'input-wrapper ' + (!isValid ? ' is-invalid' : '') },
-            _imports.React.createElement('input', {
-              type: 'text',
-              ref: function ref(element) {
-                _this2.input = element;
-              },
-              value: value
-            }),
-            !isValid && _imports.React.createElement('span', { className: 'icon icon16 icon-cross' })
-          )
+          _imports.React.createElement('input', {
+            type: 'text',
+            className: 'inlineInput',
+            disabled: !this.state.isEditing ? 'disabled' : '',
+            onBlur: function onBlur(e) {
+              return _this3.blurAction(e);
+            },
+            onKeyDown: function onKeyDown(e) {
+              return _this3.keyAction(e);
+            },
+            defaultValue: this.state.text,
+            ref: function ref(el) {
+              _this3.editEl = el;
+            }
+          })
         );
       }
     }]);
@@ -27548,451 +27490,22 @@ define('fabric-components/ws-inline-edit/ws-inline-edit',['exports', '../imports
     return WSInlineEdit;
   }(_imports.Component);
 
-  Object.defineProperty(WSInlineEdit, 'defaultProps', {
-    enumerable: true,
-    writable: true,
-    value: {
-      value: '',
-      options: {},
-      type: 'text',
-      onChange: function onChange() {}
-    }
-  });
   Object.defineProperty(WSInlineEdit, 'propTypes', {
     enumerable: true,
     writable: true,
     value: {
-      value: _imports.PropTypes.string,
-      options: _imports.PropTypes.object,
-      type: _imports.PropTypes.oneOf(['text', 'number', 'price']),
-      onChange: _imports.PropTypes.func
+      text: _imports.PropTypes.string,
+      onUpdate: _imports.PropTypes.func
     }
   });
-});
-define('fabric-components/ws-inline-edit/types/type-handler',['exports', './number-strategy', './price-strategy', './text-strategy'], function (exports, _numberStrategy, _priceStrategy, _textStrategy) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.TypeHandler = undefined;
-
-  function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  }
-
-  var _createClass = function () {
-    function defineProperties(target, props) {
-      for (var i = 0; i < props.length; i++) {
-        var descriptor = props[i];
-        descriptor.enumerable = descriptor.enumerable || false;
-        descriptor.configurable = true;
-        if ("value" in descriptor) descriptor.writable = true;
-        Object.defineProperty(target, descriptor.key, descriptor);
-      }
-    }
-
-    return function (Constructor, protoProps, staticProps) {
-      if (protoProps) defineProperties(Constructor.prototype, protoProps);
-      if (staticProps) defineProperties(Constructor, staticProps);
-      return Constructor;
-    };
-  }();
-
-  var TypeHandler = exports.TypeHandler = function () {
-    function TypeHandler() {
-      _classCallCheck(this, TypeHandler);
-    }
-
-    _createClass(TypeHandler, null, [{
-      key: 'getStrategy',
-      value: function getStrategy(type, options) {
-        if (!this.TYPES[type]) {
-          throw new Error('Unknown type: ' + type);
-        }
-        return new this.TYPES[type](options);
-      }
-    }]);
-
-    return TypeHandler;
-  }();
-
-  Object.defineProperty(TypeHandler, 'TYPES', {
+  Object.defineProperty(WSInlineEdit, 'defaultProps', {
     enumerable: true,
     writable: true,
     value: {
-      text: _textStrategy.TextStrategy,
-      number: _numberStrategy.NumberStrategy,
-      price: _priceStrategy.PriceStrategy
+      text: '',
+      onUpdate: function onUpdate() {}
     }
   });
-});
-define('fabric-components/ws-inline-edit/types/number-strategy',['exports', './abstract-type-strategy'], function (exports, _abstractTypeStrategy) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.NumberStrategy = undefined;
-
-  function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  }
-
-  var _createClass = function () {
-    function defineProperties(target, props) {
-      for (var i = 0; i < props.length; i++) {
-        var descriptor = props[i];
-        descriptor.enumerable = descriptor.enumerable || false;
-        descriptor.configurable = true;
-        if ("value" in descriptor) descriptor.writable = true;
-        Object.defineProperty(target, descriptor.key, descriptor);
-      }
-    }
-
-    return function (Constructor, protoProps, staticProps) {
-      if (protoProps) defineProperties(Constructor.prototype, protoProps);
-      if (staticProps) defineProperties(Constructor, staticProps);
-      return Constructor;
-    };
-  }();
-
-  function _possibleConstructorReturn(self, call) {
-    if (!self) {
-      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-    }
-
-    return call && (typeof call === "object" || typeof call === "function") ? call : self;
-  }
-
-  function _inherits(subClass, superClass) {
-    if (typeof superClass !== "function" && superClass !== null) {
-      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
-    }
-
-    subClass.prototype = Object.create(superClass && superClass.prototype, {
-      constructor: {
-        value: subClass,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
-  }
-
-  var english = '([0-9]*(,[0-9]{3})*)(\\.[0-9]+)?';
-  var german = '([0-9]*(\\.[0-9]{3})*)(,[0-9]+)?';
-  var strip = function strip(str) {
-    return str.replace(/[.,]/g, '');
-  };
-
-  var NumberStrategy = exports.NumberStrategy = function (_AbstractTypeStrategy) {
-    _inherits(NumberStrategy, _AbstractTypeStrategy);
-
-    function NumberStrategy(options) {
-      _classCallCheck(this, NumberStrategy);
-
-      var _this = _possibleConstructorReturn(this, (NumberStrategy.__proto__ || Object.getPrototypeOf(NumberStrategy)).call(this, options));
-
-      _this.locale = options.locale;
-      return _this;
-    }
-
-    _createClass(NumberStrategy, [{
-      key: 'validate',
-      value: function validate(value) {
-        if (this.locale) {
-          return NumberStrategy.getPattern(this.locale).test(value);
-        }
-        return NumberStrategy.getPattern('en').test(value) || NumberStrategy.getPattern('de').test(value);
-      }
-    }, {
-      key: 'convert',
-      value: function convert(value) {
-        var simple = void 0;
-        if (this.locale) {
-          simple = value.replace(NumberStrategy.getPattern(this.locale), NumberStrategy.convertToDecimal);
-        } else if (NumberStrategy.getPattern('en').test(value)) {
-          simple = value.replace(NumberStrategy.getPattern('en'), NumberStrategy.convertToDecimal);
-        } else if (NumberStrategy.getPattern('de').test(value)) {
-          simple = value.replace(NumberStrategy.getPattern('de'), NumberStrategy.convertToDecimal);
-        }
-        return parseFloat(simple);
-      }
-    }], [{
-      key: 'getPattern',
-      value: function getPattern(locale) {
-        switch (locale) {
-          case 'de':
-            return new RegExp('^' + german + '$');
-          case 'en':
-            return new RegExp('^' + english + '$');
-          default:
-            return new RegExp('^' + english + '$');
-        }
-      }
-    }, {
-      key: 'convertToDecimal',
-      value: function convertToDecimal(match) {
-        var combined = strip((arguments.length <= 1 ? undefined : arguments[1]) || (arguments.length <= 4 ? undefined : arguments[4]));
-        if ((arguments.length <= 3 ? undefined : arguments[3]) || (arguments.length <= 6 ? undefined : arguments[6])) {
-          combined += '.' + strip((arguments.length <= 3 ? undefined : arguments[3]) || (arguments.length <= 6 ? undefined : arguments[6]));
-        }
-        return combined;
-      }
-    }]);
-
-    return NumberStrategy;
-  }(_abstractTypeStrategy.AbstractTypeStrategy);
-});
-define('fabric-components/ws-inline-edit/types/abstract-type-strategy',["exports"], function (exports) {
-  "use strict";
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-
-  function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  }
-
-  var _createClass = function () {
-    function defineProperties(target, props) {
-      for (var i = 0; i < props.length; i++) {
-        var descriptor = props[i];
-        descriptor.enumerable = descriptor.enumerable || false;
-        descriptor.configurable = true;
-        if ("value" in descriptor) descriptor.writable = true;
-        Object.defineProperty(target, descriptor.key, descriptor);
-      }
-    }
-
-    return function (Constructor, protoProps, staticProps) {
-      if (protoProps) defineProperties(Constructor.prototype, protoProps);
-      if (staticProps) defineProperties(Constructor, staticProps);
-      return Constructor;
-    };
-  }();
-
-  var AbstractTypeStrategy = exports.AbstractTypeStrategy = function () {
-    function AbstractTypeStrategy(options) {
-      _classCallCheck(this, AbstractTypeStrategy);
-
-      this.options = options;
-    }
-
-    _createClass(AbstractTypeStrategy, [{
-      key: "validate",
-      value: function validate(value) {
-        return true;
-      }
-    }, {
-      key: "convert",
-      value: function convert(value) {
-        return value;
-      }
-    }]);
-
-    return AbstractTypeStrategy;
-  }();
-});
-define('fabric-components/ws-inline-edit/types/price-strategy',['exports', './abstract-type-strategy'], function (exports, _abstractTypeStrategy) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.PriceStrategy = undefined;
-
-  function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  }
-
-  var _createClass = function () {
-    function defineProperties(target, props) {
-      for (var i = 0; i < props.length; i++) {
-        var descriptor = props[i];
-        descriptor.enumerable = descriptor.enumerable || false;
-        descriptor.configurable = true;
-        if ("value" in descriptor) descriptor.writable = true;
-        Object.defineProperty(target, descriptor.key, descriptor);
-      }
-    }
-
-    return function (Constructor, protoProps, staticProps) {
-      if (protoProps) defineProperties(Constructor.prototype, protoProps);
-      if (staticProps) defineProperties(Constructor, staticProps);
-      return Constructor;
-    };
-  }();
-
-  function _possibleConstructorReturn(self, call) {
-    if (!self) {
-      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-    }
-
-    return call && (typeof call === "object" || typeof call === "function") ? call : self;
-  }
-
-  function _inherits(subClass, superClass) {
-    if (typeof superClass !== "function" && superClass !== null) {
-      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
-    }
-
-    subClass.prototype = Object.create(superClass && superClass.prototype, {
-      constructor: {
-        value: subClass,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
-  }
-
-  var english = '([0-9]*(,[0-9]{3})*)(\\.[0-9]{2})?';
-  var german = '([0-9]*(\\.[0-9]{3})*)(,[0-9]{2})?';
-  var strip = function strip(str) {
-    return str.replace(/[.,]/g, '');
-  };
-
-  var PriceStrategy = exports.PriceStrategy = function (_AbstractTypeStrategy) {
-    _inherits(PriceStrategy, _AbstractTypeStrategy);
-
-    function PriceStrategy(options) {
-      _classCallCheck(this, PriceStrategy);
-
-      var _this = _possibleConstructorReturn(this, (PriceStrategy.__proto__ || Object.getPrototypeOf(PriceStrategy)).call(this, options));
-
-      _this.locale = options.locale;
-      return _this;
-    }
-
-    _createClass(PriceStrategy, [{
-      key: 'validate',
-      value: function validate(value) {
-        return PriceStrategy.getPattern(this.locale).test(value);
-      }
-    }, {
-      key: 'convert',
-      value: function convert(value) {
-        var simple = value.replace(PriceStrategy.getPattern(this.locale), PriceStrategy.convertToDecimal);
-        return parseFloat(simple);
-      }
-    }], [{
-      key: 'getPattern',
-      value: function getPattern(locale) {
-        switch (locale) {
-          case 'de':
-            return new RegExp('^' + german + '$');
-          case 'en':
-            return new RegExp('^' + english + '$');
-          default:
-            return new RegExp('^' + english + '|' + german + '$');
-        }
-      }
-    }, {
-      key: 'convertToDecimal',
-      value: function convertToDecimal(match) {
-        var combined = strip((arguments.length <= 1 ? undefined : arguments[1]) || (arguments.length <= 4 ? undefined : arguments[4]));
-        if ((arguments.length <= 3 ? undefined : arguments[3]) || (arguments.length <= 6 ? undefined : arguments[6])) {
-          combined += '.' + strip((arguments.length <= 3 ? undefined : arguments[3]) || (arguments.length <= 6 ? undefined : arguments[6]));
-        }
-        return combined;
-      }
-    }]);
-
-    return PriceStrategy;
-  }(_abstractTypeStrategy.AbstractTypeStrategy);
-});
-define('fabric-components/ws-inline-edit/types/text-strategy',['exports', './abstract-type-strategy'], function (exports, _abstractTypeStrategy) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.TextStrategy = undefined;
-
-  function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  }
-
-  var _createClass = function () {
-    function defineProperties(target, props) {
-      for (var i = 0; i < props.length; i++) {
-        var descriptor = props[i];
-        descriptor.enumerable = descriptor.enumerable || false;
-        descriptor.configurable = true;
-        if ("value" in descriptor) descriptor.writable = true;
-        Object.defineProperty(target, descriptor.key, descriptor);
-      }
-    }
-
-    return function (Constructor, protoProps, staticProps) {
-      if (protoProps) defineProperties(Constructor.prototype, protoProps);
-      if (staticProps) defineProperties(Constructor, staticProps);
-      return Constructor;
-    };
-  }();
-
-  function _possibleConstructorReturn(self, call) {
-    if (!self) {
-      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-    }
-
-    return call && (typeof call === "object" || typeof call === "function") ? call : self;
-  }
-
-  function _inherits(subClass, superClass) {
-    if (typeof superClass !== "function" && superClass !== null) {
-      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
-    }
-
-    subClass.prototype = Object.create(superClass && superClass.prototype, {
-      constructor: {
-        value: subClass,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
-  }
-
-  var TextStrategy = exports.TextStrategy = function (_AbstractTypeStrategy) {
-    _inherits(TextStrategy, _AbstractTypeStrategy);
-
-    function TextStrategy() {
-      _classCallCheck(this, TextStrategy);
-
-      return _possibleConstructorReturn(this, (TextStrategy.__proto__ || Object.getPrototypeOf(TextStrategy)).apply(this, arguments));
-    }
-
-    _createClass(TextStrategy, [{
-      key: 'validate',
-      value: function validate(value) {
-        return true;
-      }
-    }, {
-      key: 'convert',
-      value: function convert(value) {
-        return value;
-      }
-    }]);
-
-    return TextStrategy;
-  }(_abstractTypeStrategy.AbstractTypeStrategy);
 });
 define('fabric-components/ws-notification/ws-notification',['exports', '../imports'], function (exports, _imports) {
   'use strict';
