@@ -25149,12 +25149,6 @@ define('fabric-components/ws-date-picker/ws-date-picker',['exports', '../imports
             className: 'icon icon-calendar icon16 ' + className,
             ref: function ref(element) {
               _this3.input = element;
-            },
-            onClick: function onClick(event) {
-              return _this3.flatpickr.open(event);
-            },
-            onKeyDown: function onKeyDown(event) {
-              return _this3.flatpickr.open(event);
             }
           })
         );
@@ -27455,6 +27449,7 @@ define('fabric-components/ws-inline-edit/ws-inline-edit',['exports', '../imports
           event.stopPropagation();
 
           if (!_this.state.isEditing) {
+            _this.resizeInput();
             _this.setState({ isEditing: true }, function () {
               _this.input.select();
               _this.input.focus();
@@ -27467,6 +27462,7 @@ define('fabric-components/ws-inline-edit/ws-inline-edit',['exports', '../imports
         writable: true,
         value: function value(event) {
           event.stopPropagation();
+          event.preventDefault();
           var inputValue = event.target.value;
 
           switch (event.key) {
@@ -27477,10 +27473,24 @@ define('fabric-components/ws-inline-edit/ws-inline-edit',['exports', '../imports
               _this.abort();
               break;
             default:
+              _this.resizeInput();
               _this.setState({
                 isValid: _this.type.validate(inputValue),
                 inputValue: inputValue
               });
+          }
+        }
+      });
+      Object.defineProperty(_this, 'onKeyDown', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          event.stopPropagation();
+
+          if (event.key.length === 1) {
+            _this.resizeInput(event.key);
+          } else {
+            _this.resizeInput();
           }
         }
       });
@@ -27509,8 +27519,10 @@ define('fabric-components/ws-inline-edit/ws-inline-edit',['exports', '../imports
       value: function componentDidMount() {
         this.input.addEventListener('focus', this.onFocus);
         this.input.addEventListener('keyup', this.onKeyUp);
+        this.input.addEventListener('keydown', this.onKeyDown);
         this.input.addEventListener('blur', this.onBlur);
         this.input.addEventListener('change', this.stopPropagation);
+        this.resizeInput();
       }
     }, {
       key: 'componentWillReceiveProps',
@@ -27521,6 +27533,7 @@ define('fabric-components/ws-inline-edit/ws-inline-edit',['exports', '../imports
       key: 'componentWillUnmount',
       value: function componentWillUnmount() {
         this.input.removeEventListener('focus', this.onFocus);
+        this.input.removeEventListener('keydown', this.onKeyDown);
         this.input.removeEventListener('keyup', this.onKeyUp);
         this.input.removeEventListener('blur', this.onBlur);
         this.input.removeEventListener('change', this.stopPropagation);
@@ -27533,7 +27546,7 @@ define('fabric-components/ws-inline-edit/ws-inline-edit',['exports', '../imports
           isEditing: false,
           isValid: true,
           inputValue: props.value,
-          initialValue: props.value
+          initialValue: (props.value || '').toString()
         };
       }
     }, {
@@ -27550,7 +27563,11 @@ define('fabric-components/ws-inline-edit/ws-inline-edit',['exports', '../imports
       value: function submit(inputValue) {
         var state = { isEditing: false, inputValue: inputValue };
 
-        if (inputValue !== this.state.initialValue && this.type.validate(inputValue)) {
+        if (!this.type.validate(inputValue)) {
+          return;
+        }
+
+        if (inputValue !== this.state.initialValue) {
           state.initialValue = inputValue;
 
           var eventData = {
@@ -27566,6 +27583,28 @@ define('fabric-components/ws-inline-edit/ws-inline-edit',['exports', '../imports
         this.setState(state);
       }
     }, {
+      key: 'resizeInput',
+      value: function resizeInput(additionalChars) {
+        if (this.props.look !== 'narrow') {
+          return;
+        }
+
+        var style = window.getComputedStyle(this.input);
+        var calculator = document.createElement('div');
+        calculator.style.fontSize = style.fontSize || '16px';
+        calculator.style.lineHeight = style.lineHeight || '16px';
+        calculator.style.margin = style.margin;
+        calculator.style.padding = style.padding;
+        calculator.style.visibility = 'hidden';
+        calculator.style.position = 'absolute';
+        calculator.style.top = '-1000px';
+        calculator.innerText = this.input.value + (additionalChars || '');
+
+        document.body.appendChild(calculator);
+        this.input.style.width = calculator.clientWidth + 'px';
+        document.body.removeChild(calculator);
+      }
+    }, {
       key: 'render',
       value: function render() {
         var _this2 = this;
@@ -27574,11 +27613,17 @@ define('fabric-components/ws-inline-edit/ws-inline-edit',['exports', '../imports
             isEditing = _state.isEditing,
             isValid = _state.isValid,
             inputValue = _state.inputValue;
+        var _props = this.props,
+            type = _props.type,
+            look = _props.look,
+            disabled = _props.disabled;
 
 
         var classes = 'ws-inline-edit';
         classes += isEditing ? ' is-editing' : '';
-        classes += ' ' + this.props.type;
+        classes += ' ' + type;
+        classes += look === 'narrow' ? ' mod-narrow' : '';
+        classes += disabled ? ' is-disabled' : '';
 
         return _imports.React.createElement(
           'div',
@@ -27612,6 +27657,8 @@ define('fabric-components/ws-inline-edit/ws-inline-edit',['exports', '../imports
       value: '',
       options: {},
       type: 'text',
+      look: 'default',
+      disabled: false,
       onChange: function onChange() {}
     }
   });
@@ -27622,6 +27669,8 @@ define('fabric-components/ws-inline-edit/ws-inline-edit',['exports', '../imports
       value: _imports.PropTypes.string,
       options: _imports.PropTypes.object,
       type: _imports.PropTypes.oneOf(['text', 'number', 'price']),
+      look: _imports.PropTypes.oneOf(['narrow', 'default']),
+      disabled: _imports.PropTypes.bool,
       onChange: _imports.PropTypes.func
     }
   });
