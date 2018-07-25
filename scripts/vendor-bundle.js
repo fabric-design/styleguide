@@ -4702,6 +4702,7 @@ define('aurelia-binding',['exports', 'aurelia-logging', 'aurelia-pal', 'aurelia-
           this.nextToken();
           result = this.parseExpression();
           this.expect(T$RParen);
+          context = C$Primary;
           break;
         case T$LBracket:
           {
@@ -4714,6 +4715,7 @@ define('aurelia-binding',['exports', 'aurelia-logging', 'aurelia-pal', 'aurelia-
             }
             this.expect(T$RBracket);
             result = new LiteralArray(_elements);
+            context = C$Primary;
             break;
           }
         case T$LBrace:
@@ -4751,23 +4753,28 @@ define('aurelia-binding',['exports', 'aurelia-logging', 'aurelia-pal', 'aurelia-
             }
             this.expect(T$RBrace);
             result = new LiteralObject(keys, values);
+            context = C$Primary;
             break;
           }
         case T$StringLiteral:
           result = new LiteralString(this.val);
           this.nextToken();
+          context = C$Primary;
           break;
         case T$TemplateTail:
           result = new LiteralTemplate([this.val]);
           this.nextToken();
+          context = C$Primary;
           break;
         case T$TemplateContinuation:
           result = this.parseTemplate(0);
+          context = C$Primary;
           break;
         case T$NumericLiteral:
           {
             result = new LiteralPrimitive(this.val);
             this.nextToken();
+
             break;
           }
         case T$NullKeyword:
@@ -4776,6 +4783,7 @@ define('aurelia-binding',['exports', 'aurelia-logging', 'aurelia-pal', 'aurelia-
         case T$FalseKeyword:
           result = new LiteralPrimitive(TokenValues[this.tkn & T$TokenMask]);
           this.nextToken();
+          context = C$Primary;
           break;
         default:
           if (this.idx >= this.len) {
@@ -4800,7 +4808,7 @@ define('aurelia-binding',['exports', 'aurelia-logging', 'aurelia-pal', 'aurelia-
             name = this.val;
             this.nextToken();
 
-            context = (context & (C$This | C$Scope)) << 1 | context & C$Member | (context & C$Keyed) >> 1;
+            context = context & C$Primary | (context & (C$This | C$Scope)) << 1 | context & C$Member | (context & C$Keyed) >> 1 | (context & C$Call) >> 2;
             if (this.tkn === T$LParen) {
               continue;
             }
@@ -4828,12 +4836,12 @@ define('aurelia-binding',['exports', 'aurelia-logging', 'aurelia-pal', 'aurelia-
             this.expect(T$RParen);
             if (context & C$Scope) {
               result = new CallScope(name, args, result.ancestor);
-            } else if (context & C$Member) {
+            } else if (context & (C$Member | C$Primary)) {
               result = new CallMember(result, name, args);
             } else {
               result = new CallFunction(result, args);
             }
-            context = 0;
+            context = C$Call;
             break;
           case T$TemplateTail:
             result = new LiteralTemplate([this.val], [], [this.raw], result);
@@ -5086,8 +5094,10 @@ define('aurelia-binding',['exports', 'aurelia-logging', 'aurelia-pal', 'aurelia-
   var C$Scope = 1 << 11;
   var C$Member = 1 << 12;
   var C$Keyed = 1 << 13;
-  var C$ShorthandProp = 1 << 14;
-  var C$Tagged = 1 << 15;
+  var C$Call = 1 << 14;
+  var C$Primary = 1 << 15;
+  var C$ShorthandProp = 1 << 16;
+  var C$Tagged = 1 << 17;
 
   var C$Ancestor = (1 << 9) - 1;
 
@@ -13388,7 +13398,6 @@ define('aurelia-router',['exports', 'aurelia-logging', 'aurelia-route-recognizer
 
       this.config.navModel.isActive = true;
 
-      router._refreshBaseUrl();
       router.refreshNavigation();
 
       var loads = [];
@@ -13786,7 +13795,19 @@ define('aurelia-router',['exports', 'aurelia-logging', 'aurelia-route-recognizer
     if ('redirect' in config) {
       var _router = instruction.router;
       return _router._createNavigationInstruction(config.redirect).then(function (newInstruction) {
-        var params = Object.keys(newInstruction.params).length ? instruction.params : {};
+        var params = {};
+        for (var _key2 in newInstruction.params) {
+          var val = newInstruction.params[_key2];
+          if (typeof val === 'string' && val[0] === ':') {
+            val = val.slice(1);
+
+            if (val in instruction.params) {
+              params[_key2] = instruction.params[val];
+            }
+          } else {
+            params[_key2] = newInstruction.params[_key2];
+          }
+        }
         var redirectLocation = _router.generate(newInstruction.config.name, params, instruction.options);
 
         if (instruction.queryString) {
@@ -13879,22 +13900,22 @@ define('aurelia-router',['exports', 'aurelia-logging', 'aurelia-route-recognizer
     var nextParams = next.params;
     var nextWildCardName = next.config.hasChildRouter ? next.getWildCardName() : null;
 
-    for (var _key2 in nextParams) {
-      if (_key2 === nextWildCardName) {
-        continue;
-      }
-
-      if (prevParams[_key2] !== nextParams[_key2]) {
-        return true;
-      }
-    }
-
-    for (var _key3 in prevParams) {
+    for (var _key3 in nextParams) {
       if (_key3 === nextWildCardName) {
         continue;
       }
 
       if (prevParams[_key3] !== nextParams[_key3]) {
+        return true;
+      }
+    }
+
+    for (var _key4 in prevParams) {
+      if (_key4 === nextWildCardName) {
+        continue;
+      }
+
+      if (prevParams[_key4] !== nextParams[_key4]) {
         return true;
       }
     }
@@ -13905,14 +13926,14 @@ define('aurelia-router',['exports', 'aurelia-logging', 'aurelia-route-recognizer
 
     var prevQueryParams = prev.queryParams;
     var nextQueryParams = next.queryParams;
-    for (var _key4 in nextQueryParams) {
-      if (prevQueryParams[_key4] !== nextQueryParams[_key4]) {
+    for (var _key5 in nextQueryParams) {
+      if (prevQueryParams[_key5] !== nextQueryParams[_key5]) {
         return true;
       }
     }
 
-    for (var _key5 in prevQueryParams) {
-      if (prevQueryParams[_key5] !== nextQueryParams[_key5]) {
+    for (var _key6 in prevQueryParams) {
+      if (prevQueryParams[_key6] !== nextQueryParams[_key6]) {
         return true;
       }
     }
@@ -14030,7 +14051,7 @@ define('aurelia-router',['exports', 'aurelia-logging', 'aurelia-route-recognizer
 
       var hasRoute = this._recognizer.hasRoute(name);
       if ((!this.isConfigured || !hasRoute) && this.parent) {
-        return this.parent.generate(name, params);
+        return this.parent.generate(name, params, options);
       }
 
       if (!hasRoute) {
@@ -14178,8 +14199,7 @@ define('aurelia-router',['exports', 'aurelia-logging', 'aurelia-route-recognizer
 
     Router.prototype._refreshBaseUrl = function _refreshBaseUrl() {
       if (this.parent) {
-        var baseUrl = this.parent.currentInstruction.getBaseUrl();
-        this.baseUrl = this.parent.baseUrl + baseUrl;
+        this.baseUrl = generateBaseUrl(this.parent, this.parent.currentInstruction);
       }
     };
 
@@ -14213,6 +14233,8 @@ define('aurelia-router',['exports', 'aurelia-logging', 'aurelia-route-recognizer
         }
       };
 
+      var result = void 0;
+
       if (results && results.length) {
         var first = results[0];
         var _instruction = new NavigationInstruction(Object.assign({}, instructionInit, {
@@ -14222,19 +14244,19 @@ define('aurelia-router',['exports', 'aurelia-logging', 'aurelia-route-recognizer
         }));
 
         if (typeof first.handler === 'function') {
-          return evaluateNavigationStrategy(_instruction, first.handler, first);
+          result = evaluateNavigationStrategy(_instruction, first.handler, first);
         } else if (first.handler && typeof first.handler.navigationStrategy === 'function') {
-          return evaluateNavigationStrategy(_instruction, first.handler.navigationStrategy, first.handler);
+          result = evaluateNavigationStrategy(_instruction, first.handler.navigationStrategy, first.handler);
+        } else {
+          result = Promise.resolve(_instruction);
         }
-
-        return Promise.resolve(_instruction);
       } else if (this.catchAllHandler) {
         var _instruction2 = new NavigationInstruction(Object.assign({}, instructionInit, {
           params: { path: fragment },
           queryParams: results ? results.queryParams : {},
           config: null }));
 
-        return evaluateNavigationStrategy(_instruction2, this.catchAllHandler);
+        result = evaluateNavigationStrategy(_instruction2, this.catchAllHandler);
       } else if (this.parent) {
         var _router2 = this._parentCatchAllHandler(this.parent);
 
@@ -14249,11 +14271,15 @@ define('aurelia-router',['exports', 'aurelia-logging', 'aurelia-route-recognizer
             parentCatchHandler: true,
             config: null }));
 
-          return evaluateNavigationStrategy(_instruction3, _router2.catchAllHandler);
+          result = evaluateNavigationStrategy(_instruction3, _router2.catchAllHandler);
         }
       }
 
-      return Promise.reject(new Error('Route not found: ' + url));
+      if (result && parentInstruction) {
+        this.baseUrl = generateBaseUrl(this.parent, parentInstruction);
+      }
+
+      return result || Promise.reject(new Error('Route not found: ' + url));
     };
 
     Router.prototype._findParentInstructionFromRouter = function _findParentInstructionFromRouter(router, instruction) {
@@ -14309,6 +14335,10 @@ define('aurelia-router',['exports', 'aurelia-logging', 'aurelia-route-recognizer
 
     return Router;
   }();
+
+  function generateBaseUrl(router, instruction) {
+    return '' + (router.baseUrl || '') + (instruction.getBaseUrl() || '');
+  }
 
   function validateRouteConfig(config, routes) {
     if ((typeof config === 'undefined' ? 'undefined' : _typeof(config)) !== 'object') {
@@ -20100,15 +20130,17 @@ define('aurelia-templating',['exports', 'aurelia-logging', 'aurelia-metadata', '
       var _this15 = this;
 
       return this.createController(context).then(function (controller) {
-        controller.automate(context.overrideContext, context.owningView);
-
         if (context.compositionTransactionOwnershipToken) {
           return context.compositionTransactionOwnershipToken.waitForCompositionComplete().then(function () {
+            controller.automate(context.overrideContext, context.owningView);
+
             return _this15._swap(context, controller.view);
           }).then(function () {
             return controller;
           });
         }
+
+        controller.automate(context.overrideContext, context.owningView);
 
         return _this15._swap(context, controller.view).then(function () {
           return controller;
@@ -20162,8 +20194,12 @@ define('aurelia-templating',['exports', 'aurelia-logging', 'aurelia-metadata', '
         });
       }
 
+      var ctor = context.viewModel.constructor;
       var isClass = typeof context.viewModel === 'function';
-      var ctor = isClass ? context.viewModel : context.viewModel.constructor;
+      if (isClass) {
+        ctor = context.viewModel;
+        childContainer.autoRegister(ctor);
+      }
       var m = _aureliaMetadata.metadata.getOrCreateOwn(_aureliaMetadata.metadata.resource, HtmlBehaviorResource, ctor);
 
       m.elementName = m.elementName || 'dynamic-element';
