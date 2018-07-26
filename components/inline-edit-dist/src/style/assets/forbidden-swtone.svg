@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="60px" height="60px" viewBox="0 0 60 60" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 45.1 (43504) - http://www.bohemiancoding.com/sketch -->
+    <title>forbidden-swtone</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Elements" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Colors-V7" transform="translate(-144.000000, -904.000000)" fill-rule="nonzero" fill="#F44F41">
+            <g id="Group-12" transform="translate(92.000000, 667.000000)">
+                <g id="Group-51" transform="translate(0.000000, 237.000000)">
+                    <g id="Group-34">
+                        <g id="Group-15">
+                            <g id="forbidden-swtone" transform="translate(52.000000, 0.000000)">
+                                <path d="M0.75,30 C0.75,46.1543289 13.8456711,59.25 30,59.25 C46.1543289,59.25 59.25,46.1543289 59.25,30 C59.25,13.8456711 46.1543289,0.75 30,0.75 C13.8525255,0.766536085 0.766536085,13.8525255 0.75,30 Z M30,55.75 C23.774942,55.7542708 17.7609325,53.4936857 13.08,49.39 L49.39,13.08 C56.0391217,20.6816201 57.6262981,31.4701903 53.4481606,40.6646786 C49.2700231,49.8591668 40.0992754,55.7591468 30,55.75 Z M4.25,30 C4.24085324,19.9007246 10.1408332,10.7299769 19.3353214,6.55183937 C28.5298097,2.37370186 39.3183799,3.96087827 46.92,10.61 L10.61,46.92 C6.50631427,42.2390675 4.24572915,36.225058 4.25,30 Z" id="Shape"></path>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
