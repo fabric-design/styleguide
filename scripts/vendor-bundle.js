@@ -3185,109 +3185,115 @@ define('aurelia-binding',['exports', 'aurelia-logging', 'aurelia-pal', 'aurelia-
     return CollectionLengthObserver;
   }()) || _class3);
 
-  var pop = Array.prototype.pop;
-  var push = Array.prototype.push;
-  var reverse = Array.prototype.reverse;
-  var shift = Array.prototype.shift;
-  var sort = Array.prototype.sort;
-  var splice = Array.prototype.splice;
-  var unshift = Array.prototype.unshift;
+  var arrayProto = Array.prototype;
+  var pop = arrayProto.pop;
+  var push = arrayProto.push;
+  var reverse = arrayProto.reverse;
+  var shift = arrayProto.shift;
+  var sort = arrayProto.sort;
+  var splice = arrayProto.splice;
+  var unshift = arrayProto.unshift;
 
-  Array.prototype.pop = function () {
-    var notEmpty = this.length > 0;
-    var methodCallResult = pop.apply(this, arguments);
-    if (notEmpty && this.__array_observer__ !== undefined) {
-      this.__array_observer__.addChangeRecord({
-        type: 'delete',
-        object: this,
-        name: this.length,
-        oldValue: methodCallResult
-      });
-    }
-    return methodCallResult;
-  };
+  if (arrayProto.__au_patched__) {
+    LogManager.getLogger('array-observation').warn('Detected 2nd attempt of patching array from Aurelia binding.' + ' This is probably caused by dependency mismatch between core modules and a 3rd party plugin.' + ' Please see https://github.com/aurelia/cli/pull/906 if you are using webpack.');
+  } else {
+    arrayProto.__au_patched__ = 1;
+    arrayProto.pop = function () {
+      var notEmpty = this.length > 0;
+      var methodCallResult = pop.apply(this, arguments);
+      if (notEmpty && this.__array_observer__ !== undefined) {
+        this.__array_observer__.addChangeRecord({
+          type: 'delete',
+          object: this,
+          name: this.length,
+          oldValue: methodCallResult
+        });
+      }
+      return methodCallResult;
+    };
 
-  Array.prototype.push = function () {
-    var methodCallResult = push.apply(this, arguments);
-    if (this.__array_observer__ !== undefined) {
-      this.__array_observer__.addChangeRecord({
-        type: 'splice',
-        object: this,
-        index: this.length - arguments.length,
-        removed: [],
-        addedCount: arguments.length
-      });
-    }
-    return methodCallResult;
-  };
+    arrayProto.push = function () {
+      var methodCallResult = push.apply(this, arguments);
+      if (this.__array_observer__ !== undefined) {
+        this.__array_observer__.addChangeRecord({
+          type: 'splice',
+          object: this,
+          index: this.length - arguments.length,
+          removed: [],
+          addedCount: arguments.length
+        });
+      }
+      return methodCallResult;
+    };
 
-  Array.prototype.reverse = function () {
-    var oldArray = void 0;
-    if (this.__array_observer__ !== undefined) {
-      this.__array_observer__.flushChangeRecords();
-      oldArray = this.slice();
-    }
-    var methodCallResult = reverse.apply(this, arguments);
-    if (this.__array_observer__ !== undefined) {
-      this.__array_observer__.reset(oldArray);
-    }
-    return methodCallResult;
-  };
+    arrayProto.reverse = function () {
+      var oldArray = void 0;
+      if (this.__array_observer__ !== undefined) {
+        this.__array_observer__.flushChangeRecords();
+        oldArray = this.slice();
+      }
+      var methodCallResult = reverse.apply(this, arguments);
+      if (this.__array_observer__ !== undefined) {
+        this.__array_observer__.reset(oldArray);
+      }
+      return methodCallResult;
+    };
 
-  Array.prototype.shift = function () {
-    var notEmpty = this.length > 0;
-    var methodCallResult = shift.apply(this, arguments);
-    if (notEmpty && this.__array_observer__ !== undefined) {
-      this.__array_observer__.addChangeRecord({
-        type: 'delete',
-        object: this,
-        name: 0,
-        oldValue: methodCallResult
-      });
-    }
-    return methodCallResult;
-  };
+    arrayProto.shift = function () {
+      var notEmpty = this.length > 0;
+      var methodCallResult = shift.apply(this, arguments);
+      if (notEmpty && this.__array_observer__ !== undefined) {
+        this.__array_observer__.addChangeRecord({
+          type: 'delete',
+          object: this,
+          name: 0,
+          oldValue: methodCallResult
+        });
+      }
+      return methodCallResult;
+    };
 
-  Array.prototype.sort = function () {
-    var oldArray = void 0;
-    if (this.__array_observer__ !== undefined) {
-      this.__array_observer__.flushChangeRecords();
-      oldArray = this.slice();
-    }
-    var methodCallResult = sort.apply(this, arguments);
-    if (this.__array_observer__ !== undefined) {
-      this.__array_observer__.reset(oldArray);
-    }
-    return methodCallResult;
-  };
+    arrayProto.sort = function () {
+      var oldArray = void 0;
+      if (this.__array_observer__ !== undefined) {
+        this.__array_observer__.flushChangeRecords();
+        oldArray = this.slice();
+      }
+      var methodCallResult = sort.apply(this, arguments);
+      if (this.__array_observer__ !== undefined) {
+        this.__array_observer__.reset(oldArray);
+      }
+      return methodCallResult;
+    };
 
-  Array.prototype.splice = function () {
-    var methodCallResult = splice.apply(this, arguments);
-    if (this.__array_observer__ !== undefined) {
-      this.__array_observer__.addChangeRecord({
-        type: 'splice',
-        object: this,
-        index: +arguments[0],
-        removed: methodCallResult,
-        addedCount: arguments.length > 2 ? arguments.length - 2 : 0
-      });
-    }
-    return methodCallResult;
-  };
+    arrayProto.splice = function () {
+      var methodCallResult = splice.apply(this, arguments);
+      if (this.__array_observer__ !== undefined) {
+        this.__array_observer__.addChangeRecord({
+          type: 'splice',
+          object: this,
+          index: +arguments[0],
+          removed: methodCallResult,
+          addedCount: arguments.length > 2 ? arguments.length - 2 : 0
+        });
+      }
+      return methodCallResult;
+    };
 
-  Array.prototype.unshift = function () {
-    var methodCallResult = unshift.apply(this, arguments);
-    if (this.__array_observer__ !== undefined) {
-      this.__array_observer__.addChangeRecord({
-        type: 'splice',
-        object: this,
-        index: 0,
-        removed: [],
-        addedCount: arguments.length
-      });
-    }
-    return methodCallResult;
-  };
+    arrayProto.unshift = function () {
+      var methodCallResult = unshift.apply(this, arguments);
+      if (this.__array_observer__ !== undefined) {
+        this.__array_observer__.addChangeRecord({
+          type: 'splice',
+          object: this,
+          index: 0,
+          removed: [],
+          addedCount: arguments.length
+        });
+      }
+      return methodCallResult;
+    };
+  }
 
   function _getArrayObserver(taskQueue, array) {
     return ModifyArrayObserver.for(taskQueue, array);
@@ -21641,9 +21647,9 @@ define('preact/preact',['require','exports','module'],function (require, exports
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('prop-types'), require('preact')) :
 	typeof define === 'function' && define.amd ? define('preact-compat/preact-compat',['prop-types', 'preact'], factory) :
 	(global.preactCompat = factory(global.PropTypes,global.preact));
-}(this, (function (PropTypes,preact) {
+}(this, (function (PropTypes,preact) { 'use strict';
 
-PropTypes = 'default' in PropTypes ? PropTypes['default'] : PropTypes;
+PropTypes = PropTypes && PropTypes.hasOwnProperty('default') ? PropTypes['default'] : PropTypes;
 
 var version = '15.1.0'; // trick libraries to think we are react
 
@@ -21674,7 +21680,7 @@ var CAMEL_PROPS = /^(?:accent|alignment|arabic|baseline|cap|clip|color|fill|floo
 var BYPASS_HOOK = {};
 
 /*global process*/
-var DEV = typeof process==='undefined' || !process.env || process.env.NODE_ENV!=='production';
+var DEV = typeof process !== 'undefined' && process.env && process.env.NODE_ENV!=='production';
 
 // a component that renders nothing. Used to replace components for unmountComponentAtNode.
 function EmptyComponent() { return null; }
@@ -21716,7 +21722,7 @@ preact.options.vnode = function (vnode) {
 		vnode.preactCompatUpgraded = true;
 
 		var tag = vnode.nodeName,
-			attrs = vnode.attributes = extend({}, vnode.attributes);
+			attrs = vnode.attributes = vnode.attributes==null ? {} : extend({}, vnode.attributes);
 
 		if (typeof tag==='function') {
 			if (tag[COMPONENT_WRAPPER_KEY]===true || (tag.prototype && 'isReactComponent' in tag.prototype)) {
@@ -21774,7 +21780,7 @@ function handleElementVNode(vnode, a) {
 
 
 // proxy render() since React returns a Component reference.
-function render$1(vnode, parent, callback) {
+function render(vnode, parent, callback) {
 	var prev = parent && parent._preactCompatRendered && parent._preactCompatRendered.base;
 
 	// ignore impossible previous renders
@@ -21808,10 +21814,18 @@ ContextProvider.prototype.render = function (props) {
 
 function renderSubtreeIntoContainer(parentComponent, vnode, container, callback) {
 	var wrap = preact.h(ContextProvider, { context: parentComponent.context }, vnode);
-	var renderContainer = render$1(wrap, container);
+	var renderContainer = render(wrap, container);
 	var component = renderContainer._component || renderContainer.base;
 	if (callback) { callback.call(component, renderContainer); }
 	return component;
+}
+
+function Portal(props) {
+	renderSubtreeIntoContainer(this, props.vnode, props.container);
+}
+
+function createPortal(vnode, container) {
+	return preact.h(Portal, { vnode: vnode, container: container });
 }
 
 
@@ -21946,7 +21960,7 @@ function normalizeVNode(vnode) {
 }
 
 
-function cloneElement$1(element, props) {
+function cloneElement(element, props) {
 	var children = [], len = arguments.length - 2;
 	while ( len-- > 0 ) children[ len ] = arguments[ len + 2 ];
 
@@ -22050,7 +22064,7 @@ function shallowDiffers(a, b) {
 
 
 function findDOMNode(component) {
-	return component && component.base || component;
+	return component && component.base || null;
 }
 
 
@@ -22059,7 +22073,7 @@ function F(){}
 function createClass(obj) {
 	function cl(props, context) {
 		bindAll(this);
-		Component$1.call(this, props, context, BYPASS_HOOK);
+		Component.call(this, props, context, BYPASS_HOOK);
 		newComponentHook.call(this, props, context);
 	}
 
@@ -22082,7 +22096,7 @@ function createClass(obj) {
 		cl.defaultProps = obj.getDefaultProps.call(cl);
 	}
 
-	F.prototype = Component$1.prototype;
+	F.prototype = Component.prototype;
 	cl.prototype = extend(new F(), obj);
 
 	cl.displayName = obj.displayName || 'Component';
@@ -22205,7 +22219,7 @@ function afterRender() {
 
 
 
-function Component$1(props, context, opts) {
+function Component(props, context, opts) {
 	preact.Component.call(this, props, context);
 	this.state = this.getInitialState ? this.getInitialState() : {};
 	this.refs = {};
@@ -22214,8 +22228,8 @@ function Component$1(props, context, opts) {
 		newComponentHook.call(this, props, context);
 	}
 }
-extend(Component$1.prototype = new preact.Component(), {
-	constructor: Component$1,
+extend(Component.prototype = new preact.Component(), {
+	constructor: Component,
 
 	isReactComponent: {},
 
@@ -22242,31 +22256,37 @@ extend(Component$1.prototype = new preact.Component(), {
 
 
 function PureComponent(props, context) {
-	Component$1.call(this, props, context);
+	Component.call(this, props, context);
 }
-F.prototype = Component$1.prototype;
+F.prototype = Component.prototype;
 PureComponent.prototype = new F();
 PureComponent.prototype.isPureReactComponent = true;
 PureComponent.prototype.shouldComponentUpdate = function(props, state) {
 	return shallowDiffers(this.props, props) || shallowDiffers(this.state, state);
 };
 
+function unstable_batchedUpdates(callback) {
+	callback();
+}
+
 var index = {
 	version: version,
 	DOM: DOM,
 	PropTypes: PropTypes,
 	Children: Children,
-	render: render$1,
+	render: render,
 	createClass: createClass,
+	createPortal: createPortal,
 	createFactory: createFactory,
 	createElement: createElement,
-	cloneElement: cloneElement$1,
+	cloneElement: cloneElement,
 	isValidElement: isValidElement,
 	findDOMNode: findDOMNode,
 	unmountComponentAtNode: unmountComponentAtNode,
-	Component: Component$1,
+	Component: Component,
 	PureComponent: PureComponent,
 	unstable_renderSubtreeIntoContainer: renderSubtreeIntoContainer,
+	unstable_batchedUpdates: unstable_batchedUpdates,
 	__spread: extend
 };
 
@@ -24144,6 +24164,7 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
           ANIMATION_END_EVENTS.forEach(function (eventName) {
             item.removeEventListener(eventName, handler);
           });
+          window.removeEventListener('blur', handler);
           item.classList.remove(animationClass);
           callback(item);
         };
@@ -24151,6 +24172,8 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
         ANIMATION_END_EVENTS.forEach(function (eventName) {
           item.addEventListener(eventName, handler);
         });
+
+        window.addEventListener('blur', handler);
 
         ANIMATION_START_EVENTS.forEach(function (eventName) {
           item.addEventListener(eventName, function () {
@@ -24844,18 +24867,20 @@ define('fabric-components/ws-overlay/ws-overlay',['exports', '../imports'], func
     }, {
       key: 'animateElement',
       value: function animateElement(item, animationClass, callback) {
-        var getEventHandler = function getEventHandler(eventName) {
-          var eventHandler = function eventHandler() {
-            item.classList.remove(animationClass);
+        var eventHandler = function eventHandler() {
+          item.classList.remove(animationClass);
+          ANIMATION_END_EVENTS.forEach(function (eventName) {
             item.removeEventListener(eventName, eventHandler);
-            callback(item);
-          };
-          return eventHandler;
+          });
+          window.removeEventListener('blur', eventHandler);
+          callback(item);
         };
 
         ANIMATION_END_EVENTS.forEach(function (eventName) {
-          item.addEventListener(eventName, getEventHandler(eventName));
+          item.addEventListener(eventName, eventHandler);
         });
+
+        window.addEventListener('blur', eventHandler);
 
         item.classList.add(animationClass);
       }
@@ -32891,4 +32916,4 @@ define('aurelia-testing/wait',["require", "exports"], function (require, exports
     exports.waitForDocumentElements = waitForDocumentElements;
 });
 
-function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","text":"../node_modules/text/text","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"fabric-components","location":"../node_modules/fabric-components/dist/amd","main":"index"},{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","fabric-components/imports","app/view/app-header","style/index"]}})}
+function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"fabric-components","location":"../node_modules/fabric-components/dist/amd","main":"index"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","fabric-components/imports","app/view/app-header","style/index"]}})}
