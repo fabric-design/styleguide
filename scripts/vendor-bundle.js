@@ -22296,7 +22296,7 @@ return index;
 //# sourceMappingURL=preact-compat.js.map
 ;define('preact-compat', ['preact-compat/preact-compat'], function (main) { return main; });
 
-define('fabric-components/index',['exports', './ws-header/ws-header', './ws-date-picker/ws-date-picker', './ws-dropdown/ws-dropdown', './ws-inline-edit/ws-inline-edit', './ws-notification/ws-notification', './ws-week-picker/ws-week-picker', './ws-tiles-chart/ws-tiles-chart', './ws-spinner/ws-spinner', './ws-tab-menu/ws-tab-menu', './ws-option-buttons/ws-option-buttons', './ws-multi-select/ws-multi-select'], function (exports, _wsHeader, _wsDatePicker, _wsDropdown, _wsInlineEdit, _wsNotification, _wsWeekPicker, _wsTilesChart, _wsSpinner, _wsTabMenu, _wsOptionButtons, _wsMultiSelect) {
+define('fabric-components/index',['exports', './ws-header/ws-header', './ws-date-picker/ws-date-picker', './ws-overlay/ws-overlay', './ws-dropdown/ws-dropdown', './ws-inline-edit/ws-inline-edit', './ws-notification/ws-notification', './ws-week-picker/ws-week-picker', './ws-tiles-chart/ws-tiles-chart', './ws-spinner/ws-spinner', './ws-tab-menu/ws-tab-menu', './ws-option-buttons/ws-option-buttons', './ws-multi-select/ws-multi-select'], function (exports, _wsHeader, _wsDatePicker, _wsOverlay, _wsDropdown, _wsInlineEdit, _wsNotification, _wsWeekPicker, _wsTilesChart, _wsSpinner, _wsTabMenu, _wsOptionButtons, _wsMultiSelect) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -22312,6 +22312,12 @@ define('fabric-components/index',['exports', './ws-header/ws-header', './ws-date
     enumerable: true,
     get: function () {
       return _wsDatePicker.WSDatePicker;
+    }
+  });
+  Object.defineProperty(exports, 'WSOverlay', {
+    enumerable: true,
+    get: function () {
+      return _wsOverlay.WSOverlay;
     }
   });
   Object.defineProperty(exports, 'WSDropdown', {
@@ -23422,6 +23428,7 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
         writable: true,
         value: function value(event) {
           event.stopPropagation();
+          event.preventDefault();
           if (!_this.props.disabled) {
             _this.overlay.toggle();
           }
@@ -25089,6 +25096,17 @@ define('fabric-components/ws-date-picker/ws-date-picker',['exports', '../imports
 
       var _this = _possibleConstructorReturn(this, (WSDatePicker.__proto__ || Object.getPrototypeOf(WSDatePicker)).call(this, props));
 
+      Object.defineProperty(_this, 'onClick', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          _this.stopPropagation(event);
+
+          WSDatePicker.flatpickrInstances.forEach(function (pickr) {
+            return pickr.documentClick(event);
+          });
+        }
+      });
       Object.defineProperty(_this, 'stopPropagation', {
         enumerable: true,
         writable: true,
@@ -25116,9 +25134,10 @@ define('fabric-components/ws-date-picker/ws-date-picker',['exports', '../imports
         }, this.props.options, {
           onChange: this.onChange.bind(this)
         }));
+        WSDatePicker.flatpickrInstances.push(this.flatpickr);
 
         this.input.addEventListener('change', this.stopPropagation);
-        this.element.addEventListener('click', this.stopPropagation);
+        this.element.addEventListener('click', this.onClick);
       }
     }, {
       key: 'componentWillReceiveProps',
@@ -25132,13 +25151,19 @@ define('fabric-components/ws-date-picker/ws-date-picker',['exports', '../imports
         Object.keys(props.options || {}).forEach(function (key) {
           _this2.flatpickr.set(key, props.options[key]);
         });
+        this.setState({ value: props.value });
       }
     }, {
       key: 'componentWillUnmount',
       value: function componentWillUnmount() {
-        this.flatpickr.destroy();
         this.input.removeEventListener('change', this.stopPropagation);
-        this.element.removeEventListener('click', this.stopPropagation);
+        this.element.removeEventListener('click', this.onClick);
+        this.flatpickr.destroy();
+
+        var index = WSDatePicker.flatpickrInstances.indexOf(this.flatpickr);
+        if (index !== -1) {
+          WSDatePicker.flatpickrInstances.splice(index, 1);
+        }
       }
     }, {
       key: 'onChange',
@@ -25185,12 +25210,6 @@ define('fabric-components/ws-date-picker/ws-date-picker',['exports', '../imports
             className: 'icon icon-calendar icon16 ' + className,
             ref: function ref(element) {
               _this3.input = element;
-            },
-            onClick: function onClick(event) {
-              return _this3.flatpickr.open(event);
-            },
-            onKeyDown: function onKeyDown(event) {
-              return _this3.flatpickr.open(event);
             }
           })
         );
@@ -25229,6 +25248,11 @@ define('fabric-components/ws-date-picker/ws-date-picker',['exports', '../imports
     writable: true,
     value: 'd.m.Y'
   });
+  Object.defineProperty(WSDatePicker, 'flatpickrInstances', {
+    enumerable: true,
+    writable: true,
+    value: []
+  });
 });
 define('fabric-components/ws-date-picker/flatpickr',['module'], function (module) {
   'use strict';
@@ -25247,6 +25271,7 @@ define('fabric-components/ws-date-picker/flatpickr',['module'], function (module
     self.changeYear = changeYear;
     self.clear = clear;
     self.close = close;
+    self.documentClick = documentClick;
     self._createElement = createElement;
     self.destroy = destroy;
     self.formatDate = formatDate;
@@ -27420,7 +27445,7 @@ define('fabric-components/ws-date-picker/flatpickr',['module'], function (module
     module.exports = Flatpickr;
   }
 });
-define('fabric-components/ws-inline-edit/ws-inline-edit',['exports', '../imports'], function (exports, _imports) {
+define('fabric-components/ws-inline-edit/ws-inline-edit',['exports', '../imports', './types/type-handler'], function (exports, _imports, _typeHandler) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -27484,79 +27509,206 @@ define('fabric-components/ws-inline-edit/ws-inline-edit',['exports', '../imports
 
       var _this = _possibleConstructorReturn(this, (WSInlineEdit.__proto__ || Object.getPrototypeOf(WSInlineEdit)).call(this, props));
 
-      _this.state = {
-        isEditing: false,
-        text: props.text
-      };
+      Object.defineProperty(_this, 'onFocus', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          event.stopPropagation();
+
+          if (!_this.state.isEditing) {
+            _this.resizeInput();
+            _this.setState({ isEditing: true }, function () {
+              _this.input.select();
+              _this.input.focus();
+            });
+          }
+        }
+      });
+      Object.defineProperty(_this, 'onKeyUp', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          event.stopPropagation();
+          event.preventDefault();
+          var inputValue = event.target.value;
+
+          switch (event.key) {
+            case 'Enter':
+              _this.submit(inputValue);
+              break;
+            case 'Escape':
+              _this.abort();
+              break;
+            default:
+              _this.resizeInput();
+              _this.setState({
+                isValid: _this.type.validate(inputValue),
+                inputValue: inputValue
+              });
+          }
+        }
+      });
+      Object.defineProperty(_this, 'onKeyDown', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          event.stopPropagation();
+
+          if (event.key.length === 1) {
+            _this.resizeInput(event.key);
+          } else {
+            _this.resizeInput();
+          }
+        }
+      });
+      Object.defineProperty(_this, 'onChange', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          event.stopPropagation();
+          _this.submit(event.target.value);
+        }
+      });
+      Object.defineProperty(_this, 'stopPropagation', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          event.stopPropagation();
+        }
+      });
+
+      _this.state = _this.createState(props);
       return _this;
     }
 
     _createClass(WSInlineEdit, [{
-      key: 'editElement',
-      value: function editElement() {
-        var _this2 = this;
-
-        if (!this.state.isEditing) {
-          this.setState({ isEditing: true }, function () {
-            _this2.editEl.focus();
-          });
-        }
+      key: 'componentDidMount',
+      value: function componentDidMount() {
+        this.input.addEventListener('focus', this.onFocus);
+        this.input.addEventListener('keyup', this.onKeyUp);
+        this.input.addEventListener('keydown', this.onKeyDown);
+        this.input.addEventListener('change', this.onChange);
+        this.resizeInput();
       }
     }, {
-      key: 'keyAction',
-      value: function keyAction(e) {
-        if (e.keyCode === 13) {
-          this.setState({
-            text: e.target.value,
-            isEditing: false
-          });
-        } else if (e.keyCode === 27) {
-          this.setState({ isEditing: false });
-        }
+      key: 'componentWillReceiveProps',
+      value: function componentWillReceiveProps(props) {
+        this.setState(this.createState(props));
       }
     }, {
-      key: 'blurAction',
-      value: function blurAction(e) {
+      key: 'componentWillUnmount',
+      value: function componentWillUnmount() {
+        this.input.removeEventListener('focus', this.onFocus);
+        this.input.removeEventListener('keydown', this.onKeyDown);
+        this.input.removeEventListener('keyup', this.onKeyUp);
+        this.input.removeEventListener('change', this.onChange);
+      }
+    }, {
+      key: 'createState',
+      value: function createState(props) {
+        this.type = _typeHandler.TypeHandler.getStrategy(props.type, props.options);
+        return {
+          isEditing: false,
+          isValid: true,
+          inputValue: props.value,
+          initialValue: (props.value || '').toString()
+        };
+      }
+    }, {
+      key: 'abort',
+      value: function abort() {
         this.setState({
-          text: e.target.value,
-          isEditing: false
+          isEditing: false,
+          isValid: true,
+          inputValue: this.state.initialValue
         });
-        this.updating(e.target.value);
       }
     }, {
-      key: 'updating',
-      value: function updating(text) {
-        if (text !== this.props.text) {
-          this.props.onUpdate(text);
+      key: 'submit',
+      value: function submit(inputValue) {
+        var state = { isEditing: false, inputValue: inputValue };
+
+        if (!this.type.validate(inputValue)) {
+          return;
         }
+
+        if (inputValue !== this.state.initialValue) {
+          state.initialValue = inputValue;
+
+          var eventData = {
+            plain: inputValue,
+            value: this.type.convert(inputValue)
+          };
+          this.dispatchEvent('change', eventData);
+
+          if (typeof this.props.onChange === 'function') {
+            this.props.onChange(eventData);
+          }
+        }
+
+        this.setState(state);
+      }
+    }, {
+      key: 'resizeInput',
+      value: function resizeInput(additionalChars) {
+        if (this.props.look !== 'narrow') {
+          return;
+        }
+
+        var style = window.getComputedStyle(this.input);
+        var calculator = document.createElement('div');
+        calculator.style.fontSize = style.fontSize || '16px';
+        calculator.style.lineHeight = style.lineHeight || '16px';
+        calculator.style.margin = style.margin;
+        calculator.style.padding = style.padding;
+        calculator.style.visibility = 'hidden';
+        calculator.style.position = 'absolute';
+        calculator.style.top = '-1000px';
+        calculator.innerText = this.input.value + (additionalChars || '');
+
+        document.body.appendChild(calculator);
+        this.input.style.width = calculator.clientWidth + 'px';
+        document.body.removeChild(calculator);
       }
     }, {
       key: 'render',
       value: function render() {
-        var _this3 = this;
+        var _this2 = this;
+
+        var _state = this.state,
+            isEditing = _state.isEditing,
+            isValid = _state.isValid,
+            inputValue = _state.inputValue;
+        var _props = this.props,
+            type = _props.type,
+            look = _props.look,
+            disabled = _props.disabled;
+
+
+        var classes = 'ws-inline-edit';
+        classes += isEditing ? ' is-editing' : '';
+        classes += ' ' + type;
+        classes += look === 'narrow' ? ' mod-narrow' : '';
+        classes += disabled ? ' is-disabled' : '';
 
         return _imports.React.createElement(
           'div',
-          { className: 'ws-inline-edit', onClick: function onClick() {
-              return _this3.editElement();
-            }, onKeyPress: function onKeyPress() {
-              return _this3.editElement();
+          { className: classes, ref: function ref(element) {
+              _this2.element = element;
             } },
-          _imports.React.createElement('input', {
-            type: 'text',
-            className: 'inlineInput',
-            disabled: !this.state.isEditing ? 'disabled' : '',
-            onBlur: function onBlur(e) {
-              return _this3.blurAction(e);
-            },
-            onKeyDown: function onKeyDown(e) {
-              return _this3.keyAction(e);
-            },
-            defaultValue: this.state.text,
-            ref: function ref(el) {
-              _this3.editEl = el;
-            }
-          })
+          _imports.React.createElement(
+            'div',
+            { className: 'input-wrapper' },
+            _imports.React.createElement('input', {
+              type: 'text',
+              className: !isValid ? 'is-invalid' : '',
+              ref: function ref(element) {
+                _this2.input = element;
+              },
+              value: inputValue
+            }),
+            !isValid && _imports.React.createElement('span', { className: 'icon icon16 icon-cross' })
+          )
         );
       }
     }]);
@@ -27564,22 +27716,463 @@ define('fabric-components/ws-inline-edit/ws-inline-edit',['exports', '../imports
     return WSInlineEdit;
   }(_imports.Component);
 
-  Object.defineProperty(WSInlineEdit, 'propTypes', {
-    enumerable: true,
-    writable: true,
-    value: {
-      text: _imports.PropTypes.string,
-      onUpdate: _imports.PropTypes.func
-    }
-  });
   Object.defineProperty(WSInlineEdit, 'defaultProps', {
     enumerable: true,
     writable: true,
     value: {
-      text: '',
-      onUpdate: function onUpdate() {}
+      value: '',
+      options: {},
+      type: 'text',
+      look: 'default',
+      disabled: false,
+      onChange: function onChange() {}
     }
   });
+  Object.defineProperty(WSInlineEdit, 'propTypes', {
+    enumerable: true,
+    writable: true,
+    value: {
+      value: _imports.PropTypes.string,
+      options: _imports.PropTypes.object,
+      type: _imports.PropTypes.oneOf(['text', 'number', 'price']),
+      look: _imports.PropTypes.oneOf(['narrow', 'default']),
+      disabled: _imports.PropTypes.bool,
+      onChange: _imports.PropTypes.func
+    }
+  });
+});
+define('fabric-components/ws-inline-edit/types/type-handler',['exports', './number-strategy', './price-strategy', './text-strategy'], function (exports, _numberStrategy, _priceStrategy, _textStrategy) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.TypeHandler = undefined;
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  var _createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
+  var TypeHandler = exports.TypeHandler = function () {
+    function TypeHandler() {
+      _classCallCheck(this, TypeHandler);
+    }
+
+    _createClass(TypeHandler, null, [{
+      key: 'getStrategy',
+      value: function getStrategy(type, options) {
+        if (!this.TYPES[type]) {
+          throw new Error('Unknown type: ' + type);
+        }
+        return new this.TYPES[type](options);
+      }
+    }]);
+
+    return TypeHandler;
+  }();
+
+  Object.defineProperty(TypeHandler, 'TYPES', {
+    enumerable: true,
+    writable: true,
+    value: {
+      text: _textStrategy.TextStrategy,
+      number: _numberStrategy.NumberStrategy,
+      price: _priceStrategy.PriceStrategy
+    }
+  });
+});
+define('fabric-components/ws-inline-edit/types/number-strategy',['exports', './abstract-type-strategy'], function (exports, _abstractTypeStrategy) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.NumberStrategy = undefined;
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  var _createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
+  function _possibleConstructorReturn(self, call) {
+    if (!self) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return call && (typeof call === "object" || typeof call === "function") ? call : self;
+  }
+
+  function _inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+    }
+
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+      constructor: {
+        value: subClass,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+  }
+
+  var english = '([0-9]*(,[0-9]{3})*)(\\.[0-9]+)?';
+  var german = '([0-9]*(\\.[0-9]{3})*)(,[0-9]+)?';
+  var strip = function strip(str) {
+    return str.replace(/[.,]/g, '');
+  };
+
+  var NumberStrategy = exports.NumberStrategy = function (_AbstractTypeStrategy) {
+    _inherits(NumberStrategy, _AbstractTypeStrategy);
+
+    function NumberStrategy(options) {
+      _classCallCheck(this, NumberStrategy);
+
+      var _this = _possibleConstructorReturn(this, (NumberStrategy.__proto__ || Object.getPrototypeOf(NumberStrategy)).call(this, options));
+
+      _this.locale = options.locale;
+      return _this;
+    }
+
+    _createClass(NumberStrategy, [{
+      key: 'validate',
+      value: function validate(value) {
+        if (!value) {
+          return false;
+        }
+
+        if (this.locale) {
+          return NumberStrategy.getPattern(this.locale).test(value);
+        }
+        return NumberStrategy.getPattern('en').test(value) || NumberStrategy.getPattern('de').test(value);
+      }
+    }, {
+      key: 'convert',
+      value: function convert(value) {
+        var simple = void 0;
+        if (this.locale) {
+          simple = value.replace(NumberStrategy.getPattern(this.locale), NumberStrategy.convertToDecimal);
+        } else if (NumberStrategy.getPattern('en').test(value)) {
+          simple = value.replace(NumberStrategy.getPattern('en'), NumberStrategy.convertToDecimal);
+        } else if (NumberStrategy.getPattern('de').test(value)) {
+          simple = value.replace(NumberStrategy.getPattern('de'), NumberStrategy.convertToDecimal);
+        }
+        return parseFloat(simple);
+      }
+    }], [{
+      key: 'getPattern',
+      value: function getPattern(locale) {
+        switch (locale) {
+          case 'de':
+            return new RegExp('^' + german + '$');
+          case 'en':
+            return new RegExp('^' + english + '$');
+          default:
+            return new RegExp('^' + english + '$');
+        }
+      }
+    }, {
+      key: 'convertToDecimal',
+      value: function convertToDecimal(match) {
+        var combined = strip((arguments.length <= 1 ? undefined : arguments[1]) || (arguments.length <= 4 ? undefined : arguments[4]));
+        if ((arguments.length <= 3 ? undefined : arguments[3]) || (arguments.length <= 6 ? undefined : arguments[6])) {
+          combined += '.' + strip((arguments.length <= 3 ? undefined : arguments[3]) || (arguments.length <= 6 ? undefined : arguments[6]));
+        }
+        return combined;
+      }
+    }]);
+
+    return NumberStrategy;
+  }(_abstractTypeStrategy.AbstractTypeStrategy);
+});
+define('fabric-components/ws-inline-edit/types/abstract-type-strategy',["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  var _createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
+  var AbstractTypeStrategy = exports.AbstractTypeStrategy = function () {
+    function AbstractTypeStrategy(options) {
+      _classCallCheck(this, AbstractTypeStrategy);
+
+      this.options = options;
+    }
+
+    _createClass(AbstractTypeStrategy, [{
+      key: "validate",
+      value: function validate(value) {
+        return true;
+      }
+    }, {
+      key: "convert",
+      value: function convert(value) {
+        return value;
+      }
+    }]);
+
+    return AbstractTypeStrategy;
+  }();
+});
+define('fabric-components/ws-inline-edit/types/price-strategy',['exports', './abstract-type-strategy'], function (exports, _abstractTypeStrategy) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.PriceStrategy = undefined;
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  var _createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
+  function _possibleConstructorReturn(self, call) {
+    if (!self) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return call && (typeof call === "object" || typeof call === "function") ? call : self;
+  }
+
+  function _inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+    }
+
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+      constructor: {
+        value: subClass,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+  }
+
+  var english = '([0-9]*(,[0-9]{3})*)(\\.[0-9]{2})?';
+  var german = '([0-9]*(\\.[0-9]{3})*)(,[0-9]{2})?';
+  var strip = function strip(str) {
+    return str.replace(/[.,]/g, '');
+  };
+
+  var PriceStrategy = exports.PriceStrategy = function (_AbstractTypeStrategy) {
+    _inherits(PriceStrategy, _AbstractTypeStrategy);
+
+    function PriceStrategy(options) {
+      _classCallCheck(this, PriceStrategy);
+
+      var _this = _possibleConstructorReturn(this, (PriceStrategy.__proto__ || Object.getPrototypeOf(PriceStrategy)).call(this, options));
+
+      _this.locale = options.locale;
+      return _this;
+    }
+
+    _createClass(PriceStrategy, [{
+      key: 'validate',
+      value: function validate(value) {
+        if (!value) {
+          return false;
+        }
+
+        return PriceStrategy.getPattern(this.locale).test(value);
+      }
+    }, {
+      key: 'convert',
+      value: function convert(value) {
+        var simple = value.replace(PriceStrategy.getPattern(this.locale), PriceStrategy.convertToDecimal);
+        return parseFloat(simple);
+      }
+    }], [{
+      key: 'getPattern',
+      value: function getPattern(locale) {
+        switch (locale) {
+          case 'de':
+            return new RegExp('^' + german + '$');
+          case 'en':
+            return new RegExp('^' + english + '$');
+          default:
+            return new RegExp('^' + english + '|' + german + '$');
+        }
+      }
+    }, {
+      key: 'convertToDecimal',
+      value: function convertToDecimal(match) {
+        var combined = strip((arguments.length <= 1 ? undefined : arguments[1]) || (arguments.length <= 4 ? undefined : arguments[4]));
+        if ((arguments.length <= 3 ? undefined : arguments[3]) || (arguments.length <= 6 ? undefined : arguments[6])) {
+          combined += '.' + strip((arguments.length <= 3 ? undefined : arguments[3]) || (arguments.length <= 6 ? undefined : arguments[6]));
+        }
+        return combined;
+      }
+    }]);
+
+    return PriceStrategy;
+  }(_abstractTypeStrategy.AbstractTypeStrategy);
+});
+define('fabric-components/ws-inline-edit/types/text-strategy',['exports', './abstract-type-strategy'], function (exports, _abstractTypeStrategy) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.TextStrategy = undefined;
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  var _createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
+  function _possibleConstructorReturn(self, call) {
+    if (!self) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return call && (typeof call === "object" || typeof call === "function") ? call : self;
+  }
+
+  function _inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+    }
+
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+      constructor: {
+        value: subClass,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+  }
+
+  var TextStrategy = exports.TextStrategy = function (_AbstractTypeStrategy) {
+    _inherits(TextStrategy, _AbstractTypeStrategy);
+
+    function TextStrategy() {
+      _classCallCheck(this, TextStrategy);
+
+      return _possibleConstructorReturn(this, (TextStrategy.__proto__ || Object.getPrototypeOf(TextStrategy)).apply(this, arguments));
+    }
+
+    _createClass(TextStrategy, [{
+      key: 'validate',
+      value: function validate(value) {
+        return true;
+      }
+    }, {
+      key: 'convert',
+      value: function convert(value) {
+        return value;
+      }
+    }]);
+
+    return TextStrategy;
+  }(_abstractTypeStrategy.AbstractTypeStrategy);
 });
 define('fabric-components/ws-notification/ws-notification',['exports', '../imports'], function (exports, _imports) {
   'use strict';
@@ -32926,4 +33519,4 @@ define('aurelia-testing/wait',["require", "exports"], function (require, exports
     exports.waitForDocumentElements = waitForDocumentElements;
 });
 
-function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","text":"../node_modules/text/text","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"fabric-components","location":"../node_modules/fabric-components/dist/amd","main":"index"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","fabric-components/imports","app/view/app-header","style/index"]}})}
+function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"fabric-components","location":"../node_modules/fabric-components/dist/amd","main":"index"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","fabric-components/imports","app/view/app-header","style/index"]}})}
