@@ -3197,7 +3197,7 @@ define('aurelia-binding',['exports', 'aurelia-logging', 'aurelia-pal', 'aurelia-
   if (arrayProto.__au_patched__) {
     LogManager.getLogger('array-observation').warn('Detected 2nd attempt of patching array from Aurelia binding.' + ' This is probably caused by dependency mismatch between core modules and a 3rd party plugin.' + ' Please see https://github.com/aurelia/cli/pull/906 if you are using webpack.');
   } else {
-    arrayProto.__au_patched__ = 1;
+    Reflect.defineProperty(arrayProto, '__au_patched__', { value: 1 });
     arrayProto.pop = function () {
       var notEmpty = this.length > 0;
       var methodCallResult = pop.apply(this, arguments);
@@ -21234,7 +21234,6 @@ define('aurelia-templating-binding',['exports', 'aurelia-logging', 'aurelia-bind
 define('text',{});
 define('preact/preact',['require','exports','module'],function (require, exports, module) {!function() {
     'use strict';
-    function VNode() {}
     function h(nodeName, attributes) {
         var lastSimple, child, simple, i, children = EMPTY_CHILDREN;
         for (i = arguments.length; i-- > 2; ) stack.push(arguments[i]);
@@ -21315,17 +21314,14 @@ define('preact/preact',['require','exports','module'],function (require, exports
             } else node.removeEventListener(name, eventProxy, useCapture);
             (node.__l || (node.__l = {}))[name] = value;
         } else if ('list' !== name && 'type' !== name && !isSvg && name in node) {
-            setProperty(node, name, null == value ? '' : value);
-            if (null == value || !1 === value) node.removeAttribute(name);
+            try {
+                node[name] = null == value ? '' : value;
+            } catch (e) {}
+            if ((null == value || !1 === value) && 'spellcheck' != name) node.removeAttribute(name);
         } else {
             var ns = isSvg && name !== (name = name.replace(/^xlink:?/, ''));
             if (null == value || !1 === value) if (ns) node.removeAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase()); else node.removeAttribute(name); else if ('function' != typeof value) if (ns) node.setAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase(), value); else node.setAttribute(name, value);
         }
-    }
-    function setProperty(node, name, value) {
-        try {
-            node[name] = value;
-        } catch (e) {}
     }
     function eventProxy(e) {
         return this.__l[e.type](options.event && options.event(e) || e);
@@ -21409,7 +21405,7 @@ define('preact/preact',['require','exports','module'],function (require, exports
                     keyed[key] = void 0;
                     keyedLen--;
                 }
-            } else if (!child && min < childrenLen) for (j = min; j < childrenLen; j++) if (void 0 !== children[j] && isSameNodeType(c = children[j], vchild, isHydrating)) {
+            } else if (min < childrenLen) for (j = min; j < childrenLen; j++) if (void 0 !== children[j] && isSameNodeType(c = children[j], vchild, isHydrating)) {
                 child = c;
                 children[j] = void 0;
                 if (j === childrenLen - 1) childrenLen--;
@@ -21444,12 +21440,8 @@ define('preact/preact',['require','exports','module'],function (require, exports
         for (name in old) if ((!attrs || null == attrs[name]) && null != old[name]) setAccessor(dom, name, old[name], old[name] = void 0, isSvgMode);
         for (name in attrs) if (!('children' === name || 'innerHTML' === name || name in old && attrs[name] === ('value' === name || 'checked' === name ? dom[name] : old[name]))) setAccessor(dom, name, old[name], old[name] = attrs[name], isSvgMode);
     }
-    function collectComponent(component) {
-        var name = component.constructor.name;
-        (components[name] || (components[name] = [])).push(component);
-    }
     function createComponent(Ctor, props, context) {
-        var inst, list = components[Ctor.name];
+        var inst, i = recyclerComponents.length;
         if (Ctor.prototype && Ctor.prototype.render) {
             inst = new Ctor(props, context);
             Component.call(inst, props, context);
@@ -21458,22 +21450,24 @@ define('preact/preact',['require','exports','module'],function (require, exports
             inst.constructor = Ctor;
             inst.render = doRender;
         }
-        if (list) for (var i = list.length; i--; ) if (list[i].constructor === Ctor) {
-            inst.__b = list[i].__b;
-            list.splice(i, 1);
-            break;
+        while (i--) if (recyclerComponents[i].constructor === Ctor) {
+            inst.__b = recyclerComponents[i].__b;
+            recyclerComponents.splice(i, 1);
+            return inst;
         }
         return inst;
     }
     function doRender(props, state, context) {
         return this.constructor(props, context);
     }
-    function setComponentProps(component, props, opts, context, mountAll) {
+    function setComponentProps(component, props, renderMode, context, mountAll) {
         if (!component.__x) {
             component.__x = !0;
-            if (component.__r = props.ref) delete props.ref;
-            if (component.__k = props.key) delete props.key;
-            if (!component.base || mountAll) {
+            component.__r = props.ref;
+            component.__k = props.key;
+            delete props.ref;
+            delete props.key;
+            if (void 0 === component.constructor.getDerivedStateFromProps) if (!component.base || mountAll) {
                 if (component.componentWillMount) component.componentWillMount();
             } else if (component.componentWillReceiveProps) component.componentWillReceiveProps(props, context);
             if (context && context !== component.context) {
@@ -21483,18 +21477,22 @@ define('preact/preact',['require','exports','module'],function (require, exports
             if (!component.__p) component.__p = component.props;
             component.props = props;
             component.__x = !1;
-            if (0 !== opts) if (1 === opts || !1 !== options.syncComponentUpdates || !component.base) renderComponent(component, 1, mountAll); else enqueueRender(component);
+            if (0 !== renderMode) if (1 === renderMode || !1 !== options.syncComponentUpdates || !component.base) renderComponent(component, 1, mountAll); else enqueueRender(component);
             if (component.__r) component.__r(component);
         }
     }
-    function renderComponent(component, opts, mountAll, isChild) {
+    function renderComponent(component, renderMode, mountAll, isChild) {
         if (!component.__x) {
-            var rendered, inst, cbase, props = component.props, state = component.state, context = component.context, previousProps = component.__p || props, previousState = component.__s || state, previousContext = component.__c || context, isUpdate = component.base, nextBase = component.__b, initialBase = isUpdate || nextBase, initialChildComponent = component._component, skip = !1;
+            var rendered, inst, cbase, props = component.props, state = component.state, context = component.context, previousProps = component.__p || props, previousState = component.__s || state, previousContext = component.__c || context, isUpdate = component.base, nextBase = component.__b, initialBase = isUpdate || nextBase, initialChildComponent = component._component, skip = !1, snapshot = previousContext;
+            if (component.constructor.getDerivedStateFromProps) {
+                state = extend(extend({}, state), component.constructor.getDerivedStateFromProps(props, state));
+                component.state = state;
+            }
             if (isUpdate) {
                 component.props = previousProps;
                 component.state = previousState;
                 component.context = previousContext;
-                if (2 !== opts && component.shouldComponentUpdate && !1 === component.shouldComponentUpdate(props, state, context)) skip = !0; else if (component.componentWillUpdate) component.componentWillUpdate(props, state, context);
+                if (2 !== renderMode && component.shouldComponentUpdate && !1 === component.shouldComponentUpdate(props, state, context)) skip = !0; else if (component.componentWillUpdate) component.componentWillUpdate(props, state, context);
                 component.props = props;
                 component.state = state;
                 component.context = context;
@@ -21504,6 +21502,7 @@ define('preact/preact',['require','exports','module'],function (require, exports
             if (!skip) {
                 rendered = component.render(props, state, context);
                 if (component.getChildContext) context = extend(extend({}, context), component.getChildContext());
+                if (isUpdate && component.getSnapshotBeforeUpdate) snapshot = component.getSnapshotBeforeUpdate(previousProps, previousState);
                 var toUnmount, base, childComponent = rendered && rendered.nodeName;
                 if ('function' == typeof childComponent) {
                     var childProps = getNodeProps(rendered);
@@ -21521,7 +21520,7 @@ define('preact/preact',['require','exports','module'],function (require, exports
                     cbase = initialBase;
                     toUnmount = initialChildComponent;
                     if (toUnmount) cbase = component._component = null;
-                    if (initialBase || 1 === opts) {
+                    if (initialBase || 1 === renderMode) {
                         if (cbase) cbase._component = null;
                         base = diff(cbase, rendered, context, mountAll || !isUpdate, initialBase && initialBase.parentNode, !0);
                     }
@@ -21546,10 +21545,10 @@ define('preact/preact',['require','exports','module'],function (require, exports
                 }
             }
             if (!isUpdate || mountAll) mounts.unshift(component); else if (!skip) {
-                if (component.componentDidUpdate) component.componentDidUpdate(previousProps, previousState, previousContext);
+                if (component.componentDidUpdate) component.componentDidUpdate(previousProps, previousState, snapshot);
                 if (options.afterUpdate) options.afterUpdate(component);
             }
-            if (null != component.__h) while (component.__h.length) component.__h.pop().call(component);
+            while (component.__h.length) component.__h.pop().call(component);
             if (!diffLevel && !isChild) flushMounts();
         }
     }
@@ -21589,7 +21588,7 @@ define('preact/preact',['require','exports','module'],function (require, exports
             if (base.__preactattr_ && base.__preactattr_.ref) base.__preactattr_.ref(null);
             component.__b = base;
             removeNode(base);
-            collectComponent(component);
+            recyclerComponents.push(component);
             removeChildren(base);
         }
         if (component.__r) component.__r(null);
@@ -21599,10 +21598,12 @@ define('preact/preact',['require','exports','module'],function (require, exports
         this.context = context;
         this.props = props;
         this.state = this.state || {};
+        this.__h = [];
     }
     function render(vnode, parent, merge) {
         return diff(merge, vnode, {}, !1, parent, !1);
     }
+    var VNode = function() {};
     var options = {};
     var stack = [];
     var EMPTY_CHILDREN = [];
@@ -21613,17 +21614,17 @@ define('preact/preact',['require','exports','module'],function (require, exports
     var diffLevel = 0;
     var isSvgMode = !1;
     var hydrating = !1;
-    var components = {};
+    var recyclerComponents = [];
     extend(Component.prototype, {
         setState: function(state, callback) {
-            var s = this.state;
-            if (!this.__s) this.__s = extend({}, s);
-            extend(s, 'function' == typeof state ? state(s, this.props) : state);
-            if (callback) (this.__h = this.__h || []).push(callback);
+            var prev = this.__s = this.state;
+            if ('function' == typeof state) state = state(prev, this.props);
+            this.state = extend(extend({}, prev), state);
+            if (callback) this.__h.push(callback);
             enqueueRender(this);
         },
         forceUpdate: function(callback) {
-            if (callback) (this.__h = this.__h || []).push(callback);
+            if (callback) this.__h.push(callback);
             renderComponent(this, 2);
         },
         render: function() {}
@@ -24812,6 +24813,7 @@ define('fabric-components/ws-overlay/ws-overlay',['exports', '../imports'], func
       });
 
       _this.contentHeight = 0;
+      _this.animations = [];
       return _this;
     }
 
@@ -24825,6 +24827,8 @@ define('fabric-components/ws-overlay/ws-overlay',['exports', '../imports'], func
       key: 'open',
       value: function open() {
         var _this2 = this;
+
+        this.finishAnimations();
 
         if (WSOverlay.openOverlay === this) {
           return;
@@ -24900,6 +24904,16 @@ define('fabric-components/ws-overlay/ws-overlay',['exports', '../imports'], func
         window.addEventListener('blur', eventHandler);
 
         item.classList.add(animationClass);
+
+        this.animations.push(eventHandler);
+      }
+    }, {
+      key: 'finishAnimations',
+      value: function finishAnimations() {
+        this.animations.forEach(function (eventHandler) {
+          eventHandler();
+        });
+        this.animations = [];
       }
     }, {
       key: 'calculateWidth',
@@ -29968,7 +29982,6 @@ define('fabric-components/ws-multi-select/ws-multi-select',['exports', '../impor
     _createClass(WSMultiSelect, [{
       key: 'componentDidMount',
       value: function componentDidMount() {
-        window.select = this;
         this.icon.addEventListener('click', this.onClickIcon);
         this.input.addEventListener('keyup', this.onKeyUp);
         this.input.addEventListener('focus', this.onFocus);
@@ -33519,4 +33532,4 @@ define('aurelia-testing/wait',["require", "exports"], function (require, exports
     exports.waitForDocumentElements = waitForDocumentElements;
 });
 
-function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"fabric-components","location":"../node_modules/fabric-components/dist/amd","main":"index"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","fabric-components/imports","app/view/app-header","style/index"]}})}
+function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"fabric-components","location":"../node_modules/fabric-components/dist/amd","main":"index"},{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","fabric-components/imports","app/view/app-header","style/index"]}})}
