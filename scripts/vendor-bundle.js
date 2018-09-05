@@ -1,5 +1,5 @@
 /** vim: et:ts=4:sw=4:sts=4
- * @license RequireJS 2.3.5 Copyright jQuery Foundation and other contributors.
+ * @license RequireJS 2.3.6 Copyright jQuery Foundation and other contributors.
  * Released under MIT license, https://github.com/requirejs/requirejs/blob/master/LICENSE
  */
 //Not using strict: uneven strict support in browsers, #392, and causes
@@ -11,7 +11,7 @@ var requirejs, require, define;
 (function (global, setTimeout) {
     var req, s, head, baseElement, dataMain, src,
         interactiveScript, currentlyAddingScript, mainScript, subPath,
-        version = '2.3.5',
+        version = '2.3.6',
         commentRegExp = /\/\*[\s\S]*?\*\/|([^:"'=]|^)\/\/.*$/mg,
         cjsRequireRegExp = /[^.]\s*require\s*\(\s*["']([^'"\s]+)["']\s*\)/g,
         jsSuffixRegExp = /\.js$/,
@@ -165,7 +165,7 @@ var requirejs, require, define;
      * @returns {Error}
      */
     function makeError(id, msg, err, requireModules) {
-        var e = new Error(msg + '\nhttp://requirejs.org/docs/errors.html#' + id);
+        var e = new Error(msg + '\nhttps://requirejs.org/docs/errors.html#' + id);
         e.requireType = id;
         e.requireModules = requireModules;
         if (err) {
@@ -21617,9 +21617,8 @@ define('preact/preact',['require','exports','module'],function (require, exports
     var recyclerComponents = [];
     extend(Component.prototype, {
         setState: function(state, callback) {
-            var prev = this.__s = this.state;
-            if ('function' == typeof state) state = state(prev, this.props);
-            this.state = extend(extend({}, prev), state);
+            if (!this.__s) this.__s = this.state;
+            this.state = extend(extend({}, this.state), 'function' == typeof state ? state(this.state, this.props) : state);
             if (callback) this.__h.push(callback);
             enqueueRender(this);
         },
@@ -21681,7 +21680,11 @@ var CAMEL_PROPS = /^(?:accent|alignment|arabic|baseline|cap|clip|color|fill|floo
 var BYPASS_HOOK = {};
 
 /*global process*/
-var DEV = typeof process !== 'undefined' && process.env && process.env.NODE_ENV!=='production';
+var DEV = false;
+try {
+	DEV = process.env.NODE_ENV!=='production';
+}
+catch (e) {}
 
 // a component that renders nothing. Used to replace components for unmountComponentAtNode.
 function EmptyComponent() { return null; }
@@ -22065,7 +22068,7 @@ function shallowDiffers(a, b) {
 
 
 function findDOMNode(component) {
-	return component && component.base || null;
+	return component && (component.base || component.nodeType === 1 && component) || null;
 }
 
 
@@ -27607,7 +27610,11 @@ define('fabric-components/ws-inline-edit/ws-inline-edit',['exports', '../imports
     }, {
       key: 'componentWillReceiveProps',
       value: function componentWillReceiveProps(props) {
-        this.setState(this.createState(props));
+        var _this2 = this;
+
+        this.setState(this.createState(props), function () {
+          _this2.resizeInput();
+        });
       }
     }, {
       key: 'componentWillUnmount',
@@ -27687,7 +27694,7 @@ define('fabric-components/ws-inline-edit/ws-inline-edit',['exports', '../imports
     }, {
       key: 'render',
       value: function render() {
-        var _this2 = this;
+        var _this3 = this;
 
         var _state = this.state,
             isEditing = _state.isEditing,
@@ -27708,7 +27715,7 @@ define('fabric-components/ws-inline-edit/ws-inline-edit',['exports', '../imports
         return _imports.React.createElement(
           'div',
           { className: classes, ref: function ref(element) {
-              _this2.element = element;
+              _this3.element = element;
             } },
           _imports.React.createElement(
             'div',
@@ -27717,7 +27724,7 @@ define('fabric-components/ws-inline-edit/ws-inline-edit',['exports', '../imports
               type: 'text',
               className: !isValid ? 'is-invalid' : '',
               ref: function ref(element) {
-                _this2.input = element;
+                _this3.input = element;
               },
               value: inputValue
             }),
@@ -33532,4 +33539,4 @@ define('aurelia-testing/wait',["require", "exports"], function (require, exports
     exports.waitForDocumentElements = waitForDocumentElements;
 });
 
-function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"fabric-components","location":"../node_modules/fabric-components/dist/amd","main":"index"},{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","fabric-components/imports","app/view/app-header","style/index"]}})}
+function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"aurelia-binding":"../node_modules/aurelia-binding/dist/amd/aurelia-binding","aurelia-bootstrapper":"../node_modules/aurelia-bootstrapper/dist/amd/aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules/aurelia-dependency-injection/dist/amd/aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules/aurelia-event-aggregator/dist/amd/aurelia-event-aggregator","aurelia-framework":"../node_modules/aurelia-framework/dist/amd/aurelia-framework","aurelia-history":"../node_modules/aurelia-history/dist/amd/aurelia-history","aurelia-history-browser":"../node_modules/aurelia-history-browser/dist/amd/aurelia-history-browser","aurelia-loader":"../node_modules/aurelia-loader/dist/amd/aurelia-loader","aurelia-loader-default":"../node_modules/aurelia-loader-default/dist/amd/aurelia-loader-default","aurelia-logging":"../node_modules/aurelia-logging/dist/amd/aurelia-logging","aurelia-logging-console":"../node_modules/aurelia-logging-console/dist/amd/aurelia-logging-console","aurelia-metadata":"../node_modules/aurelia-metadata/dist/amd/aurelia-metadata","aurelia-pal":"../node_modules/aurelia-pal/dist/amd/aurelia-pal","aurelia-pal-browser":"../node_modules/aurelia-pal-browser/dist/amd/aurelia-pal-browser","aurelia-path":"../node_modules/aurelia-path/dist/amd/aurelia-path","aurelia-polyfills":"../node_modules/aurelia-polyfills/dist/amd/aurelia-polyfills","aurelia-route-recognizer":"../node_modules/aurelia-route-recognizer/dist/amd/aurelia-route-recognizer","aurelia-router":"../node_modules/aurelia-router/dist/amd/aurelia-router","aurelia-task-queue":"../node_modules/aurelia-task-queue/dist/amd/aurelia-task-queue","aurelia-templating":"../node_modules/aurelia-templating/dist/amd/aurelia-templating","aurelia-templating-binding":"../node_modules/aurelia-templating-binding/dist/amd/aurelia-templating-binding","text":"../node_modules/text/text","app-bundle":"../scripts/app-bundle"},"packages":[{"name":"preact","location":"../node_modules/preact/dist","main":"preact"},{"name":"preact-compat","location":"../node_modules/preact-compat/dist","main":"preact-compat"},{"name":"fabric-components","location":"../node_modules/fabric-components/dist/amd","main":"index"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{},"map":{"*":{"react":"preact","react-dom":"preact-compat"}},"bundles":{"app-bundle":["environment","prop-types","app/articles","app/environment","app/main","app/view/app","app/view/article-page","app/view/dynamic-html","app/view/iterable-converter","app/view/navigation","app/feature/components/index","fabric-components/imports","app/view/app-header","style/index"]}})}
