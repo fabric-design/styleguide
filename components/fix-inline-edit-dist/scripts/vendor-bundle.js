@@ -23340,6 +23340,20 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
   });
   exports.WSDropdown = undefined;
 
+  var _extends = Object.assign || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
+  };
+
   var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
     return typeof obj;
   } : function (obj) {
@@ -23438,6 +23452,20 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
           }
         }
       });
+      Object.defineProperty(_this, 'onTriggerKeyPress', {
+        enumerable: true,
+        writable: true,
+        value: function value(event) {
+          event.stopPropagation();
+          event.preventDefault();
+          var isEnter = event.key === 'Enter' || event.which === 12;
+          var isNotOpen = _wsOverlay.WSOverlay.openOverlay !== _this.overlay;
+
+          if (!_this.props.disabled && isEnter && isNotOpen) {
+            _this.overlay.open();
+          }
+        }
+      });
       Object.defineProperty(_this, 'handlePropagation', {
         enumerable: true,
         writable: true,
@@ -23469,6 +23497,7 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
       value: function componentDidMount() {
         this.element.addEventListener('click', this.onAnyEvent);
         this.trigger.addEventListener('click', this.onTriggerClick);
+        this.trigger.addEventListener('keypress', this.onTriggerKeyPress);
       }
     }, {
       key: 'componentWillReceiveProps',
@@ -23480,6 +23509,7 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
       value: function componentWillUnmount() {
         this.element.removeEventListener('click', this.onAnyEvent);
         this.trigger.removeEventListener('click', this.onTriggerClick);
+        this.trigger.removeEventListener('keypress', this.onTriggerKeyPress);
       }
     }, {
       key: 'onOpen',
@@ -23603,17 +23633,22 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
           icon = _imports.React.createElement('span', { className: 'icon ' + this.props.icon });
         }
         var disabledStyle = this.props.disabled ? ' is-disabled' : '';
+        var additionalProperties = {};
+        if (this.props.tabIndex) {
+          additionalProperties.tabindex = this.props.tabIndex;
+        }
+
         switch (this.props.type) {
           case 'anchor':
             return _imports.React.createElement(
               'a',
-              {
+              _extends({
                 href: '#void',
                 className: 'dropdown-trigger ' + disabledStyle,
                 ref: function ref(element) {
                   _this4.trigger = element;
                 }
-              },
+              }, additionalProperties),
               icon,
               ' ',
               this.state.text
@@ -23621,12 +23656,12 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
           case 'button':
             return _imports.React.createElement(
               'button',
-              {
+              _extends({
                 className: 'dropdown-trigger ' + disabledStyle,
                 ref: function ref(element) {
                   _this4.trigger = element;
                 }
-              },
+              }, additionalProperties),
               icon,
               ' ',
               this.state.text
@@ -23634,12 +23669,12 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
           case 'select':
             return _imports.React.createElement(
               'div',
-              {
+              _extends({
                 className: 'dropdown-trigger select-box ' + disabledStyle,
                 ref: function ref(element) {
                   _this4.trigger = element;
                 }
-              },
+              }, additionalProperties),
               icon,
               ' ',
               this.state.text || this.props.placeholder
@@ -23648,13 +23683,13 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
           default:
             return _imports.React.createElement(
               'a',
-              {
+              _extends({
                 href: '#void',
                 className: 'dropdown-trigger ' + disabledStyle,
                 ref: function ref(element) {
                   _this4.trigger = element;
                 }
-              },
+              }, additionalProperties),
               icon
             );
         }
@@ -23759,7 +23794,8 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
       value: null,
       onChange: function onChange() {},
       disabled: false,
-      selectAll: false
+      selectAll: false,
+      tabIndex: undefined
     }
   });
   Object.defineProperty(WSDropdown, 'propTypes', {
@@ -23784,7 +23820,8 @@ define('fabric-components/ws-dropdown/ws-dropdown',['exports', '../imports', './
       value: _imports.PropTypes.oneOfType([_imports.PropTypes.string, _imports.PropTypes.object, _imports.PropTypes.array]),
       onChange: _imports.PropTypes.func,
       disabled: _imports.PropTypes.bool,
-      selectAll: _imports.PropTypes.bool
+      selectAll: _imports.PropTypes.bool,
+      tabIndex: _imports.PropTypes.oneOf(_imports.PropTypes.string, _imports.PropTypes.number)
     }
   });
   Object.defineProperty(WSDropdown, 'childContextTypes', {
@@ -23892,6 +23929,8 @@ define('fabric-components/ws-dropdown/dropdown-menu',['exports', '../imports', '
               _this.focusNextItem(1);
               break;
             case 'Enter':
+              event.preventDefault();
+              event.stopPropagation();
               _this.selectCurrentItem();
               break;
             default:
